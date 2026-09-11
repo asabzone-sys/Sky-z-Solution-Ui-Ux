@@ -17,7 +17,7 @@ const SERVICE_ICON: Record<string, React.ReactNode> = {
 // (the labs.google treatment, built from SkyZ's actual services).
 const FLOATING_CHIPS: { serviceId: string; position: string; rotate: string; anim: string; delay: string }[] = [
   { serviceId: 'web-development', position: 'top-[3%] sm:top-[9%] left-[2%] sm:left-[4%] lg:left-[9%]', rotate: '-rotate-6', anim: 'animate-float-slow', delay: '0s' },
-  { serviceId: 'ai-automation', position: 'top-[4%] sm:top-[12%] right-[2%] sm:right-[4%] lg:right-[9%]', rotate: 'rotate-6', anim: 'animate-float-rev', delay: '0.4s' },
+  { serviceId: 'ai-automation', position: 'top-[10%] sm:top-[12%] right-[2%] sm:right-[4%] lg:right-[9%]', rotate: 'rotate-6', anim: 'animate-float-rev', delay: '0.4s' },
   { serviceId: 'graphic-design', position: 'bottom-[6%] sm:bottom-[12%] left-[2%] sm:left-[6%] lg:left-[11%]', rotate: 'rotate-3', anim: 'animate-float-rev', delay: '0.8s' },
   { serviceId: 'seo', position: 'bottom-[6%] sm:bottom-[10%] right-[2%] sm:right-[5%] lg:right-[10%]', rotate: '-rotate-3', anim: 'animate-float-slow', delay: '1.2s' },
 ];
@@ -156,7 +156,7 @@ export const Hero: React.FC = () => {
           <FloatingTag className="top-[-18px] sm:top-[-14px] left-[2%] sm:left-[8%] bg-green-400 text-black -rotate-6" delay={0.6}>
             ✦ FAST
           </FloatingTag>
-          <FloatingTag className="top-[-28px] sm:top-[-26px] right-[2%] sm:right-[9%] bg-pink-400 text-white rotate-3" delay={0.9}>
+          <FloatingTag className="top-[6px] sm:top-[-26px] right-[2%] sm:right-[9%] bg-pink-400 text-white rotate-3" delay={0.9}>
             ✦ CONNECTED
           </FloatingTag>
         </div>

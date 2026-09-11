@@ -167,10 +167,10 @@ export const ServicesPage: React.FC = () => {
         <Blob className="w-[340px] h-[320px] top-16 right-[-120px] opacity-60" color="rgba(56, 189, 248, 0.08)" duration={13} />
 
         {/* Floating elements responsive across mobile & desktop */}
-        <FloatingTag className="top-12 sm:top-16 left-[2%] sm:left-[8%] bg-sky-500/15 text-sky-600 dark:text-sky-400 border border-sky-500/20 -rotate-6" delay={0.4}>
+        <FloatingTag className="top-5 sm:top-16 left-[2%] sm:left-[8%] bg-sky-500/15 text-sky-600 dark:text-sky-400 border border-sky-500/20 -rotate-6" delay={0.4}>
           ✦ 6 CAPABILITIES
         </FloatingTag>
-        <FloatingTag className="top-16 sm:top-20 right-[2%] sm:right-[8%] bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/20 rotate-3" delay={0.8}>
+        <FloatingTag className="top-4 sm:top-20 right-[2%] sm:right-[8%] bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/20 rotate-3" delay={0.8}>
           ✦ END-TO-END
         </FloatingTag>
 

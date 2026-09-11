@@ -228,54 +228,32 @@ export const Capabilities: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Twin Interactive Modules */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 my-6">
-                  {/* Module A: AI Agent Orchestration */}
-                  <div className="p-4 rounded-2xl bg-skyz-surface-subtle shadow-sm font-mono text-xs border border-skyz-border overflow-x-auto no-scrollbar">
-                    <div className="flex items-center justify-between pb-2 text-skyz-text-muted border-b border-skyz-border">
-                      <span className="flex items-center gap-1.5 font-medium text-skyz-text">
-                        <span className="w-2 h-2 rounded-full bg-skyz-accent animate-pulse" />
-                        agent.executor.ts
-                      </span>
-                      <span className="text-skyz-accent font-bold text-[10px]">AI AGENT WORKFLOW</span>
+                {/* Interactive API Integrations Module */}
+                <div className="my-6 p-4 sm:p-5 rounded-2xl bg-skyz-surface-subtle shadow-sm flex items-center justify-around border border-skyz-border">
+                  <div className="flex items-center gap-2 sm:gap-6 w-full max-w-2xl justify-around">
+                    <div className="flex flex-col items-center">
+                      <div className="w-9 h-9 rounded-xl bg-skyz-bg border border-skyz-border flex items-center justify-center text-skyz-text shadow-sm">
+                        <Database className="w-4 h-4 text-skyz-accent" />
+                      </div>
+                      <span className="text-[10px] text-skyz-text-muted mt-1 font-medium">CRM / DB</span>
                     </div>
-                    <div className="space-y-1 mt-2.5 text-skyz-text-muted text-[11px] sm:text-[12px] whitespace-nowrap">
-                      <div><span className="text-skyz-accent-secondary font-semibold">export const</span> dispatchTask = <span className="text-skyz-accent font-semibold">async</span> (event) =&gt; &#123;</div>
-                      <div className="pl-4 text-skyz-text bg-skyz-bg rounded px-1.5 py-0.5">
-                        <span className="text-skyz-text-muted">const</span> result = <span className="text-skyz-accent font-semibold">await</span> runAgentPipeline(event.payload);
-                      </div>
-                      <div className="pl-4 text-skyz-accent-secondary">return result.syncWithBusinessSystem(&#123; status: &quot;completed&quot; &#125;);</div>
-                      <div>&#125;;</div>
+                    <div className="flex-1 max-w-[80px] h-0.5 bg-skyz-border relative">
+                      <div className="w-2 h-2 rounded-full bg-skyz-accent absolute -top-[3px] animate-ping" />
                     </div>
-                  </div>
-
-                  {/* Module B: API Integrations */}
-                  <div className="p-4 rounded-2xl bg-skyz-surface-subtle shadow-sm flex items-center justify-around border border-skyz-border">
-                    <div className="flex items-center gap-2 sm:gap-4 w-full justify-around">
-                      <div className="flex flex-col items-center">
-                        <div className="w-9 h-9 rounded-xl bg-skyz-bg border border-skyz-border flex items-center justify-center text-skyz-text shadow-sm">
-                          <Database className="w-4 h-4 text-skyz-accent" />
-                        </div>
-                        <span className="text-[10px] text-skyz-text-muted mt-1 font-medium">CRM / DB</span>
+                    <div className="flex flex-col items-center">
+                      <div className="w-10 h-10 rounded-xl bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#080B10] flex items-center justify-center shadow-md">
+                        <RefreshCw className="w-4 h-4" />
                       </div>
-                      <div className="flex-1 max-w-[60px] h-0.5 bg-skyz-border relative">
-                        <div className="w-2 h-2 rounded-full bg-skyz-accent absolute -top-[3px] animate-ping" />
+                      <span className="text-[10px] text-skyz-text dark:text-skyz-accent font-bold mt-1">API Workflow</span>
+                    </div>
+                    <div className="flex-1 max-w-[80px] h-0.5 bg-skyz-border relative">
+                      <div className="w-2 h-2 rounded-full bg-skyz-accent-secondary absolute -top-[3px] animate-ping" style={{ animationDelay: '0.8s' }} />
+                    </div>
+                    <div className="flex flex-col items-center">
+                      <div className="w-9 h-9 rounded-xl bg-skyz-bg border border-skyz-border flex items-center justify-center text-skyz-text shadow-sm">
+                        <Cloud className="w-4 h-4 text-skyz-accent" />
                       </div>
-                      <div className="flex flex-col items-center">
-                        <div className="w-10 h-10 rounded-xl bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#080B10] flex items-center justify-center shadow-md">
-                          <RefreshCw className="w-4 h-4" />
-                        </div>
-                        <span className="text-[10px] text-skyz-text dark:text-skyz-accent font-bold mt-1">API Workflow</span>
-                      </div>
-                      <div className="flex-1 max-w-[60px] h-0.5 bg-skyz-border relative">
-                        <div className="w-2 h-2 rounded-full bg-skyz-accent-secondary absolute -top-[3px] animate-ping" style={{ animationDelay: '0.8s' }} />
-                      </div>
-                      <div className="flex flex-col items-center">
-                        <div className="w-9 h-9 rounded-xl bg-skyz-bg border border-skyz-border flex items-center justify-center text-skyz-text shadow-sm">
-                          <Cloud className="w-4 h-4 text-skyz-accent" />
-                        </div>
-                        <span className="text-[10px] text-skyz-text-muted mt-1 font-medium">Cloud Webhooks</span>
-                      </div>
+                      <span className="text-[10px] text-skyz-text-muted mt-1 font-medium">Cloud Webhooks</span>
                     </div>
                   </div>
                 </div>
