@@ -1,0 +1,6 @@
+{
+  "name": "SkyZ Solutions",
+  "description": "Autonomous digital architecture, bespoke web development, and AI workflow automation.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
