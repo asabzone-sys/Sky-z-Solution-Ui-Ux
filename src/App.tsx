@@ -3,10 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ThemeProvider } from './context/ThemeContext';
 import { NavigationProvider, useNavigation } from './context/NavigationContext';
+import { LiquidPortalLoader } from './components/LiquidPortalLoader';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { HomePage } from './pages/HomePage';
@@ -58,9 +59,20 @@ const AppContent: React.FC = () => {
 };
 
 export default function App() {
+  // One-time cinematic entry — session-scoped so normal navigation within the
+  // session never replays it, but a fresh visit/refresh does.
+  const [loaderDone, setLoaderDone] = useState(
+    () => sessionStorage.getItem('skyz_portal_seen') === '1'
+  );
+  const handleLoaderDone = useCallback(() => {
+    try { sessionStorage.setItem('skyz_portal_seen', '1'); } catch { /* private mode */ }
+    setLoaderDone(true);
+  }, []);
+
   return (
     <ThemeProvider>
       <NavigationProvider>
+        {!loaderDone && <LiquidPortalLoader onDone={handleLoaderDone} />}
         <AppContent />
       </NavigationProvider>
     </ThemeProvider>
