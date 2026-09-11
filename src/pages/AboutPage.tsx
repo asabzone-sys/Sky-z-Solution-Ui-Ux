@@ -214,7 +214,7 @@ export const AboutPage: React.FC = () => {
               heading="See how we work"
               caption="A two-minute tour of how SkyZ designs, builds, and ships digital tools for real businesses."
               title="Inside SkyZ Solutions — Build • Grow • Automate"
-              videoId="QEJhjQSdG-M"
+              videoId="dYISWlAxUVs"
             />
           </div>
         </div>

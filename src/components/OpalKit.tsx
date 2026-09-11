@@ -70,7 +70,7 @@ export const VideoSection: React.FC<{
   caption?: string;
   title: string;
 }> = ({
-  videoId = 'QEJhjQSdG-M',
+  videoId = 'dYISWlAxUVs',
   heading,
   caption,
   title,

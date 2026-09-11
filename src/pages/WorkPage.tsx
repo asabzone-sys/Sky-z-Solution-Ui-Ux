@@ -242,7 +242,7 @@ export const WorkPage: React.FC = () => {
               heading="See the work in motion"
               caption="A short tour through how these projects move from first sketch to a running, measurable system."
               title="SkyZ Solutions — Selected work showcase"
-              videoId="QEJhjQSdG-M"
+              videoId="dYISWlAxUVs"
             />
           </div>
         </div>
