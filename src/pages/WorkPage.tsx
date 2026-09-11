@@ -35,8 +35,18 @@ const TILE_LAYOUT = [
   { position: 'bottom-[6%] left-[12%]', rotate: 'rotate-2', anim: 'animate-float-slow', delay: '0.9s' },
 ];
 
-/* Editorial grid rhythm: wide feature cards at positions 0 and 4. */
-const GRID_SPANS = ['sm:col-span-2', '', '', '', 'sm:col-span-2', ''];
+/* Editorial grid rhythm:
+   Row 1: Card 1 (Big, 2 cols) + Card 2 (Small, 1 col)
+   Row 2: Card 3 (Small, 1 col) + Card 4 (Big, 2 cols)
+   Row 3: Card 5 (Big, 2 cols) + Card 6 (Small, 1 col) */
+const GRID_SPANS = [
+  'lg:col-span-2', // Row 1: Big
+  '',              // Row 1: Small
+  '',              // Row 2: Small
+  'lg:col-span-2', // Row 2: Big
+  'lg:col-span-2', // Row 3: Big
+  '',              // Row 3: Small
+];
 
 const FILTER_OPTIONS: Array<'ALL' | ServiceCategory> = [
   'ALL',
@@ -163,12 +173,13 @@ export const WorkPage: React.FC = () => {
             {/* Asymmetric editorial grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-7">
               {filteredProjects.map((project, idx) => {
-                const isWide = GRID_SPANS[idx % GRID_SPANS.length] !== '';
+                const isWide = selectedFilter === 'ALL' && GRID_SPANS[idx % GRID_SPANS.length] !== '';
+                const spanClass = selectedFilter === 'ALL' ? GRID_SPANS[idx % GRID_SPANS.length] : '';
                 return (
                   <Reveal
                     key={project.id}
                     delay={(idx % 3) * 0.07}
-                    className={`${GRID_SPANS[idx % GRID_SPANS.length]} h-full`}
+                    className={`${spanClass} h-full`}
                   >
                     <motion.button
                       type="button"
