@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import {
-  ArrowRight,
   ArrowUpRight,
   Globe,
   ShoppingCart,
@@ -17,7 +16,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { useNavigation } from '../context/NavigationContext';
-import { OFFICIAL_SERVICES, OfficialService } from '../data/content';
+import { OFFICIAL_SERVICES } from '../data/content';
 import {
   Reveal,
   SectionShell,
@@ -89,8 +88,7 @@ const SUGGESTION_CHIPS = [
 ];
 
 export const ServicesPage: React.FC = () => {
-  const { navigate, setServiceCategory } = useNavigation();
-  const [selected, setSelected] = useState<OfficialService>(OFFICIAL_SERVICES[0]);
+  const { navigate } = useNavigation();
   const [queryIdx, setQueryIdx] = useState(0);
   const [placeholderText, setPlaceholderText] = useState(SERVICE_QUERIES[0]);
   const [inputValue, setInputValue] = useState('');
@@ -156,11 +154,6 @@ export const ServicesPage: React.FC = () => {
       setIsFocused(false);
       navigate('contact');
     }, 600);
-  };
-
-  const handleStart = (service: OfficialService) => {
-    setServiceCategory(service.pillar);
-    navigate('contact');
   };
 
   return (
@@ -272,114 +265,42 @@ export const ServicesPage: React.FC = () => {
                 Start with one, or combine all six
               </h2>
               <p className="text-sm sm:text-base text-skyz-text-muted">
-                Tap any capability to see how it works — every card connects into the same engine.
+                Six essential capabilities engineered into one connected studio engine.
               </p>
             </Reveal>
 
-            {/* Tilted gallery grid */}
+            {/* Tilted gallery grid — clean showcase without detail panel */}
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 max-w-5xl mx-auto">
-              {OFFICIAL_SERVICES.map((service, i) => {
-                const isSelected = selected.id === service.id;
-                return (
-                  <Reveal key={service.id} delay={i * 0.06} className="h-full">
-                    <motion.button
-                      type="button"
-                      onClick={() => setSelected(service)}
-                      whileHover={{ rotate: 0, scale: 1.04, y: -4 }}
-                      whileTap={{ scale: 0.97 }}
-                      transition={{ type: 'spring', stiffness: 300, damping: 18 }}
-                      className={`w-full h-full text-left rounded-3xl p-4 sm:p-5 border transition-shadow cursor-pointer ${TILTS[i % TILTS.length]} ${
-                        isSelected
-                          ? 'border-skyz-accent shadow-xl shadow-skyz-accent/10 bg-skyz-bg'
-                          : 'border-skyz-border bg-skyz-bg hover:shadow-lg'
-                      }`}
-                    >
-                      {/* Accent visual tile */}
-                      <div className={`aspect-[4/3] rounded-2xl ${TINTS[service.id]} flex items-center justify-center mb-4 relative overflow-hidden`}>
-                        <motion.div
-                          animate={{ y: [0, -6, 0] }}
-                          transition={{ duration: 4 + i * 0.4, repeat: Infinity, ease: 'easeInOut' }}
-                          className="w-16 h-16 rounded-2xl bg-white/80 dark:bg-white/10 shadow-sm border border-black/5 dark:border-white/10 flex items-center justify-center"
-                        >
-                          {SERVICE_ICONS[service.id]}
-                        </motion.div>
-                        <span className="absolute top-2.5 left-3 text-[10px] font-mono font-bold text-skyz-text-muted">
-                          {service.pillarNumber} // {service.pillar}
-                        </span>
-                      </div>
-
-                      <h3 className="font-display text-base sm:text-lg font-bold text-skyz-text">
-                        {service.name}
-                      </h3>
-                      <p className="text-xs sm:text-sm text-skyz-text-muted mt-1 leading-relaxed line-clamp-2">
-                        {service.sentence}
-                      </p>
-                    </motion.button>
-                  </Reveal>
-                );
-              })}
-            </div>
-
-            {/* Selected service detail panel */}
-            <div className="max-w-5xl mx-auto mt-12">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={selected.id}
-                  initial={{ opacity: 0, y: 18 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -12 }}
-                  transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                  className="p-6 sm:p-9 rounded-[2rem] bg-skyz-bg border border-skyz-border shadow-sm relative overflow-hidden"
-                >
-                  <div
-                    className="absolute -top-16 -right-16 w-72 h-72 rounded-full blur-3xl opacity-20 pointer-events-none"
-                    style={{ backgroundColor: selected.accent }}
-                  />
-                  <div className="relative z-10 flex flex-col md:flex-row md:items-center gap-6 md:gap-10">
-                    <div className="flex-1 space-y-3">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span
-                          className="text-[11px] font-mono font-bold px-2.5 py-1 rounded-full"
-                          style={{ backgroundColor: `${selected.accent}1A`, color: selected.accent }}
-                        >
-                          {selected.badge}
-                        </span>
-                        <span className="text-[11px] font-mono text-skyz-text-muted">{selected.tagline}</span>
-                      </div>
-                      <h3 className="font-display text-2xl sm:text-3xl font-bold text-skyz-text">
-                        {selected.name}
-                      </h3>
-                      <p className="text-sm sm:text-base text-skyz-text-muted leading-relaxed">
-                        {selected.sentence}
-                      </p>
-                      <div className="flex flex-wrap gap-1.5 pt-1">
-                        {selected.microLabels.map((label) => (
-                          <span
-                            key={label}
-                            className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-skyz-surface-subtle text-skyz-text-muted border border-skyz-border"
-                          >
-                            {label}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col items-start md:items-end gap-2.5">
-                      <button
-                        type="button"
-                        onClick={() => handleStart(selected)}
-                        className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#080B10] font-semibold text-sm shadow-md hover:bg-skyz-accent transition-all cursor-pointer"
+              {OFFICIAL_SERVICES.map((service, i) => (
+                <Reveal key={service.id} delay={i * 0.06} className="h-full">
+                  <motion.div
+                    whileHover={{ rotate: 0, scale: 1.03, y: -4 }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 18 }}
+                    className={`w-full h-full text-left rounded-3xl p-4 sm:p-5 border border-skyz-border bg-skyz-bg hover:border-skyz-accent/40 hover:shadow-xl transition-all select-none ${TILTS[i % TILTS.length]}`}
+                  >
+                    {/* Accent visual tile */}
+                    <div className={`aspect-[4/3] rounded-2xl ${TINTS[service.id]} flex items-center justify-center mb-4 relative overflow-hidden`}>
+                      <motion.div
+                        animate={{ y: [0, -6, 0] }}
+                        transition={{ duration: 4 + i * 0.4, repeat: Infinity, ease: 'easeInOut' }}
+                        className="w-16 h-16 rounded-2xl bg-white/80 dark:bg-white/10 shadow-sm border border-black/5 dark:border-white/10 flex items-center justify-center"
                       >
-                        <span>Scope {selected.name}</span>
-                        <ArrowRight className="w-4 h-4" />
-                      </button>
-                      <span className="text-[11px] font-mono text-skyz-text-muted">
-                        Direct 24hr response
+                        {SERVICE_ICONS[service.id]}
+                      </motion.div>
+                      <span className="absolute top-2.5 left-3 text-[10px] font-mono font-bold text-skyz-text-muted">
+                        {service.pillarNumber} // {service.pillar}
                       </span>
                     </div>
-                  </div>
-                </motion.div>
-              </AnimatePresence>
+
+                    <h3 className="font-display text-base sm:text-lg font-bold text-skyz-text">
+                      {service.name}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-skyz-text-muted mt-1 leading-relaxed line-clamp-2">
+                      {service.sentence}
+                    </p>
+                  </motion.div>
+                </Reveal>
+              ))}
             </div>
           </div>
         </div>
