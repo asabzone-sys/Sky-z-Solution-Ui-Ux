@@ -1,68 +1,226 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { motion } from 'motion/react';
+import React, { useRef, useState, useEffect } from 'react';
 import { ArrowLeft, ArrowRight, ArrowUpRight } from 'lucide-react';
-import { PORTFOLIO_PROJECTS, ProjectVisual, getServiceBadgeStyle } from '../data/portfolio';
+import {
+  PORTFOLIO_PROJECTS,
+  ProjectVisual,
+  getServiceBadgeStyle,
+  PortfolioProject,
+} from '../data/portfolio';
 import { useNavigation } from '../context/NavigationContext';
 import { Reveal, SectionShell, Blob, Eyebrow } from '../components/OpalKit';
 
 const PILLAR_FILTERS = ['ALL', 'BUILD', 'GROW', 'AUTOMATE'] as const;
+const N = PORTFOLIO_PROJECTS.length;
+
+/** Signed shortest distance in slot units from a to b, wrapped on the ring. */
+const wrapDelta = (d: number) => {
+  const w = ((d % N) + N) % N;
+  return w > N / 2 ? w - N : w;
+};
 
 /**
- * Home portfolio preview — Labs-style tilted card showcase.
- * Shows the real case studies (shared with the Work page) as three
- * editorial cards; the center one is featured. No 3D arc, no heavy motion.
+ * Home portfolio preview — continuous conveyor showcase.
+ *
+ * Motion model: `S.pos` is a float position in "slot units" on a ring of N
+ * cards. Every frame, each card's pixel offset is `wrapDelta(i - pos) * STEP`
+ * and its scale / opacity / y / rotation are continuous functions of that
+ * signed distance — so emphasis emerges as a card glides through the center
+ * and dissolves as it leaves. Auto-advance just nudges a spring target; the
+ * spring interpolates everything, so there are no snaps, resets or mounts.
+ * All motion is transform/opacity only (GPU-composited, no reflow), React
+ * re-renders only when the centered slot index changes.
  */
 export const WorkCarousel: React.FC = () => {
   const { navigate } = useNavigation();
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [touchStartX, setTouchStartX] = useState(0);
-  const total = PORTFOLIO_PROJECTS.length;
+  const wrapRef = useRef<HTMLDivElement | null>(null);
+  const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  const orbitNext = useCallback(() => setActiveIndex((p) => (p + 1) % total), [total]);
-  const orbitPrev = useCallback(() => setActiveIndex((p) => (p - 1 + total) % total), [total]);
+  // Mutable motion state — deliberately outside React state (no re-renders).
+  const S = useRef({
+    pos: 0,        // current belt position, in slot units
+    target: 0,     // spring target, in slot units
+    vel: 0,        // slots per frame (~16.7ms)
+    x0: 0, y0: 0,  // pointer-down origin
+    pos0: 0,       // belt position at pointer-down
+    lastMove: 0,
+    locked: false,     // horizontal drag intent confirmed
+    suppress: false,   // suppress the click after a drag
+    dragging: false,
+    pause: false,      // hover / focus pause for auto-advance
+    visible: true,     // IntersectionObserver gate
+    vw: 1440,
+    autoT: 0,          // ms accumulated toward the next auto-advance
+  }).current;
 
-  // Gentle autoplay, disabled for reduced motion
+  const [activeSlot, setActiveSlot] = useState(0);
+  const activeSlotRef = useRef(0);
+  const [dragging, setDragging] = useState(false);
+
+  // Responsive card geometry (content size only — emphasis comes from scale)
+  const [dims, setDims] = useState({ baseW: 420, gap: 48 });
   useEffect(() => {
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion) return;
-    const timer = setInterval(orbitNext, 4600);
-    return () => clearInterval(timer);
-  }, [orbitNext]);
-
-  // Keyboard navigation
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName)) return;
-      if (e.key === 'ArrowLeft') orbitPrev();
-      if (e.key === 'ArrowRight') orbitNext();
+    const update = () => {
+      const vw = window.innerWidth;
+      S.vw = vw;
+      const baseW = vw < 640 ? Math.min(300, vw - 88) : vw < 1024 ? 360 : 420;
+      const gap = vw < 640 ? 14 : vw < 1024 ? 32 : 48;
+      setDims((d) => (d.baseW === baseW && d.gap === gap ? d : { baseW, gap }));
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [orbitPrev, orbitNext]);
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, [S]);
+  const STEP = dims.baseW + dims.gap;
 
-  const leftProject = PORTFOLIO_PROJECTS[(activeIndex - 1 + total) % total];
-  const centerProject = PORTFOLIO_PROJECTS[activeIndex];
-  const rightProject = PORTFOLIO_PROJECTS[(activeIndex + 1) % total];
+  // ── The animation loop ────────────────────────────────────────────────
+  useEffect(() => {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let raf = 0;
+    let last = 0;
 
-  const jumpToPillar = (pillar: (typeof PILLAR_FILTERS)[number]) => {
-    const idx = PORTFOLIO_PROJECTS.findIndex((p) => (pillar === 'ALL' ? true : p.pillar === pillar));
-    if (idx !== -1) setActiveIndex(idx);
+    const frame = (t: number) => {
+      const dt = Math.min(48, t - (last || t));
+      last = t;
+      const n = dt / 16.7; // normalize to ~60fps frames
+
+      if (!S.dragging) {
+        // Auto-advance: nudge the target one slot forward on a cadence.
+        if (S.visible && !S.pause && !reduce) {
+          S.autoT += dt;
+          if (S.autoT > 2800) {
+            S.autoT = 0;
+            S.target += 1;
+          }
+        }
+        // Spring integration (soft, near-critically-damped; quick + subtle
+        // settle when reduced motion is preferred).
+        const k = reduce ? 0.35 : 0.045;
+        const c = reduce ? 0.9 : 0.32;
+        S.vel += (-k * (S.pos - S.target) - c * S.vel) * n;
+        S.pos += S.vel * n;
+        if (Math.abs(S.vel) < 0.0004 && Math.abs(S.pos - S.target) < 0.0004) {
+          S.pos = S.target;
+          S.vel = 0;
+        }
+      }
+
+      // Which slot is centered? (React state only when it changes)
+      const nearest = ((Math.round(S.pos) % N) + N) % N;
+      if (nearest !== activeSlotRef.current) {
+        activeSlotRef.current = nearest;
+        setActiveSlot(nearest);
+        S.autoT = 0;
+      }
+
+      // Paint every card from continuous functions of its ring distance.
+      for (let i = 0; i < N; i++) {
+        const el = itemRefs.current[i];
+        if (!el) continue;
+        const d = wrapDelta(i - S.pos);          // signed slots from center
+        const dx = d * STEP;                     // signed px from center
+        const ad = Math.abs(d);
+        const a = Math.min(1, ad / 2);           // 0 center → 1 two slots away
+        const scale = 1 - 0.28 * Math.pow(a, 1.6);
+        const opacity = 1 - 0.5 * Math.pow(a, 1.5);
+        const y = 14 * a;
+        const rot = d * 2.4;
+        el.style.transform =
+          `translate3d(${dx.toFixed(1)}px, ${y.toFixed(1)}px, 0) ` +
+          `scale(${scale.toFixed(4)}) rotate(${rot.toFixed(2)}deg)`;
+        el.style.opacity = opacity.toFixed(3);
+        el.style.zIndex = String(60 - Math.round(a * 50));
+        el.style.pointerEvents = a > 0.92 ? 'none' : 'auto';
+        el.style.visibility =
+          Math.abs(dx) > S.vw / 2 + STEP ? 'hidden' : 'visible';
+      }
+      raf = requestAnimationFrame(frame);
+    };
+
+    raf = requestAnimationFrame(frame);
+    return () => cancelAnimationFrame(raf);
+  }, [STEP, S]);
+
+  // Pause auto-advance while the belt is off-screen.
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return;
+    const io = new IntersectionObserver(
+      (entries) => { S.visible = entries[0].isIntersecting; },
+      { threshold: 0.05 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [S]);
+
+  // ── Drag / swipe (pointer events, vertical-scroll friendly) ──────────
+  const onPointerDown = (e: React.PointerEvent) => {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    S.dragging = true;
+    S.locked = false;
+    S.suppress = false;
+    S.x0 = e.clientX;
+    S.y0 = e.clientY;
+    S.pos0 = S.pos;
+    S.vel = 0;
+    S.lastMove = performance.now();
   };
 
-  const Card: React.FC<{
-    project: (typeof PORTFOLIO_PROJECTS)[number];
-    variant: 'flank' | 'center';
-  }> = ({ project, variant }) => (
-    <button
-      type="button"
-      onClick={() => navigate('work')}
-      className={`text-left rounded-[2rem] bg-skyz-bg border p-3 sm:p-4 flex flex-col cursor-pointer transition-all duration-500 ${
-        variant === 'center'
-          ? 'w-[300px] sm:w-[380px] border-skyz-accent/60 shadow-xl card-shadow-active'
-          : 'hidden md:flex w-[300px] sm:w-[330px] border-skyz-border shadow-sm card-shadow-flank opacity-75 hover:opacity-100'
-      }`}
-    >
-      <div className={`relative w-full rounded-[1.4rem] overflow-hidden ${variant === 'center' ? 'aspect-[16/11]' : 'aspect-[4/3]'}`}>
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (!S.dragging) return;
+    const dx = e.clientX - S.x0;
+    const dy = e.clientY - S.y0;
+    if (!S.locked) {
+      if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+      if (Math.abs(dy) > Math.abs(dx)) { // vertical intent → let page scroll
+        S.dragging = false;
+        return;
+      }
+      S.locked = true;
+      S.suppress = true;
+      setDragging(true);
+      wrapRef.current?.setPointerCapture?.(e.pointerId);
+    }
+    const now = performance.now();
+    const dtm = Math.max(1, now - S.lastMove);
+    S.lastMove = now;
+    const np = S.pos0 + dx / STEP;
+    S.vel = ((np - S.pos) / dtm) * 16.7; // → slots per frame
+    S.pos = np;
+    S.target = np;
+  };
+
+  const onPointerUp = () => {
+    if (!S.dragging) return;
+    S.dragging = false;
+    setDragging(false);
+    if (!S.locked) return;
+    // Momentum: project where the fling decays, then settle on that slot.
+    const proj = S.pos + S.vel * 12;
+    S.target = Math.round(proj);
+    S.vel *= 0.4;
+    S.autoT = 0;
+  };
+
+  const onClickCapture = (e: React.MouseEvent) => {
+    if (S.suppress) {
+      e.preventDefault();
+      e.stopPropagation();
+      S.suppress = false;
+    }
+  };
+
+  // ── Animated navigation (the spring covers the distance) ─────────────
+  const go = (delta: number) => { S.target += delta; S.autoT = 0; };
+  const goTo = (i: number) => { S.target += wrapDelta(i - Math.round(S.target)); S.autoT = 0; };
+  const jumpToPillar = (pillar: (typeof PILLAR_FILTERS)[number]) => {
+    const idx = PORTFOLIO_PROJECTS.findIndex((p) => (pillar === 'ALL' ? true : p.pillar === pillar));
+    if (idx !== -1) goTo(idx);
+  };
+
+  // ── Card (content + markup unchanged from the original design) ───────
+  const CardBody: React.FC<{ project: PortfolioProject }> = ({ project }) => (
+    <>
+      <div className="relative w-full rounded-[1.4rem] overflow-hidden aspect-[16/11]">
         <ProjectVisual project={project} />
         <span
           className={`absolute top-3 left-3 text-[10px] font-mono font-bold px-2.5 py-1 rounded-full border backdrop-blur-sm ${getServiceBadgeStyle(project.serviceCategory)}`}
@@ -82,73 +240,81 @@ export const WorkCarousel: React.FC = () => {
           <ArrowUpRight className="w-3.5 h-3.5" />
         </span>
       </div>
+    </>
+  );
+
+  const Card: React.FC<{ project: PortfolioProject }> = ({ project }) => (
+    <button
+      type="button"
+      onClick={() => navigate('work')}
+      className="block w-full text-left rounded-[2rem] bg-skyz-bg border border-skyz-border shadow-sm card-shadow-flank hover:border-skyz-accent/40 transition-colors duration-300 p-3 sm:p-4 cursor-pointer"
+    >
+      <CardBody project={project} />
     </button>
   );
 
   return (
     <SectionShell id="work">
-      <div className="bg-skyz-surface border border-skyz-border rounded-[inherit] px-4 sm:px-12 py-16 sm:py-24 relative overflow-hidden">
+      <div className="bg-skyz-surface border border-skyz-border rounded-[inherit] px-0 py-16 sm:py-24 relative overflow-hidden">
         <Blob className="w-[380px] h-[340px] top-1/3 -left-32 opacity-70" color="rgba(59, 130, 246, 0.10)" duration={12} />
         <Blob className="w-[360px] h-[330px] -top-20 right-[-110px] opacity-70" color="rgba(16, 185, 129, 0.09)" duration={10} />
 
         <div className="relative z-10 flex flex-col items-center">
-          <Reveal className="text-center space-y-4 mb-12">
+          <Reveal className="text-center space-y-4 mb-12 px-4">
             <Eyebrow>Selected Work</Eyebrow>
             <h2 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-skyz-text">
               Made in the studio.
             </h2>
           </Reveal>
 
-          {/* Tilted card row — center featured, flanks gently rotated */}
+          {/* Continuous belt viewport */}
           <Reveal delay={0.08} className="w-full">
             <div
-              className="flex items-center justify-center gap-4 sm:gap-6 select-none"
-              onTouchStart={(e) => setTouchStartX(e.changedTouches[0].screenX)}
-              onTouchEnd={(e) => {
-                const diff = e.changedTouches[0].screenX - touchStartX;
-                if (Math.abs(diff) > 40) {
-                  if (diff > 0) orbitPrev();
-                  else orbitNext();
-                }
-              }}
+              ref={wrapRef}
+              onPointerDown={onPointerDown}
+              onPointerMove={onPointerMove}
+              onPointerUp={onPointerUp}
+              onPointerCancel={onPointerUp}
+              onClickCapture={onClickCapture}
+              onMouseEnter={() => { if (!S.dragging) S.pause = true; }}
+              onMouseLeave={() => { S.pause = false; }}
+              onFocus={() => { S.pause = true; }}
+              onBlur={() => { S.pause = false; }}
+              className={`relative w-full py-5 select-none touch-pan-y ${dragging ? 'cursor-grabbing' : 'cursor-grab'}`}
             >
-              <motion.div
-                key={`left-${leftProject.id}`}
-                initial={{ opacity: 0, scale: 0.94 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-                className="-rotate-3 translate-y-3 hidden md:block"
-              >
-                <Card project={leftProject} variant="flank" />
-              </motion.div>
+              {/* Invisible spacer defines the belt height (no layout thrash) */}
+              <div aria-hidden className="invisible mx-auto" style={{ width: dims.baseW }}>
+                <div className="rounded-[2rem] border border-transparent p-3 sm:p-4">
+                  <CardBody project={PORTFOLIO_PROJECTS[0]} />
+                </div>
+              </div>
 
-              <motion.div
-                key={`center-${centerProject.id}`}
-                initial={{ opacity: 0, scale: 0.96, y: 14 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-              >
-                <Card project={centerProject} variant="center" />
-              </motion.div>
-
-              <motion.div
-                key={`right-${rightProject.id}`}
-                initial={{ opacity: 0, scale: 0.94 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-                className="rotate-3 translate-y-3 hidden md:block"
-              >
-                <Card project={rightProject} variant="flank" />
-              </motion.div>
+              {/* The belt — every card painted every frame via transforms */}
+              <div className="absolute inset-0">
+                {PORTFOLIO_PROJECTS.map((project, i) => (
+                  <div
+                    key={project.id}
+                    ref={(el) => { itemRefs.current[i] = el; }}
+                    className="absolute top-5 left-1/2 will-change-transform"
+                    style={{
+                      width: dims.baseW,
+                      marginLeft: -dims.baseW / 2,
+                      backfaceVisibility: 'hidden',
+                    }}
+                  >
+                    <Card project={project} />
+                  </div>
+                ))}
+              </div>
             </div>
           </Reveal>
 
-          {/* Controls — arrows + progress dots, Labs-style */}
-          <div className="flex items-center gap-4 mt-8">
+          {/* Controls — arrows + progress dots */}
+          <div className="flex items-center gap-4 mt-8 px-4">
             <button
               type="button"
               aria-label="Previous project"
-              onClick={orbitPrev}
+              onClick={() => go(-1)}
               className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-skyz-bg border border-skyz-border shadow-sm flex items-center justify-center text-skyz-text hover:text-skyz-accent hover:scale-105 active:scale-95 transition-all cursor-pointer"
             >
               <ArrowLeft className="w-5 h-5" />
@@ -160,9 +326,9 @@ export const WorkCarousel: React.FC = () => {
                   key={p.id}
                   type="button"
                   aria-label={`Show ${p.title}`}
-                  onClick={() => setActiveIndex(i)}
+                  onClick={() => goTo(i)}
                   className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
-                    i === activeIndex ? 'w-6 bg-skyz-accent' : 'w-1.5 bg-skyz-border hover:bg-skyz-text-muted'
+                    i === activeSlot ? 'w-6 bg-skyz-accent' : 'w-1.5 bg-skyz-border hover:bg-skyz-text-muted'
                   }`}
                 />
               ))}
@@ -171,7 +337,7 @@ export const WorkCarousel: React.FC = () => {
             <button
               type="button"
               aria-label="Next project"
-              onClick={orbitNext}
+              onClick={() => go(1)}
               className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-skyz-bg border border-skyz-border shadow-sm flex items-center justify-center text-skyz-text hover:text-skyz-accent hover:scale-105 active:scale-95 transition-all cursor-pointer"
             >
               <ArrowRight className="w-5 h-5" />
@@ -180,7 +346,7 @@ export const WorkCarousel: React.FC = () => {
 
           {/* Quick-jump pillar chips — Labs-style quiet filters */}
           <Reveal delay={0.14} className="w-full">
-            <div className="flex flex-wrap items-center justify-center gap-2 mt-8">
+            <div className="flex flex-wrap items-center justify-center gap-2 mt-8 px-4">
               {PILLAR_FILTERS.map((pillar) => (
                 <button
                   key={pillar}
