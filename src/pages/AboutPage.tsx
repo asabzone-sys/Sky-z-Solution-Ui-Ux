@@ -1,436 +1,321 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { 
-  ArrowRight, 
-  Layers, 
-  TrendingUp, 
-  Bot, 
-  Sparkles, 
-  Compass, 
-  Code2, 
-  CheckCircle2, 
-  Workflow, 
-  Zap, 
-  Cpu, 
-  Eye, 
-  Sliders,
-  ChevronRight
+import React from 'react';
+import { motion } from 'motion/react';
+import {
+  ArrowRight,
+  Compass,
+  Sparkles,
+  CheckCircle2,
 } from 'lucide-react';
 import { useNavigation } from '../context/NavigationContext';
+import {
+  Reveal,
+  SectionShell,
+  Blob,
+  VideoSection,
+  Eyebrow,
+  FloatingTag,
+} from '../components/OpalKit';
 
 export const AboutPage: React.FC = () => {
   const { navigate } = useNavigation();
-  const [activeLetterHover, setActiveLetterHover] = useState<number | null>(null);
-  const [activeEcosystemStage, setActiveEcosystemStage] = useState<'BUILD' | 'GROW' | 'AUTOMATE'>('BUILD');
-
-  const interactiveLetters = "AUTONOMOUS".split("");
-
-  const ecosystemStages = {
-    BUILD: {
-      number: '01',
-      title: 'Foundations & Architecture',
-      services: ['Web Development', 'E-commerce'],
-      description: 'We engineer high-performance web applications, responsive digital storefronts, and modular design systems from first principles.',
-      microLanguage: ['BUILD', 'LAYOUT', 'INTERFACE', 'DEPLOY'],
-      output: 'Production-ready web platform with zero bloat.',
-      accent: 'text-sky-500',
-      bgLight: 'bg-sky-500/10 border-sky-500/20'
-    },
-    GROW: {
-      number: '02',
-      title: 'Visibility & Authority',
-      services: ['SEO', 'Digital Marketing', 'Graphic Design'],
-      description: 'We align technical search indexing, targeted customer acquisition funnels, and recognizable brand identity systems.',
-      microLanguage: ['GROW', 'OPTIMIZE', 'INDEX', 'CRAFT'],
-      output: 'High-intent audience conversion and brand presence.',
-      accent: 'text-purple-500',
-      bgLight: 'bg-purple-500/10 border-purple-500/20'
-    },
-    AUTOMATE: {
-      number: '03',
-      title: 'Intelligent Workflows',
-      services: ['AI Automation'],
-      description: 'We orchestrate autonomous AI agents and bidirectional API integrations that run repetitive customer and operational tasks 24/7.',
-      microLanguage: ['AUTOMATE', 'WORKFLOW', 'PROCESS', 'LOGIC'],
-      output: 'Continuous operational leverage without manual overhead.',
-      accent: 'text-amber-500',
-      bgLight: 'bg-amber-500/10 border-amber-500/20'
-    }
-  };
 
   const principles = [
     {
-      number: '01',
-      token: 'PURPOSE',
-      title: 'Purpose Over Novelty',
-      description: 'We select technologies strictly for their business utility, speed, and durability—never temporary hype or unneeded complexity.'
+      num: '01',
+      title: 'Build for Real Utility',
+      desc: 'We write software to solve practical business challenges, not to chase temporary tech trends.',
+      tag: 'PURPOSE',
+      blobColor: 'rgba(14, 165, 233, 0.16)',
     },
     {
-      number: '02',
-      token: 'ERGONOMICS',
-      title: 'Interfaces for Humans',
-      description: 'Software is an instrument. We design ergonomic interfaces with high typographic contrast, fast feedback, and fluid interaction.'
+      num: '02',
+      title: 'Designed for People',
+      desc: 'Clean layouts and intuitive interfaces that customers and team members love using from day one.',
+      tag: 'CLARITY',
+      blobColor: 'rgba(236, 72, 153, 0.14)',
     },
     {
-      number: '03',
-      token: 'CONTINUITY',
-      title: 'Continuous Pipeline',
-      description: 'What we build is designed to be found, and what is found is designed to operate autonomously. Code, growth, and automation in unison.'
+      num: '03',
+      title: 'Connected Together',
+      desc: 'Your website, marketing reach, and automated workflows are built to support one another seamlessly.',
+      tag: 'HARMONY',
+      blobColor: 'rgba(168, 85, 247, 0.14)',
     },
     {
-      number: '04',
-      token: 'MODULARITY',
-      title: 'Built to Scale',
-      description: 'Clean data contracts, modular components, and accessible patterns that adapt effortlessly as organizational demands expand.'
-    }
+      num: '04',
+      title: 'Built to Last',
+      desc: 'Reliable, well-structured foundations that scale effortlessly as your business expands.',
+      tag: 'LONGEVITY',
+      blobColor: 'rgba(245, 158, 11, 0.16)',
+    },
   ];
 
   return (
     <div className="w-full bg-skyz-bg text-skyz-text transition-colors duration-200 overflow-x-hidden">
-      
-      {/* 1. HERO WITH PLAYFUL KINETIC TYPOGRAPHY & MICRO-ANNOTATIONS */}
-      <section className="w-full pt-12 pb-16 sm:pt-16 sm:pb-24 px-4 sm:px-6 lg:px-8 border-b border-skyz-border relative overflow-hidden bg-dots-pattern">
-        {/* Organic curved glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[350px] bg-skyz-accent/10 blur-[140px] rounded-full pointer-events-none" />
+
+      {/* ================================================================ */}
+      {/* 1. HERO — Labs-style kinetic typography on breathing space        */}
+      {/* ================================================================ */}
+      <section className="w-full pt-14 pb-20 sm:pt-24 sm:pb-28 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        {/* Organic color blobs behind the type — Labs playfulness */}
+        <Blob className="w-[420px] h-[380px] -top-24 -left-32 opacity-80" color="rgba(124, 58, 237, 0.10)" duration={11} />
+        <Blob className="w-[360px] h-[320px] top-10 right-[-120px] opacity-70" color="rgba(236, 72, 153, 0.09)" duration={13} />
+        <Blob className="w-[300px] h-[280px] bottom-[-100px] left-1/3 opacity-60" color="rgba(56, 189, 248, 0.10)" duration={9} />
 
         <div className="max-w-7xl mx-auto relative z-10">
-          
-          {/* Editorial Ribbon */}
-          <div className="flex items-center justify-between gap-4 mb-6">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-skyz-surface border border-skyz-border shadow-sm">
-              <span className="w-2 h-2 rounded-full bg-skyz-accent animate-pulse" />
-              <span className="text-xs text-skyz-text-muted uppercase tracking-wider font-semibold">
-                Studio Manifesto // SkyZ Solutions
-              </span>
+          <Reveal>
+            <div className="flex flex-wrap items-center justify-between gap-4 mb-10 sm:mb-14">
+              <Eyebrow>
+                <span className="w-2 h-2 rounded-full bg-skyz-accent animate-pulse" />
+                Studio Story // SkyZ Solutions
+              </Eyebrow>
+              <div className="flex items-center gap-2 font-mono text-[11px] text-skyz-text-muted">
+                <span className="px-2.5 py-1 rounded-full bg-skyz-surface border border-skyz-border">EST. 2024</span>
+                <span className="text-skyz-accent font-bold">DIGITAL CRAFT</span>
+              </div>
             </div>
-            <span className="hidden sm:inline-block font-mono text-xs text-skyz-text-muted">
-              EST. STUDIO // CREATIVE TECH
-            </span>
-          </div>
+          </Reveal>
 
-          {/* Kinetic Interactive Letters */}
-          <div className="relative my-8 select-none">
-            <div className="flex flex-wrap items-center gap-1 sm:gap-2 text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-display font-extrabold tracking-tight leading-none text-skyz-text">
-              {interactiveLetters.map((char, i) => (
+          {/* Kinetic display type — hover each word for playful motion */}
+          <Reveal delay={0.08}>
+            <h1 className="font-display font-black text-[13vw] sm:text-6xl md:text-8xl lg:text-[7.5rem] tracking-tight leading-[0.95] select-none">
+              <span className="inline-flex flex-wrap items-center gap-x-4 gap-y-2 sm:gap-x-6">
+                {['WE', 'BUILD', 'DIGITAL'].map((word, i) => (
+                  <motion.span
+                    key={word}
+                    whileHover={{ scale: 1.06, rotate: i % 2 === 0 ? -2 : 2 }}
+                    transition={{ type: 'spring', stiffness: 320, damping: 14 }}
+                    className="inline-block cursor-default"
+                  >
+                    {word}
+                  </motion.span>
+                ))}
+              </span>
+              <span className="inline-flex flex-wrap items-center gap-x-4 gap-y-2 sm:gap-x-6 mt-1 sm:mt-3">
                 <motion.span
-                  key={i}
-                  className="inline-block cursor-pointer transition-colors relative"
-                  whileHover={{ 
-                    scale: 1.15, 
-                    rotate: i % 2 === 0 ? 5 : -5,
-                    color: 'var(--accent)'
-                  }}
-                  whileTap={{ scale: 0.95 }}
-                  onHoverStart={() => setActiveLetterHover(i)}
-                  onHoverEnd={() => setActiveLetterHover(null)}
+                  whileHover={{ scale: 1.06, rotate: 2 }}
+                  transition={{ type: 'spring', stiffness: 320, damping: 14 }}
+                  className="inline-block cursor-default"
                 >
-                  {char}
-                  {activeLetterHover === i && (
-                    <motion.span 
-                      initial={{ opacity: 0, y: 10, scale: 0.8 }}
-                      animate={{ opacity: 1, y: -20, scale: 1 }}
-                      exit={{ opacity: 0 }}
-                      className="absolute -top-4 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-skyz-accent text-white shadow-md pointer-events-none z-20"
-                    >
-                      {['SYSTEM', 'LAYOUT', 'INTERFACE', 'DEPLOY', 'DESIGN', 'GROW', 'OPTIMIZE', 'AUTOMATE', 'WORKFLOW', 'SCALE'][i]}
-                    </motion.span>
-                  )}
+                  TOOLS
                 </motion.span>
+                <motion.span
+                  whileHover={{ scale: 1.06, rotate: -2 }}
+                  transition={{ type: 'spring', stiffness: 320, damping: 14 }}
+                  className="inline-flex items-center px-4 py-1.5 sm:px-6 sm:py-2 rounded-2xl sm:rounded-3xl border-2 border-dashed border-purple-400 bg-purple-500/10 text-purple-500 cursor-default"
+                >
+                  THAT
+                </motion.span>
+                <motion.span
+                  whileHover={{ scale: 1.08 }}
+                  transition={{ type: 'spring', stiffness: 320, damping: 14 }}
+                  className="inline-block text-skyz-accent cursor-default"
+                >
+                  WORK.
+                </motion.span>
+              </span>
+            </h1>
+
+            {/* Floating cursor-tag badges — Putty hero flavor */}
+            <FloatingTag className="top-2 right-[8%] bg-green-400 text-black -rotate-6" delay={0.5}>
+              ✦ FAST
+            </FloatingTag>
+            <FloatingTag className="top-24 right-[22%] bg-pink-400 text-white rotate-3" delay={0.8}>
+              ✦ CLEAN
+            </FloatingTag>
+            <FloatingTag className="top-44 right-[4%] bg-blue-400 text-white rotate-6" delay={1.1}>
+              ✦ CONNECTED
+            </FloatingTag>
+          </Reveal>
+
+          {/* Human statement + actions */}
+          <Reveal delay={0.16}>
+            <p className="max-w-2xl mt-10 text-lg sm:text-xl md:text-2xl text-skyz-text-muted leading-relaxed">
+              We make technology work for your business. Fast websites, targeted customer growth, and smart automations built without unnecessary complexity.
+            </p>
+          </Reveal>
+
+          <Reveal delay={0.22}>
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                onClick={() => navigate('services')}
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#080B10] font-semibold text-sm shadow-md hover:bg-skyz-accent transition-all cursor-pointer"
+              >
+                <span>Explore Services</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate('contact')}
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-skyz-surface text-skyz-text font-medium text-sm border border-skyz-border hover:border-skyz-accent/40 transition-all cursor-pointer"
+              >
+                <span>Talk to Our Team</span>
+              </button>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ================================================================ */}
+      {/* 2. WHO WE ARE — floating Opal shell, editorial split              */}
+      {/* ================================================================ */}
+      <SectionShell>
+        <div className="bg-skyz-surface border border-skyz-border rounded-[inherit] px-6 py-16 sm:px-14 sm:py-24">
+          <Blob className="w-[380px] h-[340px] -top-28 -right-24 opacity-70" color="rgba(124, 58, 237, 0.07)" duration={12} />
+          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            <Reveal className="lg:col-span-5 space-y-5">
+              <Eyebrow>
+                <Compass className="w-3.5 h-3.5 text-skyz-accent" />
+                Who We Are
+              </Eyebrow>
+              <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-skyz-text leading-tight">
+                A creative digital technology studio.
+              </h2>
+            </Reveal>
+
+            <div className="lg:col-span-7 space-y-6">
+              <Reveal delay={0.08}>
+                <p className="text-lg sm:text-xl text-skyz-text-muted leading-relaxed">
+                  SkyZ Solutions is a creative digital technology studio. We build modern websites, expand digital audiences, and automate everyday business workflows. No fluff, no complicated handoffs—just clean software and direct results.
+                </p>
+              </Reveal>
+              <div className="grid grid-cols-3 gap-3 sm:gap-4">
+                {[
+                  { label: 'BUILD', sub: 'Web & Commerce', color: 'text-sky-500' },
+                  { label: 'GROW', sub: 'Search & Design', color: 'text-purple-500' },
+                  { label: 'AUTOMATE', sub: 'Workflows & AI', color: 'text-amber-500' },
+                ].map((item, i) => (
+                  <Reveal key={item.label} delay={0.1 + i * 0.07}>
+                    <motion.div
+                      whileHover={{ y: -4, rotate: i % 2 === 0 ? -1 : 1 }}
+                      className="p-4 sm:p-5 rounded-2xl bg-skyz-surface-subtle border border-skyz-border font-mono text-xs h-full"
+                    >
+                      <span className={`${item.color} font-bold block text-sm mb-1`}>{item.label}</span>
+                      <span className="text-skyz-text text-[11px]">{item.sub}</span>
+                    </motion.div>
+                  </Reveal>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </SectionShell>
+
+      {/* ================================================================ */}
+      {/* 3. VIDEO — Putty-style embed card ("The Demo" position)           */}
+      {/* ================================================================ */}
+      <SectionShell>
+        <div className="relative rounded-[inherit] px-2 py-14 sm:py-20 bg-gradient-to-b from-skyz-surface-subtle/60 to-transparent overflow-hidden">
+          <Blob className="w-[420px] h-[380px] top-6 -left-32 opacity-60" color="rgba(56, 189, 248, 0.08)" duration={12} />
+          <Blob className="w-[360px] h-[340px] bottom-0 -right-24 opacity-60" color="rgba(168, 85, 247, 0.08)" duration={10} />
+          <div className="relative z-10">
+            <VideoSection
+              heading="See how we work"
+              caption="A two-minute tour of how SkyZ designs, builds, and ships digital tools for real businesses."
+              title="Inside SkyZ Solutions — Build • Grow • Automate"
+              videoId="QEJhjQSdG-M"
+            />
+          </div>
+        </div>
+      </SectionShell>
+
+      {/* ================================================================ */}
+      {/* 4. HOW WE THINK — 4 principle cards with per-card color blobs     */}
+      {/* ================================================================ */}
+      <SectionShell>
+        <div className="bg-skyz-surface border border-skyz-border rounded-[inherit] px-6 py-16 sm:px-14 sm:py-24 relative overflow-hidden">
+          <Blob className="w-[420px] h-[380px] -top-32 left-1/4 opacity-60" color="rgba(236, 72, 153, 0.06)" duration={14} />
+          <div className="relative z-10">
+            <Reveal>
+              <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-14 gap-4">
+                <div className="space-y-4">
+                  <Eyebrow>
+                    <Sparkles className="w-3.5 h-3.5 text-skyz-accent" />
+                    Our Standards
+                  </Eyebrow>
+                  <h2 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-skyz-text">
+                    How we think.
+                  </h2>
+                </div>
+                <span className="font-mono text-[11px] text-skyz-text-muted tracking-wider">
+                  CLARITY // DIRECT WORK // NO FLUFF
+                </span>
+              </div>
+            </Reveal>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              {principles.map((item, i) => (
+                <Reveal key={item.num} delay={i * 0.08} className="h-full">
+                  <motion.div
+                    whileHover={{ y: -6 }}
+                    transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+                    className="relative p-6 sm:p-7 rounded-3xl bg-skyz-bg border border-skyz-border shadow-sm h-full flex flex-col justify-between overflow-hidden group"
+                  >
+                    {/* per-card soft blob */}
+                    <Blob className="w-40 h-40 -top-12 -right-12 opacity-90" color={item.blobColor} duration={8 + i} animate={false} />
+                    <div className="relative z-10">
+                      <div className="flex items-center justify-between mb-5">
+                        <span className="text-xs font-mono font-bold text-skyz-accent">{item.num}</span>
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-skyz-surface-subtle text-skyz-text-muted border border-skyz-border">
+                          {item.tag}
+                        </span>
+                      </div>
+                      <h3 className="font-display text-xl font-bold text-skyz-text">{item.title}</h3>
+                      <p className="text-sm text-skyz-text-muted mt-2.5 leading-relaxed">{item.desc}</p>
+                    </div>
+                    <div className="relative z-10 mt-6 pt-4 border-t border-skyz-border text-[11px] font-mono text-skyz-text-muted flex items-center justify-between">
+                      <span>STANDARD // VERIFIED</span>
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </div>
+                  </motion.div>
+                </Reveal>
               ))}
             </div>
-
-            <div className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-display font-extrabold tracking-tight text-skyz-accent mt-2 sm:mt-4">
-              SYSTEMS &amp; SOFTWARE.
-            </div>
           </div>
-
-          {/* High-Impact Statement */}
-          <div className="max-w-3xl mt-8">
-            <p className="text-lg sm:text-xl md:text-2xl text-skyz-text-muted leading-relaxed">
-              We engineer what matters and eliminate what doesn’t. Crafting bespoke digital foundations through{' '}
-              <span className="inline-block px-3 py-0.5 rounded-full bg-skyz-surface border border-skyz-border font-semibold text-skyz-text shadow-sm">
-                clean code
-              </span>
-              , targeted growth, and autonomous workflows.
-            </p>
-          </div>
-
-          {/* Quick Action Buttons */}
-          <div className="mt-8 flex flex-wrap items-center gap-3">
-            <button
-              type="button"
-              onClick={() => navigate('contact')}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#080B10] font-semibold text-sm shadow-md hover:bg-skyz-accent transition-all cursor-pointer"
-            >
-              <span>Start a Project</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate('work')}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-skyz-surface text-skyz-text font-medium text-sm border border-skyz-border hover:border-skyz-accent/40 transition-all cursor-pointer"
-            >
-              <span>Explore Prototypes</span>
-            </button>
-          </div>
-
         </div>
-      </section>
+      </SectionShell>
 
-      {/* 2. WHO WE ARE: SHORT EDITORIAL STATEMENT */}
-      <section className="w-full py-16 sm:py-24 px-4 sm:px-6 lg:px-8 border-b border-skyz-border">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-            
-            <div className="lg:col-span-5 space-y-4">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-skyz-surface border border-skyz-border">
-                <Compass className="w-3.5 h-3.5 text-skyz-accent" />
-                <span className="text-xs font-mono uppercase text-skyz-text-muted font-semibold">
-                  01 // WHO WE ARE
-                </span>
-              </div>
-              <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-skyz-text">
-                A creative technology studio with technical discipline.
+      {/* ================================================================ */}
+      {/* 5. VISION — big breathing-type closer, Labs "Stay connected" vibe */}
+      {/* ================================================================ */}
+      <SectionShell>
+        <div className="relative rounded-[inherit] px-6 py-20 sm:py-28 text-center overflow-hidden bg-skyz-surface border border-skyz-border">
+          <Blob className="w-[300px] h-[280px] -top-20 -left-16 opacity-80" color="rgba(56, 189, 248, 0.10)" duration={10} />
+          <Blob className="w-[320px] h-[300px] -bottom-24 -right-20 opacity-80" color="rgba(168, 85, 247, 0.10)" duration={12} />
+          <div className="relative z-10 max-w-3xl mx-auto space-y-8">
+            <Reveal>
+              <Eyebrow>
+                <span className="w-2 h-2 rounded-full bg-skyz-accent animate-pulse" />
+                Our Vision
+              </Eyebrow>
+            </Reveal>
+            <Reveal delay={0.08}>
+              <h2 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-skyz-text leading-tight">
+                Digital technology should make your business{' '}
+                <span className="text-skyz-accent">faster</span>,{' '}
+                <span className="text-pink-500">simpler</span>, and more{' '}
+                <span className="text-emerald-500">recognizable</span>.
               </h2>
-            </div>
-
-            <div className="lg:col-span-7 space-y-5 text-base sm:text-lg text-skyz-text-muted leading-relaxed">
-              <p>
-                SkyZ Solutions is an integrated digital studio built around solving concrete business problems. We don't believe in vanity features or fragmented agency handoffs.
+            </Reveal>
+            <Reveal delay={0.14}>
+              <p className="text-base sm:text-lg text-skyz-text-muted max-w-xl mx-auto">
+                Ready to build a modern website, grow your customer audience, or automate everyday workflows?
               </p>
-              <p>
-                We unite bespoke web development, search &amp; audience growth, and autonomous AI pipelines into a single continuous discipline. Every website we launch is architected to perform, scale, and work autonomously.
-              </p>
-              
-              {/* Creative technical annotation cards */}
-              <div className="pt-2 grid grid-cols-3 gap-3 font-mono text-xs">
-                <div className="p-3 rounded-xl bg-skyz-surface border border-skyz-border">
-                  <span className="text-skyz-accent font-bold block">01 // BUILD</span>
-                  <span className="text-skyz-text">Code &amp; Commerce</span>
-                </div>
-                <div className="p-3 rounded-xl bg-skyz-surface border border-skyz-border">
-                  <span className="text-purple-500 font-bold block">02 // GROW</span>
-                  <span className="text-skyz-text">Search &amp; Design</span>
-                </div>
-                <div className="p-3 rounded-xl bg-skyz-surface border border-skyz-border">
-                  <span className="text-amber-500 font-bold block">03 // AUTOMATE</span>
-                  <span className="text-skyz-text">Agents &amp; API Logic</span>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* 3. ORGANIC SECTION DIVIDER */}
-      <div className="w-full relative h-10 overflow-hidden pointer-events-none -mt-px">
-        <svg viewBox="0 0 1440 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-          <path 
-            d="M0 0C400 32 800 32 1440 0V40H0V0Z" 
-            className="fill-skyz-surface-subtle opacity-30 dark:opacity-15"
-          />
-        </svg>
-      </div>
-
-      {/* 4. BUILD → GROW → AUTOMATE INTERACTIVE VISUAL JOURNEY */}
-      <section className="w-full py-16 sm:py-24 px-4 sm:px-6 lg:px-8 border-b border-skyz-border bg-skyz-surface-subtle/30">
-        <div className="max-w-7xl mx-auto">
-          
-          <div className="text-center max-w-2xl mx-auto mb-12 space-y-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-skyz-surface border border-skyz-border">
-              <Workflow className="w-3.5 h-3.5 text-skyz-accent" />
-              <span className="text-xs font-mono uppercase text-skyz-text-muted font-semibold">
-                02 // THE CONTINUOUS SYSTEM
-              </span>
-            </div>
-            <h2 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-skyz-text">
-              BUILD → GROW → AUTOMATE
-            </h2>
-            <p className="text-sm sm:text-base text-skyz-text-muted">
-              Explore how each pillar connects directly into the next to form an autonomous digital operating loop.
-            </p>
-          </div>
-
-          {/* Interactive Stage Navigator */}
-          <div className="flex justify-center mb-8">
-            <div className="inline-flex p-1.5 rounded-2xl bg-skyz-surface border border-skyz-border shadow-sm">
-              {(['BUILD', 'GROW', 'AUTOMATE'] as const).map((stage) => {
-                const isSelected = activeEcosystemStage === stage;
-                return (
-                  <button
-                    key={stage}
-                    type="button"
-                    onClick={() => setActiveEcosystemStage(stage)}
-                    className={`relative px-5 py-2.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
-                      isSelected ? 'text-white dark:text-[#080B10]' : 'text-skyz-text-muted hover:text-skyz-text'
-                    }`}
-                  >
-                    {isSelected && (
-                      <motion.div
-                        layoutId="aboutPillarPill"
-                        className="absolute inset-0 bg-skyz-text dark:bg-skyz-accent rounded-xl -z-10 shadow-sm"
-                        transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                      />
-                    )}
-                    <span>{stage}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Dynamic Stage Canvas */}
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeEcosystemStage}
-              initial={{ opacity: 0, scale: 0.98, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.98, y: -10 }}
-              transition={{ duration: 0.25 }}
-              className="max-w-4xl mx-auto p-6 sm:p-10 rounded-3xl bg-skyz-surface border border-skyz-border shadow-xl relative overflow-hidden"
-            >
-              <div className="flex items-center justify-between pb-4 border-b border-skyz-border mb-6">
-                <div className="flex items-center gap-2">
-                  <span className={`text-xs font-mono font-bold px-2.5 py-1 rounded-full ${ecosystemStages[activeEcosystemStage].bgLight} ${ecosystemStages[activeEcosystemStage].accent}`}>
-                    STAGE {ecosystemStages[activeEcosystemStage].number} // {activeEcosystemStage}
-                  </span>
-                </div>
-                <div className="flex gap-1.5">
-                  {ecosystemStages[activeEcosystemStage].microLanguage.map((token, i) => (
-                    <span key={i} className="text-[10px] font-mono px-2 py-0.5 rounded bg-skyz-surface-subtle text-skyz-text-muted border border-skyz-border">
-                      {token}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <h3 className="font-display text-2xl sm:text-3xl font-bold text-skyz-text">
-                {ecosystemStages[activeEcosystemStage].title}
-              </h3>
-              <p className="text-base sm:text-lg text-skyz-text-muted mt-3 leading-relaxed">
-                {ecosystemStages[activeEcosystemStage].description}
-              </p>
-
-              {/* Service Capabilities in this Stage */}
-              <div className="mt-6 pt-6 border-t border-skyz-border grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <span className="text-xs font-mono text-skyz-text-muted block mb-2 font-bold uppercase">
-                    Primary Services
-                  </span>
-                  <div className="flex flex-wrap gap-2">
-                    {ecosystemStages[activeEcosystemStage].services.map((svc, i) => (
-                      <span 
-                        key={i} 
-                        className="text-xs font-semibold px-3 py-1.5 rounded-xl bg-skyz-surface-subtle text-skyz-text border border-skyz-border"
-                      >
-                        {svc}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <span className="text-xs font-mono text-skyz-text-muted block mb-2 font-bold uppercase">
-                    Stage Outcome
-                  </span>
-                  <div className="text-xs font-mono text-skyz-text p-2.5 rounded-xl bg-skyz-surface-subtle border border-skyz-border">
-                    {ecosystemStages[activeEcosystemStage].output}
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </AnimatePresence>
-
-        </div>
-      </section>
-
-      {/* 5. HOW WE THINK: 4 SHORT PRINCIPLES */}
-      <section className="w-full py-16 sm:py-24 px-4 sm:px-6 lg:px-8 border-b border-skyz-border">
-        <div className="max-w-7xl mx-auto">
-          
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-12 gap-4">
-            <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-skyz-surface border border-skyz-border mb-3">
-                <Sparkles className="w-3.5 h-3.5 text-skyz-accent" />
-                <span className="text-xs font-mono uppercase text-skyz-text-muted font-semibold">
-                  03 // HOW WE THINK
-                </span>
-              </div>
-              <h2 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-skyz-text">
-                Core Principles.
-              </h2>
-            </div>
-            <span className="text-xs font-mono text-skyz-text-muted">
-              ENGINEERING INTEGRITY // ZERO VANITY
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {principles.map((principle) => (
-              <motion.div
-                key={principle.number}
-                whileHover={{ y: -4 }}
-                className="p-6 rounded-3xl bg-skyz-surface border border-skyz-border shadow-sm flex flex-col justify-between"
+            </Reveal>
+            <Reveal delay={0.2}>
+              <button
+                type="button"
+                onClick={() => navigate('contact')}
+                className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#080B10] font-semibold text-sm shadow-md hover:bg-skyz-accent transition-all cursor-pointer"
               >
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-xs font-mono font-bold text-skyz-accent">
-                      {principle.number}
-                    </span>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-skyz-surface-subtle text-skyz-text-muted border border-skyz-border">
-                      {principle.token}
-                    </span>
-                  </div>
-
-                  <h3 className="font-display text-xl font-bold text-skyz-text">
-                    {principle.title}
-                  </h3>
-                  <p className="text-sm text-skyz-text-muted mt-3 leading-relaxed">
-                    {principle.description}
-                  </p>
-                </div>
-
-                <div className="mt-6 pt-3 border-t border-skyz-border text-[11px] font-mono text-skyz-text-muted">
-                  DISCIPLINE // VERIFIED
-                </div>
-              </motion.div>
-            ))}
-          </div>
-
-        </div>
-      </section>
-
-      {/* 6. VISION STATEMENT & FINAL CTA */}
-      <section className="w-full py-16 sm:py-24 px-4 sm:px-6 lg:px-8 bg-skyz-surface text-center relative overflow-hidden">
-        <div className="max-w-3xl mx-auto space-y-6">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-skyz-surface-subtle border border-skyz-border">
-            <span className="w-2 h-2 rounded-full bg-skyz-accent animate-pulse" />
-            <span className="text-xs font-mono text-skyz-text font-bold uppercase tracking-wider">
-              04 // VISION
-            </span>
-          </div>
-
-          <h2 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-skyz-text leading-tight">
-            Replacing fragmented agency handoffs with unified digital systems.
-          </h2>
-
-          <p className="text-base sm:text-lg text-skyz-text-muted max-w-xl mx-auto">
-            Ready to experience an integrated technical partnership that delivers real software, real growth, and autonomous operations?
-          </p>
-
-          <div className="pt-4 flex justify-center">
-            <button
-              type="button"
-              onClick={() => navigate('contact')}
-              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#080B10] font-semibold text-sm shadow-md hover:bg-skyz-accent transition-all cursor-pointer"
-            >
-              <span>Work With SkyZ</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
+                <span>Start a Project</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </Reveal>
           </div>
         </div>
-      </section>
+      </SectionShell>
 
     </div>
   );

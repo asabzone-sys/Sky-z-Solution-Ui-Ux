@@ -1,4 +1,4 @@
-import { PortfolioCard, CapabilityItem, MethodologyStep, CreedItem } from '../types';
+import { CapabilityItem, MethodologyStep, CreedItem } from '../types';
 
 export const HERO_QUERIES = [
   "Build a modern business website",
@@ -11,114 +11,131 @@ export const HERO_QUERIES = [
   "Connect my business systems"
 ];
 
-export const PORTFOLIO_CARDS: PortfolioCard[] = [
-  {
-    id: 'media-pipeline',
-    index: 0,
-    title: 'Media Pipeline',
-    subtitle: 'High-throughput asset processing & responsive video delivery system',
-    category: 'Media Architecture',
-    bgColor: '#EFF6FF',
-    borderColor: '#BFDBFE',
-    textColor: '#1E3A8A',
-    subtextColor: '#3B82F6',
-    tags: ['Web Video', 'Asset CDN', 'Realtime Processing']
-  },
-  {
-    id: 'editorial-engine',
-    index: 1,
-    title: 'Editorial Engine',
-    subtitle: 'Dynamic content publishing platform & structured layout architecture',
-    category: 'Publishing Platform',
-    bgColor: '#F0FDF4',
-    borderColor: '#BBF7D0',
-    textColor: '#14532D',
-    subtextColor: '#16A34A',
-    tags: ['Next-Gen CMS', 'SEO Optimization', 'Dynamic Routing']
-  },
-  {
-    id: 'knowledge-retrieval',
-    index: 2,
-    title: 'Knowledge Base',
-    subtitle: 'Vector-indexed search architecture & reference catalog interface',
-    category: 'Information Architecture',
-    bgColor: '#F8FAFC',
-    borderColor: '#E2E8F0',
-    textColor: '#0F172A',
-    subtextColor: '#64748B',
-    tags: ['Semantic Search', 'Indexed Storage', 'Interactive Graph']
-  },
-  {
-    id: 'intelligence-suite',
-    index: 3,
-    title: 'Market Intelligence',
-    subtitle: 'Data aggregation framework & competitive dashboard architecture',
-    category: 'Analytics Platform',
-    bgColor: '#FEF2F2',
-    borderColor: '#FECACA',
-    textColor: '#7F1D1D',
-    subtextColor: '#DC2626',
-    tags: ['Realtime Telemetry', 'Multi-Source Aggregation', 'Visual Analytics']
-  },
-  {
-    id: 'topology-interface',
-    index: 4,
-    title: 'Spatial Topology',
-    subtitle: 'Infrastructure mapping platform & hierarchical systems visualization',
-    category: 'Spatial Systems',
-    bgColor: '#FFFBEB',
-    borderColor: '#FDE68A',
-    textColor: '#78350F',
-    subtextColor: '#D97706',
-    tags: ['Interactive Map', 'Node Clustering', 'Performance Metrics']
-  }
-];
-
 export const CAPABILITIES: CapabilityItem[] = [
   {
     number: '01',
     category: 'BUILD',
-    title: 'Websites & Custom Software',
-    description: 'Bespoke web development, enterprise web applications, and custom digital software engineered for high performance, accessibility, and modern scale.',
+    title: 'Websites & Digital Stores',
+    description: 'Modern websites and online storefronts designed to perform smoothly and convert visitors into customers.',
     services: [
       'Web Development',
-      'Business Websites',
-      'Web Applications',
-      'E-commerce',
-      'Custom Software',
-      'Digital Products',
-      'AI-powered Web Solutions'
+      'E-commerce'
     ]
   },
   {
     number: '02',
     category: 'GROW',
-    title: 'Growth & Digital Presence',
-    description: 'Organic search optimization, strategic digital marketing, high-impact multimedia, and cohesive brand design systems to expand market reach.',
+    title: 'Search, Marketing & Design',
+    description: 'Targeted organic search, conversion campaigns, and distinct visual design that make your business recognizable.',
     services: [
       'SEO',
       'Digital Marketing',
-      'Graphic Design',
-      'Content Creation',
-      'Video Editing',
-      'Brand and Marketing Assets'
+      'Graphic Design'
     ]
   },
   {
     number: '03',
     category: 'AUTOMATE',
-    title: 'AI Agents & Workflow Automation',
-    description: 'Autonomous conversational AI agents, multi-system workflow automation, continuous business process orchestration, and bidirectional API integrations.',
+    title: 'AI Workflows & Smart Systems',
+    description: 'Practical AI automation and system integrations that handle repetitive tasks and save valuable hours.',
     services: [
-      'AI Agents',
-      'AI Automation',
-      'Workflow Automation',
-      'Business Process Automation',
-      'AI Customer Support',
-      'Lead Automation',
-      'API Integrations',
-      'Custom Business Automation'
+      'AI Automation'
     ]
+  }
+];
+
+export interface OfficialService {
+  id: string;
+  name: string;
+  pillar: 'BUILD' | 'GROW' | 'AUTOMATE';
+  pillarNumber: string;
+  tagline: string;
+  sentence: string;
+  accent: string;
+  bgClass: string;
+  borderClass: string;
+  badge: string;
+  microLabels: string[];
+}
+
+export const OFFICIAL_SERVICES: OfficialService[] = [
+  {
+    id: 'web-development',
+    name: 'Web Development',
+    pillar: 'BUILD',
+    pillarNumber: '01',
+    tagline: 'Fast, responsive web solutions',
+    sentence: 'Websites and web applications built around real business needs.',
+    accent: '#0EA5E9',
+    bgClass: 'bg-sky-500/10 text-sky-600 dark:text-sky-400',
+    borderClass: 'border-sky-500/20',
+    badge: 'WEB // INTERFACE',
+    microLabels: ['BUILD', 'LAYOUT', 'CODE', 'DEPLOY']
+  },
+  {
+    id: 'ecommerce',
+    name: 'E-commerce',
+    pillar: 'BUILD',
+    pillarNumber: '01',
+    tagline: 'Digital storefronts built to convert',
+    sentence: 'Digital storefronts designed to sell and scale.',
+    accent: '#3B82F6',
+    bgClass: 'bg-blue-500/10 text-blue-600 dark:text-blue-400',
+    borderClass: 'border-blue-500/20',
+    badge: 'STORE // CHECKOUT',
+    microLabels: ['STORE', 'TRANSACT', 'FLOW', 'SCALE']
+  },
+  {
+    id: 'seo',
+    name: 'SEO',
+    pillar: 'GROW',
+    pillarNumber: '02',
+    tagline: 'High-ranking search visibility',
+    sentence: 'Search visibility built around useful content and strong foundations.',
+    accent: '#10B981',
+    bgClass: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+    borderClass: 'border-emerald-500/20',
+    badge: 'SEARCH // VISIBILITY',
+    microLabels: ['SEARCH', 'OPTIMIZE', 'INDEX', 'DISCOVER']
+  },
+  {
+    id: 'digital-marketing',
+    name: 'Digital Marketing',
+    pillar: 'GROW',
+    pillarNumber: '02',
+    tagline: 'Targeted customer acquisition',
+    sentence: 'Digital campaigns designed to reach the right audience.',
+    accent: '#8B5CF6',
+    bgClass: 'bg-purple-500/10 text-purple-600 dark:text-purple-400',
+    borderClass: 'border-purple-500/20',
+    badge: 'CAMPAIGN // AUDIENCE',
+    microLabels: ['CAMPAIGN', 'AUDIENCE', 'ENGAGE', 'REACH']
+  },
+  {
+    id: 'graphic-design',
+    name: 'Graphic Design',
+    pillar: 'GROW',
+    pillarNumber: '02',
+    tagline: 'Recognizable visual identity',
+    sentence: 'Visual assets and brand design that make businesses recognizable.',
+    accent: '#EC4899',
+    bgClass: 'bg-pink-500/10 text-pink-600 dark:text-pink-400',
+    borderClass: 'border-pink-500/20',
+    badge: 'BRAND // VECTOR',
+    microLabels: ['DESIGN', 'SHAPE', 'BRAND', 'CREATE']
+  },
+  {
+    id: 'ai-automation',
+    name: 'AI Automation',
+    pillar: 'AUTOMATE',
+    pillarNumber: '03',
+    tagline: 'Autonomous smart workflows',
+    sentence: 'AI-powered workflows that reduce repetitive business work.',
+    accent: '#F59E0B',
+    bgClass: 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
+    borderClass: 'border-amber-500/20',
+    badge: 'AI // AUTONOMOUS',
+    microLabels: ['AI', 'WORKFLOW', 'INPUT', 'OUTPUT']
   }
 ];
 

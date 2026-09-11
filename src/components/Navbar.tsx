@@ -85,10 +85,11 @@ export const Navbar: React.FC = () => {
             {theme === 'light' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4 text-skyz-accent" />}
           </button>
 
+          {/* Desktop Only: Start a Project CTA */}
           <button
             type="button"
             onClick={() => handleNavClick('contact')}
-            className="inline-flex items-center gap-1.5 px-4 sm:px-5 py-1.5 sm:py-2 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#080B10] text-xs sm:text-sm font-semibold shadow-sm hover:bg-skyz-accent dark:hover:bg-skyz-accent-secondary transition-all duration-200 cursor-pointer"
+            className="hidden lg:inline-flex items-center gap-1.5 px-4 sm:px-5 py-1.5 sm:py-2 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#080B10] text-xs sm:text-sm font-semibold shadow-sm hover:bg-skyz-accent dark:hover:bg-skyz-accent-secondary transition-all duration-200 cursor-pointer"
           >
             <span>Start a Project</span>
             <ArrowRight className="w-4 h-4" />
@@ -109,7 +110,7 @@ export const Navbar: React.FC = () => {
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
         <div className="lg:hidden bg-skyz-bg border-b border-skyz-border px-4 py-4 shadow-xl transition-all">
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-1.5">
             {navLinks.map((link) => {
               const isActive = currentPage === link.page;
               return (
@@ -117,9 +118,9 @@ export const Navbar: React.FC = () => {
                   key={link.page}
                   type="button"
                   onClick={() => handleNavClick(link.page)}
-                  className={`flex items-center justify-between px-4 py-2.5 rounded-xl font-medium text-sm transition-colors text-left cursor-pointer ${
+                  className={`flex items-center justify-between px-4 py-3 rounded-xl font-medium text-sm transition-colors text-left cursor-pointer ${
                     isActive
-                      ? 'bg-skyz-surface text-skyz-text font-semibold border border-skyz-border'
+                      ? 'bg-skyz-surface text-skyz-text font-bold border border-skyz-border shadow-xs'
                       : 'text-skyz-text-muted hover:bg-skyz-surface hover:text-skyz-text'
                   }`}
                 >
@@ -129,26 +130,15 @@ export const Navbar: React.FC = () => {
               );
             })}
 
-            <div className="pt-2 mt-1 border-t border-skyz-border flex items-center justify-between px-4 py-2">
-              <span className="text-xs font-semibold uppercase tracking-wider text-skyz-text-muted">
-                Appearance
-              </span>
+            {/* Mobile Start a Project CTA */}
+            <div className="pt-3 mt-1 border-t border-skyz-border">
               <button
                 type="button"
-                onClick={toggleTheme}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-skyz-surface text-skyz-text text-xs font-medium border border-skyz-border shadow-sm cursor-pointer"
+                onClick={() => handleNavClick('contact')}
+                className="w-full py-3 px-4 rounded-xl bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#080B10] font-bold text-sm tracking-wide shadow-sm hover:bg-skyz-accent dark:hover:bg-skyz-accent-secondary flex items-center justify-center gap-2 cursor-pointer transition-all"
               >
-                {theme === 'light' ? (
-                  <>
-                    <Moon className="w-3.5 h-3.5 text-skyz-text-muted" />
-                    <span>Dark Mode</span>
-                  </>
-                ) : (
-                  <>
-                    <Sun className="w-3.5 h-3.5 text-skyz-accent" />
-                    <span>Light Mode</span>
-                  </>
-                )}
+                <span>START A PROJECT</span>
+                <ArrowRight className="w-4 h-4" />
               </button>
             </div>
           </div>
