@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   ArrowRight,
@@ -14,6 +14,7 @@ import {
   Wrench,
   Megaphone,
   Workflow,
+  Sparkles,
 } from 'lucide-react';
 import { useNavigation } from '../context/NavigationContext';
 import { OFFICIAL_SERVICES, OfficialService } from '../data/content';
@@ -23,6 +24,7 @@ import {
   Blob,
   VideoSection,
   Eyebrow,
+  FloatingTag,
 } from '../components/OpalKit';
 
 const SERVICE_ICONS: Record<string, React.ReactNode> = {
@@ -68,9 +70,93 @@ const PILLARS = [
   },
 ];
 
+const SERVICE_QUERIES = [
+  'Build a custom high-performance web application',
+  'Scale an online store with modern headless e-commerce',
+  'Audit and accelerate organic search rankings (SEO)',
+  'Launch high-converting digital marketing campaigns',
+  'Design a distinct brand identity and design system',
+  'Deploy autonomous AI agents to automate workflows',
+];
+
+const SUGGESTION_CHIPS = [
+  { label: 'Web Apps', query: 'Custom Web Application' },
+  { label: 'E-Commerce', query: 'Headless E-Commerce Store' },
+  { label: 'SEO Audit', query: 'SEO Optimization' },
+  { label: 'Digital Ads', query: 'Digital Marketing Campaign' },
+  { label: 'Brand UI', query: 'Graphic & Brand Identity' },
+  { label: 'AI Agents', query: 'Autonomous AI Automation' },
+];
+
 export const ServicesPage: React.FC = () => {
   const { navigate, setServiceCategory } = useNavigation();
   const [selected, setSelected] = useState<OfficialService>(OFFICIAL_SERVICES[0]);
+  const [queryIdx, setQueryIdx] = useState(0);
+  const [placeholderText, setPlaceholderText] = useState(SERVICE_QUERIES[0]);
+  const [inputValue, setInputValue] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
+
+  const charIdxRef = useRef(0);
+  const isDeletingRef = useRef(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Smooth typewriter animation running continuously on desktop and mobile
+  useEffect(() => {
+    if (inputValue.trim().length > 0) return;
+
+    const runTypewriter = () => {
+      const currentQuery = SERVICE_QUERIES[queryIdx];
+      const typingSpeed = isDeletingRef.current ? 22 : 45;
+
+      if (!isDeletingRef.current) {
+        charIdxRef.current++;
+        setPlaceholderText(currentQuery.substring(0, charIdxRef.current));
+
+        if (charIdxRef.current === currentQuery.length) {
+          timeoutRef.current = setTimeout(() => {
+            isDeletingRef.current = true;
+            runTypewriter();
+          }, 2400);
+          return;
+        }
+      } else {
+        charIdxRef.current--;
+        setPlaceholderText(currentQuery.substring(0, charIdxRef.current));
+
+        if (charIdxRef.current === 0) {
+          isDeletingRef.current = false;
+          setQueryIdx((prev) => (prev + 1) % SERVICE_QUERIES.length);
+          timeoutRef.current = setTimeout(runTypewriter, 350);
+          return;
+        }
+      }
+
+      timeoutRef.current = setTimeout(runTypewriter, typingSpeed);
+    };
+
+    timeoutRef.current = setTimeout(runTypewriter, 150);
+
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, [queryIdx, inputValue]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const query = inputValue.trim() || placeholderText;
+    setIsSubmitting(true);
+    setFeedbackMessage(`Scoping: "${query.slice(0, 28)}..."`);
+
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setFeedbackMessage(null);
+      setInputValue('');
+      setIsFocused(false);
+      navigate('contact');
+    }, 600);
+  };
 
   const handleStart = (service: OfficialService) => {
     setServiceCategory(service.pillar);
@@ -81,11 +167,19 @@ export const ServicesPage: React.FC = () => {
     <div className="w-full bg-skyz-bg text-skyz-text transition-colors duration-200 overflow-x-hidden">
 
       {/* ================================================================ */}
-      {/* 1. HERO — Opal-style centered statement + prompt pill, big air    */}
+      {/* 1. HERO — Opal-style centered statement + animated search bar     */}
       {/* ================================================================ */}
       <section className="w-full pt-16 pb-20 sm:pt-24 sm:pb-28 px-4 sm:px-6 relative overflow-hidden">
         <Blob className="w-[380px] h-[340px] top-0 left-[-140px] opacity-70" color="rgba(124, 58, 237, 0.08)" duration={11} />
         <Blob className="w-[340px] h-[320px] top-16 right-[-120px] opacity-60" color="rgba(56, 189, 248, 0.08)" duration={13} />
+
+        {/* Floating elements responsive across mobile & desktop */}
+        <FloatingTag className="top-12 sm:top-16 left-[2%] sm:left-[8%] bg-sky-500/15 text-sky-600 dark:text-sky-400 border border-sky-500/20 -rotate-6" delay={0.4}>
+          ✦ 6 CAPABILITIES
+        </FloatingTag>
+        <FloatingTag className="top-16 sm:top-20 right-[2%] sm:right-[8%] bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/20 rotate-3" delay={0.8}>
+          ✦ END-TO-END
+        </FloatingTag>
 
         <div className="max-w-3xl mx-auto text-center relative z-10 space-y-8">
           <Reveal>
@@ -108,20 +202,59 @@ export const ServicesPage: React.FC = () => {
             </p>
           </Reveal>
 
-          {/* Opal-style prompt input pill */}
-          <Reveal delay={0.2}>
-            <button
-              type="button"
-              onClick={() => navigate('contact')}
-              className="group w-full max-w-xl mx-auto flex items-center justify-between gap-3 pl-5 pr-2.5 py-2.5 rounded-full bg-skyz-surface border-2 border-skyz-accent/30 hover:border-skyz-accent/60 shadow-lg shadow-skyz-accent/5 transition-all cursor-pointer text-left"
-            >
-              <span className="text-xs sm:text-sm text-skyz-text-muted truncate">
-                A studio that builds my website, grows my audience, and automates my work
+          {/* Interactive Animated Search Bar */}
+          <Reveal delay={0.2} className="w-full max-w-2xl mx-auto px-1 sm:px-0">
+            <div className="p-1 sm:p-1.5 rounded-full bg-skyz-surface shadow-[0_12px_36px_-6px_rgba(124,58,237,0.14)] dark:shadow-[0_12px_36px_-6px_rgba(0,0,0,0.6)] transition-all duration-300 hover:shadow-[0_16px_44px_-4px_rgba(124,58,237,0.22)]">
+              <form onSubmit={handleSubmit} className="relative flex items-center bg-skyz-surface-subtle rounded-full px-3 py-2 sm:px-4 sm:py-2.5">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-skyz-accent mr-1 flex-shrink-0">
+                  <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 animate-pulse" />
+                </div>
+
+                <div className="flex-1 text-left min-w-0 pr-2">
+                  <input
+                    type="text"
+                    value={feedbackMessage || inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    onFocus={() => setIsFocused(true)}
+                    onBlur={() => {
+                      if (!inputValue.trim()) setIsFocused(false);
+                    }}
+                    disabled={isSubmitting}
+                    placeholder={placeholderText}
+                    className="w-full bg-transparent py-1 font-sans text-xs sm:text-base text-skyz-text placeholder:text-skyz-text-muted/70 focus:outline-none min-w-0"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-skyz-text dark:bg-skyz-accent flex items-center justify-center flex-shrink-0 cursor-pointer shadow-md hover:scale-105 active:scale-95 transition-all text-white dark:text-[#080B10]"
+                  title="Search Services"
+                >
+                  <Send className="w-4 h-4" />
+                </button>
+              </form>
+            </div>
+
+            {/* Quick interactive service filter tags */}
+            <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 mt-4">
+              <span className="text-[11px] font-mono text-skyz-text-muted uppercase tracking-wider mr-1">
+                Explore:
               </span>
-              <span className="w-9 h-9 rounded-full bg-skyz-text dark:bg-skyz-accent flex items-center justify-center flex-shrink-0 transition-transform group-hover:translate-x-0.5">
-                <Send className="w-4 h-4 text-white dark:text-[#080B10]" />
-              </span>
-            </button>
+              {SUGGESTION_CHIPS.map((chip) => (
+                <button
+                  key={chip.label}
+                  type="button"
+                  onClick={() => {
+                    setInputValue(chip.query);
+                    setIsFocused(true);
+                  }}
+                  className="text-[11px] sm:text-xs px-2.5 sm:px-3 py-1 rounded-full bg-skyz-surface hover:bg-skyz-surface-subtle border border-skyz-border hover:border-skyz-accent/40 text-skyz-text-muted hover:text-skyz-text transition-all cursor-pointer"
+                >
+                  {chip.label}
+                </button>
+              ))}
+            </div>
           </Reveal>
         </div>
       </section>

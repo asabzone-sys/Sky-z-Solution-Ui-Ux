@@ -28,11 +28,11 @@ import {
    built from SkyZ's real projects instead of stock imagery. */
 const HERO_TILES = PORTFOLIO_PROJECTS.slice(0, 5);
 const TILE_LAYOUT = [
-  { position: 'top-[5%] left-[3%] xl:left-[6%]', rotate: '-rotate-6', anim: 'animate-float-slow', delay: '0s' },
-  { position: 'top-[16%] left-[20%]', rotate: 'rotate-3', anim: 'animate-float-rev', delay: '0.6s' },
-  { position: 'top-[4%] right-[19%]', rotate: '-rotate-2', anim: 'animate-float-rev', delay: '1.1s' },
-  { position: 'top-[14%] right-[3%] xl:right-[6%]', rotate: 'rotate-6', anim: 'animate-float-slow', delay: '0.3s' },
-  { position: 'bottom-[6%] left-[12%]', rotate: 'rotate-2', anim: 'animate-float-slow', delay: '0.9s' },
+  { position: 'top-[3%] sm:top-[5%] left-[2%] xl:left-[6%]', rotate: '-rotate-6', anim: 'animate-float-slow', delay: '0s' },
+  { position: 'top-[12%] sm:top-[16%] left-[10%] sm:left-[20%]', rotate: 'rotate-3', anim: 'animate-float-rev', delay: '0.6s' },
+  { position: 'top-[3%] sm:top-[4%] right-[8%] sm:right-[19%]', rotate: '-rotate-2', anim: 'animate-float-rev', delay: '1.1s' },
+  { position: 'top-[12%] sm:top-[14%] right-[2%] xl:right-[6%]', rotate: 'rotate-6', anim: 'animate-float-slow', delay: '0.3s' },
+  { position: 'bottom-[4%] sm:bottom-[6%] left-[6%] sm:left-[12%]', rotate: 'rotate-2', anim: 'animate-float-slow', delay: '0.9s' },
 ];
 
 /* Editorial grid rhythm:
@@ -79,14 +79,14 @@ export const WorkPage: React.FC = () => {
       {/*    display type, very little copy, generous air               */}
       {/* ============================================================ */}
       <section className="relative w-full min-h-[86vh] sm:min-h-[82vh] flex items-center justify-center px-4 sm:px-6 py-28 sm:py-24 overflow-hidden">
-        {/* Floating project tiles — desktop/tablet only so mobile breathes */}
+        {/* Floating project tiles — visible on desktop and mobile */}
         {HERO_TILES.map((project, i) => (
           <div
             key={project.id}
             style={{ animationDelay: TILE_LAYOUT[i].delay }}
-            className={`hidden md:block absolute ${TILE_LAYOUT[i].position} ${TILE_LAYOUT[i].rotate} ${TILE_LAYOUT[i].anim} pointer-events-none select-none z-0`}
+            className={`block absolute ${TILE_LAYOUT[i].position} ${TILE_LAYOUT[i].rotate} ${TILE_LAYOUT[i].anim} pointer-events-none select-none z-0`}
           >
-            <div className="w-44 lg:w-56 aspect-[4/3] rounded-3xl overflow-hidden border border-skyz-border shadow-xl opacity-80">
+            <div className="w-24 sm:w-36 md:w-44 lg:w-56 aspect-[4/3] rounded-2xl sm:rounded-3xl overflow-hidden border border-skyz-border shadow-md sm:shadow-xl opacity-70 sm:opacity-80">
               <ProjectVisual project={project} />
             </div>
           </div>

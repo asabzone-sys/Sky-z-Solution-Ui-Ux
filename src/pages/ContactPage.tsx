@@ -133,10 +133,10 @@ export const ContactPage: React.FC = () => {
         <Blob className="w-[320px] h-[300px] top-10 right-[-90px] opacity-70" color="rgba(56, 189, 248, 0.09)" duration={10} />
 
         {/* Creative touch #1 — floating micro-tags around the hero type */}
-        <FloatingTag className="top-32 left-[10%] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20" delay={0.5}>
+        <FloatingTag className="top-24 sm:top-32 left-[3%] sm:left-[10%] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20" delay={0.5}>
           ✦ 24H REPLY
         </FloatingTag>
-        <FloatingTag className="top-52 right-[8%] bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20" delay={0.9}>
+        <FloatingTag className="top-40 sm:top-52 right-[3%] sm:right-[8%] bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20" delay={0.9}>
           ✦ NO COMMITMENT
         </FloatingTag>
 

@@ -16,10 +16,10 @@ const SERVICE_ICON: Record<string, React.ReactNode> = {
 // Living background: four real services float around the hero as soft chips
 // (the labs.google treatment, built from SkyZ's actual services).
 const FLOATING_CHIPS: { serviceId: string; position: string; rotate: string; anim: string; delay: string }[] = [
-  { serviceId: 'web-development', position: 'top-[9%] left-[4%] lg:left-[9%]', rotate: '-rotate-6', anim: 'animate-float-slow', delay: '0s' },
-  { serviceId: 'ai-automation', position: 'top-[12%] right-[4%] lg:right-[9%]', rotate: 'rotate-6', anim: 'animate-float-rev', delay: '0.4s' },
-  { serviceId: 'graphic-design', position: 'bottom-[12%] left-[6%] lg:left-[11%]', rotate: 'rotate-3', anim: 'animate-float-rev', delay: '0.8s' },
-  { serviceId: 'seo', position: 'bottom-[10%] right-[5%] lg:right-[10%]', rotate: '-rotate-3', anim: 'animate-float-slow', delay: '1.2s' },
+  { serviceId: 'web-development', position: 'top-[3%] sm:top-[9%] left-[2%] sm:left-[4%] lg:left-[9%]', rotate: '-rotate-6', anim: 'animate-float-slow', delay: '0s' },
+  { serviceId: 'ai-automation', position: 'top-[4%] sm:top-[12%] right-[2%] sm:right-[4%] lg:right-[9%]', rotate: 'rotate-6', anim: 'animate-float-rev', delay: '0.4s' },
+  { serviceId: 'graphic-design', position: 'bottom-[6%] sm:bottom-[12%] left-[2%] sm:left-[6%] lg:left-[11%]', rotate: 'rotate-3', anim: 'animate-float-rev', delay: '0.8s' },
+  { serviceId: 'seo', position: 'bottom-[6%] sm:bottom-[10%] right-[2%] sm:right-[5%] lg:right-[10%]', rotate: '-rotate-3', anim: 'animate-float-slow', delay: '1.2s' },
 ];
 
 export const Hero: React.FC = () => {
@@ -35,11 +35,10 @@ export const Hero: React.FC = () => {
   const isDeletingRef = useRef(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Typewriter effect respecting prefers-reduced-motion
+  // Typewriter effect running continuously on both desktop and mobile
   useEffect(() => {
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion || isFocused) {
-      setPlaceholderText(HERO_QUERIES[queryIdx]);
+    // Only pause if the user is actively typing their own text
+    if (inputValue.trim().length > 0) {
       return;
     }
 
@@ -78,7 +77,7 @@ export const Hero: React.FC = () => {
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
-  }, [queryIdx, isFocused]);
+  }, [queryIdx, inputValue]);
 
   const handleChipClick = (query: string) => {
     setIsFocused(true);
@@ -110,7 +109,7 @@ export const Hero: React.FC = () => {
       <Blob className="w-[400px] h-[380px] top-24 right-[-140px] opacity-70" color="rgba(56, 189, 248, 0.08)" duration={13} />
       <Blob className="w-[340px] h-[320px] bottom-[-120px] left-1/3 opacity-60" color="rgba(236, 72, 153, 0.07)" duration={10} />
 
-      {/* Floating Service Chips — desktop/tablet only so mobile breathes */}
+      {/* Floating Service Chips — visible across desktop and mobile screens */}
       {FLOATING_CHIPS.map((chip) => {
         const service = OFFICIAL_SERVICES.find((s) => s.id === chip.serviceId);
         if (!service) return null;
@@ -118,15 +117,15 @@ export const Hero: React.FC = () => {
           <div
             key={chip.serviceId}
             style={{ animationDelay: chip.delay }}
-            className={`hidden md:flex absolute ${chip.position} ${chip.anim} ${chip.rotate} items-center gap-2.5 pl-2 pr-4 py-2 rounded-2xl bg-skyz-surface/80 backdrop-blur-sm border border-skyz-border shadow-lg opacity-70 hover:opacity-100 transition-opacity pointer-events-none select-none z-0`}
+            className={`flex absolute ${chip.position} ${chip.anim} ${chip.rotate} items-center gap-1.5 sm:gap-2.5 pl-1.5 sm:pl-2 pr-2.5 sm:pr-4 py-1 sm:py-2 rounded-xl sm:rounded-2xl bg-skyz-surface/90 backdrop-blur-sm border border-skyz-border shadow-md sm:shadow-lg opacity-85 hover:opacity-100 transition-opacity pointer-events-none select-none z-0 scale-90 sm:scale-100 origin-center`}
           >
             <div
-              className="w-8 h-8 rounded-xl flex items-center justify-center text-white p-1.5 flex-shrink-0"
+              className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl flex items-center justify-center text-white p-1 sm:p-1.5 flex-shrink-0"
               style={{ backgroundColor: service.accent }}
             >
               {SERVICE_ICON[service.id]}
             </div>
-            <span className="text-xs font-semibold text-skyz-text whitespace-nowrap">
+            <span className="text-[10px] sm:text-xs font-semibold text-skyz-text whitespace-nowrap">
               {service.name}
             </span>
           </div>
@@ -152,12 +151,12 @@ export const Hero: React.FC = () => {
           </h1>
         </Reveal>
 
-        {/* Playful cursor-tags — Putty hero flavor, desktop only */}
+        {/* Playful cursor-tags — Putty hero flavor */}
         <div className="relative w-full">
-          <FloatingTag className="top-[-14px] left-[8%] bg-green-400 text-black -rotate-6" delay={0.6}>
+          <FloatingTag className="top-[-18px] sm:top-[-14px] left-[2%] sm:left-[8%] bg-green-400 text-black -rotate-6" delay={0.6}>
             ✦ FAST
           </FloatingTag>
-          <FloatingTag className="top-[-26px] right-[9%] bg-pink-400 text-white rotate-3" delay={0.9}>
+          <FloatingTag className="top-[-28px] sm:top-[-26px] right-[2%] sm:right-[9%] bg-pink-400 text-white rotate-3" delay={0.9}>
             ✦ CONNECTED
           </FloatingTag>
         </div>

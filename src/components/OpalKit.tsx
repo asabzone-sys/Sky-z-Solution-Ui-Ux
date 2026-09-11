@@ -173,7 +173,7 @@ export const FloatingTag: React.FC<{
 }> = ({ children, className = '', delay = 0 }) => (
   <motion.span
     aria-hidden
-    className={`absolute hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-mono font-bold shadow-md ${className}`}
+    className={`absolute inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-mono font-bold shadow-sm sm:shadow-md pointer-events-none select-none z-10 ${className}`}
     initial={{ opacity: 0, scale: 0.6 }}
     animate={{ opacity: 1, scale: 1 }}
     transition={{ delay, type: 'spring', stiffness: 260, damping: 18 }}

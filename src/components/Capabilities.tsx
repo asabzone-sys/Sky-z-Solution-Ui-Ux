@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'motion/react';
 import { Laptop, Bot, TrendingUp, ArrowRight, Code, Activity, Database, RefreshCw, Cloud } from 'lucide-react';
 import { CAPABILITIES } from '../data/content';
 import { useNavigation } from '../context/NavigationContext';
@@ -66,31 +67,45 @@ export const Capabilities: React.FC = () => {
                 </div>
 
                 {/* Interactive Visual Widget */}
-                <div className="my-6 p-4 rounded-2xl bg-skyz-surface-subtle shadow-sm border border-skyz-border">
+                <div className="my-6 p-3 sm:p-4 rounded-2xl bg-skyz-surface-subtle shadow-sm border border-skyz-border">
                   <div className="flex items-center justify-between relative overflow-hidden">
-                    <div className="flex flex-col items-center gap-1 z-10">
-                      <div className="w-10 h-10 rounded-full bg-skyz-surface border border-skyz-border flex items-center justify-center text-skyz-text font-semibold text-xs shadow-sm">
+                    <div className="flex flex-col items-center gap-1 z-10 flex-shrink-0">
+                      <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-skyz-surface border border-skyz-border flex items-center justify-center text-skyz-text font-semibold text-[11px] sm:text-xs shadow-sm">
+                        <span className="w-1.5 h-1.5 rounded-full bg-skyz-accent absolute top-1 right-1 animate-pulse" />
                         UI/UX
                       </div>
-                      <span className="text-[11px] text-skyz-text-muted">Architecture</span>
+                      <span className="text-[10px] sm:text-[11px] text-skyz-text-muted whitespace-nowrap">Architecture</span>
                     </div>
-                    <div className="flex-1 h-1 bg-skyz-border mx-2 relative rounded-full overflow-hidden">
-                      <div className="absolute h-full w-12 bg-skyz-accent rounded-full animate-signal-pulse" />
+
+                    <div className="flex-1 h-1.5 sm:h-2 bg-skyz-border mx-1.5 sm:mx-2.5 relative rounded-full overflow-hidden">
+                      <motion.div
+                        className="absolute top-0 bottom-0 w-8 sm:w-12 bg-gradient-to-r from-transparent via-skyz-accent to-skyz-accent-secondary rounded-full shadow-[0_0_8px_rgba(124,58,237,0.7)]"
+                        animate={{ x: ['-100%', '300%'] }}
+                        transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+                      />
                     </div>
-                    <div className="flex flex-col items-center gap-1 z-10">
-                      <div className="w-11 h-11 rounded-full bg-skyz-text dark:bg-skyz-accent text-skyz-bg dark:text-[#080B10] flex items-center justify-center shadow-md">
-                        <Code className="w-5 h-5" />
+
+                    <div className="flex flex-col items-center gap-1 z-10 flex-shrink-0">
+                      <div className="relative w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-skyz-text dark:bg-skyz-accent text-skyz-bg dark:text-[#080B10] flex items-center justify-center shadow-md">
+                        <Code className="w-4 h-4 sm:w-5 sm:h-5" />
                       </div>
-                      <span className="text-[11px] text-skyz-text dark:text-skyz-accent font-bold">Engineering</span>
+                      <span className="text-[10px] sm:text-[11px] text-skyz-text dark:text-skyz-accent font-bold whitespace-nowrap">Engineering</span>
                     </div>
-                    <div className="flex-1 h-1 bg-skyz-border mx-2 relative rounded-full overflow-hidden">
-                      <div className="absolute h-full w-12 bg-skyz-accent-secondary rounded-full animate-signal-pulse" style={{ animationDelay: '1.2s' }} />
+
+                    <div className="flex-1 h-1.5 sm:h-2 bg-skyz-border mx-1.5 sm:mx-2.5 relative rounded-full overflow-hidden">
+                      <motion.div
+                        className="absolute top-0 bottom-0 w-8 sm:w-12 bg-gradient-to-r from-transparent via-skyz-accent-secondary to-skyz-accent rounded-full shadow-[0_0_8px_rgba(96,165,250,0.7)]"
+                        animate={{ x: ['-100%', '300%'] }}
+                        transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut', delay: 0.9 }}
+                      />
                     </div>
-                    <div className="flex flex-col items-center gap-1 z-10">
-                      <div className="w-10 h-10 rounded-full bg-skyz-surface border border-skyz-border flex items-center justify-center text-skyz-accent font-semibold text-xs shadow-sm">
+
+                    <div className="flex flex-col items-center gap-1 z-10 flex-shrink-0">
+                      <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-skyz-surface border border-skyz-border flex items-center justify-center text-skyz-accent font-semibold text-[11px] sm:text-xs shadow-sm">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 absolute top-1 right-1 animate-pulse" />
                         PROD
                       </div>
-                      <span className="text-[11px] text-skyz-text-muted">Deployment</span>
+                      <span className="text-[10px] sm:text-[11px] text-skyz-text-muted whitespace-nowrap">Deployment</span>
                     </div>
                   </div>
                 </div>
