@@ -2,8 +2,8 @@ import React from 'react';
 import { Hero } from '../components/Hero';
 import { WorkCarousel } from '../components/WorkCarousel';
 import { Capabilities } from '../components/Capabilities';
-import { Methodology } from '../components/Methodology';
 import { Creed } from '../components/Creed';
+import { Testimonials } from '../components/Testimonials';
 import { ContactCTA } from '../components/ContactCTA';
 
 export const HomePage: React.FC = () => {
@@ -12,8 +12,8 @@ export const HomePage: React.FC = () => {
       <Hero />
       <WorkCarousel />
       <Capabilities />
-      <Methodology />
       <Creed />
+      <Testimonials />
       <ContactCTA />
     </>
   );
