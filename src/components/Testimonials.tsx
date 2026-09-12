@@ -17,6 +17,34 @@ import { TESTIMONIALS } from '../data/testimonials';
  */
 
 const EASE = [0.16, 1, 0.3, 1] as const;
+
+/**
+ * Directional story transition. Motion resolves these per-side via `custom`,
+ * which is the only supported way to pass dynamic values — inline function
+ * `initial`/`exit` props produce NaN keyframes (broken fades).
+ */
+const storyVariants = {
+  enter: (dir: number) => ({
+    opacity: 0,
+    x: (dir >= 0 ? 1 : -1) * 90,
+    scale: 0.985,
+    rotate: (dir >= 0 ? -1 : 1) * 0.5,
+  }),
+  center: {
+    opacity: 1,
+    x: 0,
+    scale: 1,
+    rotate: 0,
+    transition: { duration: 0.7, ease: EASE },
+  },
+  exit: (dir: number) => ({
+    opacity: 0,
+    x: (dir >= 0 ? -1 : 1) * 90,
+    scale: 0.985,
+    rotate: (dir >= 0 ? 1 : -1) * 0.5,
+    transition: { duration: 0.45, ease: EASE },
+  }),
+};
 const n = TESTIMONIALS.length;
 /** shortest signed distance around the ring (for the faint edge siblings) */
 const wrapDelta = (d: number) => {
@@ -159,18 +187,18 @@ export const Testimonials: React.FC = () => {
             {/* the active story */}
             <div className="relative z-10 min-h-[380px] sm:min-h-[360px] flex items-center py-2">
               <AnimatePresence mode="popLayout" custom={dir} initial={false}>
+                <motion.div
+                  key="drag-follow"
+                  style={{ x: dragging ? dragX : 0 }}
+                  className="w-full"
+                >
                 <motion.figure
                   key={t.id}
                   custom={dir}
-                  initial={(dir: number) => ({
-                    opacity: 0, x: (dir >= 0 ? 1 : -1) * 90, scale: 0.985, rotate: (dir >= 0 ? -1 : 1) * 0.5,
-                  })}
-                  animate={{ opacity: 1, x: 0, scale: 1, rotate: 0, transition: { duration: reducedRef.current ? 0.15 : 0.7, ease: EASE } }}
-                  exit={(dir: number) => ({
-                    opacity: 0, x: (dir >= 0 ? -1 : 1) * 90, scale: 0.985, rotate: (dir >= 0 ? 1 : -1) * 0.5,
-                    transition: { duration: reducedRef.current ? 0.12 : 0.5, ease: EASE },
-                  })}
-                  style={{ x: dragging ? dragX : undefined }}
+                  variants={storyVariants}
+                  initial={reducedRef.current ? 'center' : 'enter'}
+                  animate="center"
+                  exit={reducedRef.current ? 'center' : 'exit'}
                   className="w-full max-w-2xl mx-auto text-center px-2 sm:px-6"
                 >
                   <blockquote className="relative">
@@ -196,6 +224,7 @@ export const Testimonials: React.FC = () => {
                     </span>
                   </figcaption>
                 </motion.figure>
+                </motion.div>
               </AnimatePresence>
             </div>
           </div>
