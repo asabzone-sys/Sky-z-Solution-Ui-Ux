@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import React, { useEffect, useRef, useState } from 'react';
+import { motion, useScroll, useTransform, useReducedMotion, AnimatePresence } from 'motion/react';
 import {
   ArrowRight,
   ArrowUpRight,
@@ -24,6 +24,30 @@ import {
   Eyebrow,
 } from '../components/OpalKit';
 
+const EASE = [0.16, 1, 0.3, 1] as const;
+
+/** word-by-word masked rise for chapter titles — editorial, not a fade-up */
+const TitleRise: React.FC<{ text: string }> = ({ text }) => {
+  const words = text.split(' ');
+  return (
+    <h3 className="mt-3 font-display font-bold text-3xl sm:text-4xl lg:text-5xl tracking-tight text-skyz-text leading-[1.05]">
+      {words.map((w, i) => (
+        <span key={i} className="inline-block overflow-hidden align-top">
+          <motion.span
+            className="inline-block"
+            initial={{ y: '110%' }}
+            whileInView={{ y: 0 }}
+            viewport={{ once: true, margin: '-15%' }}
+            transition={{ duration: 0.7, delay: i * 0.06, ease: EASE }}
+          >
+            {w}&nbsp;
+          </motion.span>
+        </span>
+      ))}
+    </h3>
+  );
+};
+
 /* Floating project tiles behind the hero — the labs.google hero treatment,
    built from SkyZ's real projects instead of stock imagery. */
 const HERO_TILES = PORTFOLIO_PROJECTS.slice(0, 5);
@@ -33,19 +57,6 @@ const TILE_LAYOUT = [
   { position: 'top-[3%] sm:top-[4%] right-[8%] sm:right-[19%]', rotate: '-rotate-2', anim: 'animate-float-rev', delay: '1.1s' },
   { position: 'top-[12%] sm:top-[14%] right-[2%] xl:right-[6%]', rotate: 'rotate-6', anim: 'animate-float-slow', delay: '0.3s' },
   { position: 'bottom-[4%] sm:bottom-[6%] left-[6%] sm:left-[12%]', rotate: 'rotate-2', anim: 'animate-float-slow', delay: '0.9s' },
-];
-
-/* Editorial grid rhythm:
-   Row 1: Card 1 (Big, 2 cols) + Card 2 (Small, 1 col)
-   Row 2: Card 3 (Small, 1 col) + Card 4 (Big, 2 cols)
-   Row 3: Card 5 (Big, 2 cols) + Card 6 (Small, 1 col) */
-const GRID_SPANS = [
-  'lg:col-span-2', // Row 1: Big
-  '',              // Row 1: Small
-  '',              // Row 2: Small
-  'lg:col-span-2', // Row 2: Big
-  'lg:col-span-2', // Row 3: Big
-  '',              // Row 3: Small
 ];
 
 const FILTER_OPTIONS: Array<'ALL' | ServiceCategory> = [
@@ -58,28 +69,169 @@ const FILTER_OPTIONS: Array<'ALL' | ServiceCategory> = [
   'AI AUTOMATION',
 ];
 
+/* ------------------------------------------------------------------ */
+/* ProjectChapter — one project as a scroll-driven scene.              */
+/* Identity vs Studio: Studio alternates side-by-side scenes; here the */
+/* visual is sticky on desktop while the story column scrolls past it, */
+/* with a progress hairline tying the chapter together. Mobile stacks  */
+/* naturally — visual first, story below — with local parallax.        */
+/* ------------------------------------------------------------------ */
+const ProjectChapter: React.FC<{
+  project: PortfolioProject;
+  index: number;
+  onOpen: (p: PortfolioProject) => void;
+}> = ({ project, index, onOpen }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const reduced = useReducedMotion();
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
+
+  const imgY = useTransform(scrollYProgress, [0, 1], ['-6%', '6%']);
+  const imgScale = useTransform(scrollYProgress, [0, 0.5, 1], [1.06, 1, 1.015]);
+  const textY = useTransform(scrollYProgress, [0, 1], [34, -34]);
+  // progress hairline — draws across the chapter as you move through it
+  const progressScale = useTransform(scrollYProgress, [0.1, 0.9], [0, 1]);
+
+  return (
+    <div ref={ref} className="relative py-10 sm:py-16">
+      {/* ghost numeral — the chapter's quiet editorial signature */}
+      <motion.span
+        aria-hidden
+        initial={{ opacity: 0, y: 60 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-15%' }}
+        transition={{ duration: 1.1, ease: EASE }}
+        className={`absolute top-2 font-display font-extrabold leading-none select-none pointer-events-none ${
+          index % 2 === 0 ? 'right-0 md:right-4' : 'left-0 md:left-4'
+        }`}
+        style={{ fontSize: 'clamp(9rem, 30vw, 22rem)', color: `${project.accentColor}12` }}
+      >
+        {String(index + 1).padStart(2, '0')}
+      </motion.span>
+
+      {/* chapter hairline — the scroll-progress detail */}
+      <div className="absolute top-0 left-4 right-4 sm:left-10 sm:right-10 h-px bg-skyz-border-subtle" aria-hidden>
+        <motion.div
+          style={reduced ? { scaleX: 1 } : { scaleX: progressScale }}
+          className="h-full origin-left"
+        >
+          <div className="h-full w-full bg-skyz-accent/50" />
+        </motion.div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-12 gap-8 md:gap-12">
+        {/* sticky media column (desktop) / natural block (mobile) */}
+        <div className="md:col-span-7">
+          <motion.div
+            style={reduced ? undefined : { y: imgY }}
+            className="md:sticky md:top-24"
+          >
+            <motion.button
+              type="button"
+              onClick={() => onOpen(project)}
+              aria-label={`Open case study: ${project.title}`}
+              className="group relative block w-full text-left cursor-pointer"
+            >
+              <motion.div
+                style={reduced ? undefined : { scale: imgScale }}
+                className={`relative overflow-hidden rounded-[1.75rem] sm:rounded-[2rem] border border-skyz-border card-shadow-flank ${
+                  index % 3 === 0 ? 'aspect-[16/10]' : 'aspect-[4/3]'
+                }`}
+              >
+                <motion.div
+                  initial={reduced ? undefined : { clipPath: 'inset(0 0 100% 0)' }}
+                  whileInView={reduced ? undefined : { clipPath: 'inset(0 0 0% 0)' }}
+                  viewport={{ once: true, margin: '-18%' }}
+                  transition={{ duration: 1.05, ease: EASE }}
+                  className="w-full h-full"
+                >
+                  <ProjectVisual project={project} />
+                </motion.div>
+                <div className="hidden md:flex absolute inset-0 items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-black/20">
+                  <span className="px-5 py-2.5 rounded-full bg-white/95 text-black text-sm font-semibold shadow-xl">
+                    Open case study
+                  </span>
+                </div>
+              </motion.div>
+              {/* meta strip under the visual */}
+              <div className="mt-4 flex items-center justify-between gap-3">
+                <span className={`text-[10px] font-mono font-bold px-2.5 py-1 rounded-full border ${getServiceBadgeStyle(project.serviceCategory)}`}>
+                  {project.serviceCategory}
+                </span>
+                <span className="font-mono text-[10px] text-skyz-text-muted tracking-widest">
+                  {String(index + 1).padStart(2, '0')} / {String(PORTFOLIO_PROJECTS.length).padStart(2, '0')}
+                </span>
+              </div>
+            </motion.button>
+          </motion.div>
+        </div>
+
+        {/* story column */}
+        <motion.div style={reduced ? undefined : { y: textY }} className="md:col-span-5 flex flex-col justify-center">
+          <span className="font-mono text-[10px] tracking-[0.25em] text-skyz-accent font-bold">
+            {project.pillar} — {project.clientSector.toUpperCase()}
+          </span>
+          <TitleRise text={project.title} />
+          <p className="mt-5 text-sm sm:text-base text-skyz-text-muted leading-relaxed max-w-md">
+            {project.description}
+          </p>
+
+          {/* deliverables — quiet list, not chips */}
+          <ul className="mt-6 space-y-2">
+            {project.deliverables.slice(0, 3).map((d) => (
+              <li key={d} className="flex items-center gap-2.5 text-xs sm:text-sm text-skyz-text-muted">
+                <span className="w-1 h-1 rounded-full flex-shrink-0" style={{ backgroundColor: project.accentColor }} />
+                {d}
+              </li>
+            ))}
+          </ul>
+
+          <button
+            type="button"
+            onClick={() => onOpen(project)}
+            className="group mt-7 inline-flex items-center gap-2 self-start px-5 py-2.5 rounded-full border border-skyz-border text-sm font-semibold text-skyz-text hover:border-skyz-accent/50 transition-all cursor-pointer"
+          >
+            Read the story
+            <ArrowRight className="w-4 h-4 text-skyz-accent transition-transform group-hover:translate-x-0.5" />
+          </button>
+        </motion.div>
+      </div>
+    </div>
+  );
+};
+
 export const WorkPage: React.FC = () => {
   const { navigate } = useNavigation();
   const [selectedFilter, setSelectedFilter] = useState<'ALL' | ServiceCategory>('ALL');
   const [activeModalProject, setActiveModalProject] = useState<PortfolioProject | null>(null);
+  const reduced = useReducedMotion();
+
+  const chaptersRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: chaptersRef, offset: ['start end', 'end start'] });
+  // inline-text drift (smaller on phones) — never widens the block box
+  const [drift, setDrift] = useState(18);
+  useEffect(() => {
+    const f = () => setDrift(window.innerWidth < 640 ? 18 : 40);
+    f();
+    window.addEventListener('resize', f);
+    return () => window.removeEventListener('resize', f);
+  }, []);
+  const headingX = useTransform(scrollYProgress, [0, 1], [drift, -drift]);
 
   const filteredProjects = selectedFilter === 'ALL'
     ? PORTFOLIO_PROJECTS
     : PORTFOLIO_PROJECTS.filter(p => p.serviceCategory === selectedFilter);
 
-  const scrollToGrid = () => {
-    document.getElementById('portfolio-grid')?.scrollIntoView({ behavior: 'smooth' });
+  const scrollToChapters = () => {
+    document.getElementById('portfolio-stories')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
-    <div className="w-full bg-skyz-bg text-skyz-text transition-colors duration-200 overflow-x-hidden">
+    <div className="w-full bg-skyz-bg text-skyz-text transition-colors duration-200">
 
       {/* ============================================================ */}
-      {/* 1. HERO — Labs-style: floating project tiles around centered  */}
-      {/*    display type, very little copy, generous air               */}
+      {/* 1. HERO — kept as approved (floating tiles + display type)    */}
       {/* ============================================================ */}
       <section className="relative w-full min-h-[86vh] sm:min-h-[82vh] flex items-center justify-center px-4 sm:px-6 py-28 sm:py-24 overflow-hidden">
-        {/* Floating project tiles — visible on desktop and mobile */}
         {HERO_TILES.map((project, i) => (
           <div
             key={project.id}
@@ -92,7 +244,6 @@ export const WorkPage: React.FC = () => {
           </div>
         ))}
 
-        {/* Organic soft blobs */}
         <Blob className="w-[360px] h-[330px] -top-20 -left-28 opacity-70" color="rgba(124, 58, 237, 0.09)" duration={12} />
         <Blob className="w-[320px] h-[300px] bottom-[-80px] right-[-100px] opacity-70" color="rgba(56, 189, 248, 0.09)" duration={10} />
 
@@ -120,7 +271,7 @@ export const WorkPage: React.FC = () => {
           <Reveal delay={0.2}>
             <button
               type="button"
-              onClick={scrollToGrid}
+              onClick={scrollToChapters}
               className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#080B10] font-semibold text-sm shadow-md hover:bg-skyz-accent transition-all cursor-pointer"
             >
               <span>Explore the work</span>
@@ -131,108 +282,63 @@ export const WorkPage: React.FC = () => {
       </section>
 
       {/* ============================================================ */}
-      {/* 2. EDITORIAL PORTFOLIO GRID — asymmetric case-study cards     */}
+      {/* 2. STORY CHAPTERS — each project is a scene, not a card       */}
       {/* ============================================================ */}
-      <SectionShell id="portfolio-grid">
-        <div className="bg-skyz-surface border border-skyz-border rounded-[inherit] px-5 sm:px-12 py-16 sm:py-24 relative overflow-hidden">
-          <Blob className="w-[380px] h-[340px] -top-28 right-1/3 opacity-60" color="rgba(236, 72, 153, 0.06)" duration={13} />
+      <div id="portfolio-stories" ref={chaptersRef} className="relative">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 sm:pt-20 pb-4">
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+            <h2 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-skyz-text">
+              <motion.span
+                style={reduced ? undefined : { x: headingX }}
+                className="inline-block will-change-transform"
+              >
+                The stories <span className="text-skyz-text-muted">behind it.</span>
+              </motion.span>
+            </h2>
 
-          <div className="relative z-10">
-            <Reveal>
-              <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-12 sm:mb-16">
-                <div className="space-y-4">
-                  <Eyebrow>The Portfolio</Eyebrow>
-                  <h2 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-skyz-text">
-                    Selected projects.
-                  </h2>
-                </div>
-
-                {/* Filters — quiet pills */}
-                <div className="flex flex-wrap items-center gap-2">
-                  {FILTER_OPTIONS.map((filter) => {
-                    const isSelected = selectedFilter === filter;
-                    return (
-                      <button
-                        key={filter}
-                        type="button"
-                        onClick={() => setSelectedFilter(filter)}
-                        className={`px-3.5 py-1.5 rounded-full text-[11px] font-mono font-semibold transition-all cursor-pointer ${
-                          isSelected
-                            ? 'bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#080B10] shadow-sm'
-                            : 'bg-skyz-bg border border-skyz-border text-skyz-text-muted hover:text-skyz-text hover:border-skyz-accent/40'
-                        }`}
-                      >
-                        {filter}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </Reveal>
-
-            {/* Asymmetric editorial grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-7">
-              {filteredProjects.map((project, idx) => {
-                const isWide = selectedFilter === 'ALL' && GRID_SPANS[idx % GRID_SPANS.length] !== '';
-                const spanClass = selectedFilter === 'ALL' ? GRID_SPANS[idx % GRID_SPANS.length] : '';
+            {/* Filters — quiet pills, kept from the approved design */}
+            <div className="flex flex-wrap items-center gap-2">
+              {FILTER_OPTIONS.map((filter) => {
+                const isSelected = selectedFilter === filter;
                 return (
-                  <Reveal
-                    key={project.id}
-                    delay={(idx % 3) * 0.07}
-                    className={`${spanClass} h-full`}
+                  <button
+                    key={filter}
+                    type="button"
+                    onClick={() => setSelectedFilter(filter)}
+                    className={`px-3.5 py-1.5 rounded-full text-[11px] font-mono font-semibold transition-all cursor-pointer ${
+                      isSelected
+                        ? 'bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#080B10] shadow-sm'
+                        : 'bg-skyz-bg border border-skyz-border text-skyz-text-muted hover:text-skyz-text hover:border-skyz-accent/40'
+                    }`}
                   >
-                    <motion.button
-                      type="button"
-                      onClick={() => setActiveModalProject(project)}
-                      whileHover={{ y: -6 }}
-                      transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-                      className="group w-full h-full text-left rounded-[1.75rem] overflow-hidden border border-skyz-border bg-skyz-bg shadow-sm hover:shadow-xl transition-shadow duration-300 cursor-pointer flex flex-col"
-                    >
-                      {/* Visual */}
-                      <div className={`relative w-full overflow-hidden ${isWide ? 'aspect-[16/9]' : 'aspect-[4/3]'}`}>
-                        <div className="w-full h-full transition-transform duration-700 group-hover:scale-[1.05]">
-                          <ProjectVisual project={project} />
-                        </div>
-                        <span
-                          className={`absolute top-3.5 left-3.5 text-[10px] font-mono font-bold px-2.5 py-1 rounded-full border backdrop-blur-sm ${getServiceBadgeStyle(project.serviceCategory)}`}
-                        >
-                          {project.serviceCategory}
-                        </span>
-                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300 flex items-center justify-center">
-                          <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 w-11 h-11 rounded-full bg-white/90 flex items-center justify-center shadow-lg">
-                            <ArrowUpRight className="w-5 h-5 text-black" />
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Minimal caption */}
-                      <div className="p-5 sm:p-6 flex flex-col gap-1.5 flex-1">
-                        <div className="flex items-center justify-between gap-3">
-                          <h3 className="font-display text-lg sm:text-xl font-bold text-skyz-text group-hover:text-skyz-accent transition-colors leading-snug">
-                            {project.title}
-                          </h3>
-                          <ArrowUpRight className="w-4 h-4 text-skyz-text-muted group-hover:text-skyz-accent group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all flex-shrink-0" />
-                        </div>
-                        <p className="text-xs sm:text-sm text-skyz-text-muted">
-                          {project.clientSector} · {project.tags[0]}
-                        </p>
-                        {isWide && (
-                          <p className="text-sm text-skyz-text-muted mt-1.5 leading-relaxed line-clamp-2">
-                            {project.description}
-                          </p>
-                        )}
-                      </div>
-                    </motion.button>
-                  </Reveal>
+                    {filter}
+                  </button>
                 );
               })}
             </div>
           </div>
         </div>
-      </SectionShell>
+
+        {/* keyed remount → instant swap, new chapters fade in (no exit wait) */}
+        <motion.div
+          key={selectedFilter}
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: reduced ? 0.12 : 0.45, ease: EASE }}
+        >
+          {filteredProjects.map((project, idx) => (
+            <ProjectChapter
+              key={project.id}
+              project={project}
+              index={idx}
+              onOpen={setActiveModalProject}
+            />
+          ))}
+        </motion.div>
+      </div>
 
       {/* ============================================================ */}
-      {/* 3. VIDEO — shared Putty-style treatment, used once            */}
+      {/* 3. VIDEO — shared Putty-style treatment, kept                 */}
       {/* ============================================================ */}
       <SectionShell>
         <div className="relative rounded-[inherit] px-2 py-14 sm:py-20 bg-gradient-to-b from-skyz-surface-subtle/60 to-transparent overflow-hidden">
@@ -249,7 +355,7 @@ export const WorkPage: React.FC = () => {
       </SectionShell>
 
       {/* ============================================================ */}
-      {/* 4. CLOSING CTA — Opal-style soft panel + input pill           */}
+      {/* 4. CLOSING CTA — kept                                         */}
       {/* ============================================================ */}
       <SectionShell>
         <div className="relative rounded-[inherit] bg-skyz-accent-muted border border-skyz-accent/20 px-5 sm:px-12 py-20 sm:py-28 text-center overflow-hidden">
@@ -290,7 +396,7 @@ export const WorkPage: React.FC = () => {
       </SectionShell>
 
       {/* ============================================================ */}
-      {/* 5. MODAL — the full case-study detail lives off the grid      */}
+      {/* 5. MODAL — kept from the approved design                      */}
       {/* ============================================================ */}
       <AnimatePresence>
         {activeModalProject && (
