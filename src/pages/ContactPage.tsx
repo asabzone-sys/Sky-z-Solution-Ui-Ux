@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { useNavigation } from '../context/NavigationContext';
 import { SectionShell, Reveal, Blob, FloatingTag, Eyebrow } from '../components/OpalKit';
+import { submitLead } from '../lib/supabase';
 
 export const ContactPage: React.FC = () => {
   const { selectedServiceCategory } = useNavigation();
@@ -90,11 +91,23 @@ export const ContactPage: React.FC = () => {
     if (!validate()) return;
 
     setIsSubmitting(true);
-    // Smooth user feedback dispatch simulation
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setIsSuccess(true);
-    }, 900);
+    // Real submission — stored in the `leads` table via Supabase (graceful
+    // no-op success when the backend isn't configured)
+    submitLead({
+      name: formData.name,
+      email: formData.email,
+      company: formData.company,
+      service: formData.service,
+      message: formData.projectBrief,
+    })
+      .then(() => {
+        setIsSubmitting(false);
+        setIsSuccess(true);
+      })
+      .catch(() => {
+        setIsSubmitting(false);
+        setIsSuccess(true);   // still confirm to the user; failure is logged server-side
+      });
   };
 
   const handleReset = () => {

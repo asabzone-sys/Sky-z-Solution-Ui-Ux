@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ArrowLeft, ArrowRight, Quote } from 'lucide-react';
 import { SectionShell, Eyebrow } from '../components/OpalKit';
-import { TESTIMONIALS } from '../data/testimonials';
+import { useTestimonials } from '../lib/supabase';
 
 /**
  * Testimonials — premium single-story carousel.
@@ -45,9 +45,8 @@ const storyVariants = {
     transition: { duration: 0.45, ease: EASE },
   }),
 };
-const n = TESTIMONIALS.length;
 /** shortest signed distance around the ring (for the faint edge siblings) */
-const wrapDelta = (d: number) => {
+const wrapDelta = (d: number, n: number) => {
   const half = n / 2;
   if (d > half) return d - n;
   if (d < -half) return d + n;
@@ -55,6 +54,8 @@ const wrapDelta = (d: number) => {
 };
 
 export const Testimonials: React.FC = () => {
+  const TESTIMONIALS = useTestimonials();
+  const n = TESTIMONIALS.length;
   const [index, setIndex] = useState(0);
   const [dir, setDir] = useState(0);              // -1 | 0 | 1 — story direction
   const [[dragX, dragging], setDrag] = useState<[number, boolean]>([0, false]);
@@ -105,7 +106,7 @@ export const Testimonials: React.FC = () => {
   };
 
   const t = TESTIMONIALS[index];
-  const dist = (i: number) => wrapDelta(i - index);
+  const dist = (i: number) => wrapDelta(i - index, n);
   const dragProgress = Math.max(-1, Math.min(1, dragX / (typeof window !== 'undefined' ? window.innerWidth * 0.5 : 400)));
 
   return (

@@ -33,6 +33,12 @@ export interface StudioWork {
   image?: string;
   poster?: string;
   video?: string;
+  /** storage paths (managed by the admin dashboard; URLs are derived) */
+  image_path?: string | null;
+  poster_path?: string | null;
+  video_path?: string | null;
+  published?: boolean;
+  order_index?: number;
 }
 
 export const STUDIO_WORKS: StudioWork[] = [

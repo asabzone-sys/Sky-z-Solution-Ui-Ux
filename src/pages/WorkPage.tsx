@@ -23,8 +23,11 @@ import {
   VideoSection,
   Eyebrow,
 } from '../components/OpalKit';
+import { useProjects } from '../lib/supabase';
 
 const EASE = [0.16, 1, 0.3, 1] as const;
+
+const HERO_TILES_COUNT = 5;
 
 /** word-by-word masked rise for chapter titles — editorial, not a fade-up */
 const TitleRise: React.FC<{ text: string }> = ({ text }) => {
@@ -50,7 +53,6 @@ const TitleRise: React.FC<{ text: string }> = ({ text }) => {
 
 /* Floating project tiles behind the hero — the labs.google hero treatment,
    built from SkyZ's real projects instead of stock imagery. */
-const HERO_TILES = PORTFOLIO_PROJECTS.slice(0, 5);
 const TILE_LAYOUT = [
   { position: 'top-[3%] sm:top-[5%] left-[2%] xl:left-[6%]', rotate: '-rotate-6', anim: 'animate-float-slow', delay: '0s' },
   { position: 'top-[12%] sm:top-[16%] left-[10%] sm:left-[20%]', rotate: 'rotate-3', anim: 'animate-float-rev', delay: '0.6s' },
@@ -201,6 +203,8 @@ const ProjectChapter: React.FC<{
 
 export const WorkPage: React.FC = () => {
   const { navigate } = useNavigation();
+  const PORTFOLIO_PROJECTS = useProjects();
+  const HERO_TILES = PORTFOLIO_PROJECTS.slice(0, HERO_TILES_COUNT);
   const [selectedFilter, setSelectedFilter] = useState<'ALL' | ServiceCategory>('ALL');
   const [activeModalProject, setActiveModalProject] = useState<PortfolioProject | null>(null);
   const reduced = useReducedMotion();

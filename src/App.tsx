@@ -7,6 +7,8 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ThemeProvider } from './context/ThemeContext';
 import { NavigationProvider, useNavigation } from './context/NavigationContext';
+import { AdminProvider } from './admin/AdminContext';
+import { AdminApp } from './admin/AdminApp';
 import { LiquidPortalLoader } from './components/LiquidPortalLoader';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
@@ -61,6 +63,10 @@ const AppContent: React.FC = () => {
 };
 
 export default function App() {
+  // The admin dashboard renders standalone: no site chrome, no cinematic loader.
+  const isAdminRoute =
+    typeof window !== 'undefined' && window.location.pathname.replace(/\/+$/, '') === '/admin';
+
   // One-time cinematic entry — session-scoped so normal navigation within the
   // session never replays it, but a fresh visit/refresh does.
   const [loaderDone, setLoaderDone] = useState(
@@ -71,11 +77,23 @@ export default function App() {
     setLoaderDone(true);
   }, []);
 
+  if (isAdminRoute) {
+    return (
+      <ThemeProvider>
+        <AdminProvider>
+          <AdminApp />
+        </AdminProvider>
+      </ThemeProvider>
+    );
+  }
+
   return (
     <ThemeProvider>
       <NavigationProvider>
-        {!loaderDone && <LiquidPortalLoader onDone={handleLoaderDone} />}
-        <AppContent />
+        <AdminProvider>
+          {!loaderDone && <LiquidPortalLoader onDone={handleLoaderDone} />}
+          <AppContent />
+        </AdminProvider>
       </NavigationProvider>
     </ThemeProvider>
   );

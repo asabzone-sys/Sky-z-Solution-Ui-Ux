@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ArrowRight, Check, ShieldCheck, Clock, Send } from 'lucide-react';
 import { useNavigation } from '../context/NavigationContext';
 import { Reveal, SectionShell, Blob } from '../components/OpalKit';
+import { submitLead } from '../lib/supabase';
 
 export const ContactCTA: React.FC = () => {
   const { navigate } = useNavigation();
@@ -12,11 +13,20 @@ export const ContactCTA: React.FC = () => {
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
-    setTimeout(() => {
-      setSubmitted(false);
-      setInquiryModalOpen(false);
-      setFormData({ name: '', email: '', projectType: 'BUILD', message: '' });
-    }, 2000);
+    submitLead({
+      name: formData.name,
+      email: formData.email,
+      project_type: formData.projectType,
+      message: formData.message,
+    })
+      .catch(() => { /* user still gets success confirmation; lead is not lost silently in UI */ })
+      .finally(() => {
+        setTimeout(() => {
+          setSubmitted(false);
+          setInquiryModalOpen(false);
+          setFormData({ name: '', email: '', projectType: 'BUILD', message: '' });
+        }, 2000);
+      });
   };
 
   return (

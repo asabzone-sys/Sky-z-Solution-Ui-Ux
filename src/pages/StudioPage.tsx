@@ -2,7 +2,8 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { motion, useScroll, useTransform, MotionValue, useReducedMotion, useSpring, useMotionValue, animate } from 'motion/react';
 import { ArrowUpRight, ArrowRight } from 'lucide-react';
 import { useNavigation } from '../context/NavigationContext';
-import { STUDIO_WORKS, STUDIO_CATEGORIES, StudioVisual, StudioWork } from '../data/studio';
+import { STUDIO_CATEGORIES, StudioVisual, StudioWork } from '../data/studio';
+import { useStudioWorks } from '../lib/supabase';
 import { Eyebrow } from '../components/OpalKit';
 
 /**
@@ -178,6 +179,7 @@ const LineReveal: React.FC<{ text: string; delay?: number; accent?: string }> = 
 /* Creative World — the marquee belt: continuous horizontal motion     */
 /* ------------------------------------------------------------------ */
 const CreativeMarquee: React.FC = () => {
+  const STUDIO_WORKS = useStudioWorks();
   const belt = [...STUDIO_WORKS, ...STUDIO_WORKS];
   return (
     <section className="relative py-12 sm:py-20 overflow-hidden">
@@ -277,6 +279,7 @@ const EditorialScene: React.FC<{ work: StudioWork; index: number }> = ({ work, i
 };
 
 const GraphicWork: React.FC = () => {
+  const STUDIO_WORKS = useStudioWorks();
   const ref = useRef<HTMLElement>(null);
   const reduced = useReducedMotion();
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
@@ -311,6 +314,7 @@ const GraphicWork: React.FC = () => {
 /* Mobile: same stage behavior (shorter runway) + manual swipe-drag.   */
 /* ------------------------------------------------------------------ */
 const MotionStrip: React.FC = () => {
+  const STUDIO_WORKS = useStudioWorks();
   const sectionRef = useRef<HTMLElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
@@ -334,9 +338,12 @@ const MotionStrip: React.FC = () => {
   }, []);
 
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start start', 'end end'] });
-  // spring-smoothed scroll mapping — kills wheel/scrollbar jitter
+  // spring-smoothed scroll mapping — kills wheel/scrollbar jitter.
+  // Reduced motion drops only the smoothing, never the position: a
+  // scroll-driven belt is user-controlled motion and must stay reachable.
   const smooth = useSpring(scrollYProgress, { stiffness: 120, damping: 28, mass: 0.4 });
-  const x = useTransform(smooth, [0, 1], [0, -dist]);
+  const source = reduced ? scrollYProgress : smooth;
+  const x = useTransform(source, [0, 1], [0, -dist]);
 
   /* manual drag (touch + mouse) composes WITH the scroll-driven position */
   const dragX = useMotionValue(0);
@@ -387,7 +394,7 @@ const MotionStrip: React.FC = () => {
         {/* the belt: scroll-driven everywhere, drag-assisted on touch */}
         <motion.div
           ref={trackRef}
-          style={{ x: reduced ? 0 : xFinal }}
+          style={{ x: xFinal }}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={endDrag}
@@ -403,7 +410,7 @@ const MotionStrip: React.FC = () => {
         <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 mt-8 sm:mt-10">
           <div className="h-px w-full bg-skyz-border-subtle" aria-hidden>
             <motion.div
-              style={reduced ? { scaleX: 1 } : { scaleX: smooth }}
+              style={{ scaleX: source }}
               className="h-full origin-left bg-skyz-accent/60"
             />
           </div>

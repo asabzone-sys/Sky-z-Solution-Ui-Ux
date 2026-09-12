@@ -1,0 +1,1 @@
+update public.profiles set role = 'admin' where email = 'skyz.solutions2000@gmail.com';
