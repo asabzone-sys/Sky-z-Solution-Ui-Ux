@@ -45,6 +45,9 @@ export const Footer: React.FC = () => {
           <button type="button" onClick={() => handleNav('work')} className="hover:text-skyz-text transition-colors cursor-pointer">
             Work
           </button>
+          <button type="button" onClick={() => handleNav('studio')} className="hover:text-skyz-text transition-colors cursor-pointer">
+            Studio
+          </button>
           <button type="button" onClick={() => handleNav('contact')} className="hover:text-skyz-text transition-colors cursor-pointer">
             Contact
           </button>

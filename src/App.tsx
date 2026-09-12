@@ -14,6 +14,7 @@ import { HomePage } from './pages/HomePage';
 import { AboutPage } from './pages/AboutPage';
 import { ServicesPage } from './pages/ServicesPage';
 import { WorkPage } from './pages/WorkPage';
+import { StudioPage } from './pages/StudioPage';
 import { ContactPage } from './pages/ContactPage';
 
 const AppContent: React.FC = () => {
@@ -48,6 +49,7 @@ const AppContent: React.FC = () => {
             {currentPage === 'about' && <AboutPage />}
             {currentPage === 'services' && <ServicesPage />}
             {currentPage === 'work' && <WorkPage />}
+            {currentPage === 'studio' && <StudioPage />}
             {currentPage === 'contact' && <ContactPage />}
           </motion.div>
         </AnimatePresence>
