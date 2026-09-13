@@ -175,30 +175,26 @@ function BuildWidget({ on }: { on: boolean }) {
             ✓ built — deploying to edge
           </motion.div>
         </div>
-        {/* skeleton blocks assembling */}
+        {/* skeleton blocks assembling — CSS loop (see index.css note) */}
         <div className="p-4 sm:p-5 grid grid-cols-3 gap-2.5 sm:gap-3">
           {blocks.map((cls, i) => (
-            <motion.div
+            <div
               key={i}
-              className={`rounded-xl bg-skyz-surface-subtle border border-skyz-border ${cls}`}
-              initial={false}
-              animate={on ? { opacity: [0.35, 1, 0.35], scale: [0.97, 1, 0.97] } : { opacity: 0.85 }}
-              transition={on ? { duration: 3.2, repeat: Infinity, delay: i * 0.45, ease: 'easeInOut' } : undefined}
+              className={`rounded-xl bg-skyz-surface-subtle border border-skyz-border widget-block-pulse ${cls}`}
+              style={on ? { animationDelay: `${i * 0.45}s`, opacity: 0.85 } : { opacity: 0.85, animation: 'none' }}
             />
           ))}
         </div>
       </div>
-      {/* pipeline pulse — a dot traveling the delivery line */}
+      {/* pipeline pulse — a dot traveling the delivery line (CSS loop) */}
       <div className="mt-5 relative">
         <div className="h-px bg-skyz-border relative overflow-hidden" aria-hidden>
-          <motion.div
-            className="absolute inset-0 flex items-center"
-            initial={false}
-            animate={on ? { x: ['-100%', '100%'] } : { x: '40%' }}
-            transition={on ? { duration: 2.4, repeat: Infinity, ease: 'easeInOut' } : undefined}
+          <div
+            className={`absolute inset-0 flex items-center ${on ? 'widget-pipeline-dot' : ''}`}
+            style={on ? undefined : { transform: 'translateX(40%)' }}
           >
             <span className="w-1.5 h-1.5 rounded-full bg-skyz-accent shadow-[0_0_10px_rgba(124,58,237,0.8)]" />
-          </motion.div>
+          </div>
         </div>
         <div className="mt-2.5 flex items-center justify-between font-mono text-[9px] sm:text-[10px] text-skyz-text-muted tracking-widest">
           <span className="flex items-center gap-1.5"><Code className="w-3 h-3 text-skyz-accent" /> ARCHITECT</span>
@@ -219,39 +215,44 @@ function GrowWidget({ on }: { on: boolean }) {
   ];
   return (
     <div className="relative rounded-[2rem] border border-skyz-border bg-skyz-bg p-4 sm:p-7 overflow-hidden w-full max-w-md mx-auto">
-      {/* radar */}
+      {/* radar — CSS ping loops (see index.css note) */}
       <div className="relative h-36 sm:h-44" aria-hidden>
         {[0, 1, 2].map((i) => (
-          <motion.span
+          <span
             key={i}
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 sm:w-28 sm:h-28 rounded-full border border-skyz-accent/40"
-            initial={false}
-            animate={on ? { scale: [0.35, 1.6], opacity: [0.55, 0] } : { scale: 0.8 + i * 0.35, opacity: 0.25 }}
-            transition={on ? { duration: 2.8, repeat: Infinity, delay: i * 0.9, ease: 'easeOut' } : undefined}
+            className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 sm:w-28 sm:h-28 rounded-full border border-skyz-accent/40 ${on ? 'widget-radar-ring' : ''}`}
+            style={
+              on
+                ? { animationDelay: `${i * 0.9}s` }
+                : { transform: `translate(-50%, -50%) scale(${0.8 + i * 0.35})`, opacity: 0.25 }
+            }
           />
         ))}
         <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-skyz-accent shadow-[0_0_14px_rgba(124,58,237,0.7)]" />
         {nodes.map((pos, i) => (
-          <motion.span
+          <span
             key={i}
-            className="absolute w-1.5 h-1.5 rounded-full"
-            style={{ ...pos, backgroundColor: i % 2 ? 'var(--accent-secondary)' : 'var(--accent)' }}
-            initial={false}
-            animate={on ? { opacity: [0.15, 1, 0.15], scale: [0.8, 1.25, 0.8] } : { opacity: 0.6 }}
-            transition={on ? { duration: 2.2, repeat: Infinity, delay: i * 0.35, ease: 'easeInOut' } : undefined}
+            className={`absolute w-1.5 h-1.5 rounded-full ${on ? 'widget-node' : ''}`}
+            style={{
+              ...pos,
+              backgroundColor: i % 2 ? 'var(--accent-secondary)' : 'var(--accent)',
+              ...(on
+                ? { animationDelay: `${i * 0.35}s` }
+                : { opacity: 0.6 }),
+            }}
           />
         ))}
       </div>
-      {/* compounding bars */}
+      {/* compounding bars — CSS scaleY loop */}
       <div className="mt-4 flex items-end justify-center gap-2 sm:gap-2.5 h-14 sm:h-16" aria-hidden>
         {[0.45, 0.65, 0.8, 1].map((h, i) => (
-          <motion.div
+          <div
             key={i}
-            className="w-5 sm:w-7 rounded-t-lg bg-gradient-to-t from-skyz-accent/25 to-skyz-accent origin-bottom"
-            style={{ height: `${h * 100}%` }}
-            initial={false}
-            animate={on ? { scaleY: [0.35, 1, 0.35] } : { scaleY: 1 }}
-            transition={on ? { duration: 2.6, repeat: Infinity, delay: i * 0.3, ease: 'easeInOut' } : undefined}
+            className={`w-5 sm:w-7 rounded-t-lg bg-gradient-to-t from-skyz-accent/25 to-skyz-accent origin-bottom ${on ? 'widget-bar' : ''}`}
+            style={{
+              height: `${h * 100}%`,
+              ...(on ? { animationDelay: `${i * 0.3}s` } : { transform: 'scaleY(1)' }),
+            }}
           />
         ))}
       </div>
@@ -274,36 +275,24 @@ function AutomateWidget({ on }: { on: boolean }) {
       <div className="relative h-40 sm:h-48" aria-hidden>
         {/* dashed orbit ring */}
         <div className="absolute inset-5 sm:inset-7 rounded-full border border-dashed border-skyz-border" />
-        {/* rotating orbit with upright nodes */}
-        <motion.div
-          className="absolute inset-5 sm:inset-7"
-          initial={false}
-          animate={on ? { rotate: 360 } : undefined}
-          transition={on ? { duration: 16, repeat: Infinity, ease: 'linear' } : undefined}
-        >
+        {/* rotating orbit with upright nodes — CSS loops (see index.css note) */}
+        <div className={`absolute inset-5 sm:inset-7 ${on ? 'widget-orbit' : ''}`}>
           {orbitNodes.map((n, i) => (
             <span key={i} className={`absolute ${n.pos}`}>
-              <motion.span
-                className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-skyz-surface border border-skyz-border shadow-sm flex items-center justify-center text-skyz-accent"
-                initial={false}
-                animate={on ? { rotate: -360 } : undefined}
-                transition={on ? { duration: 16, repeat: Infinity, ease: 'linear' } : undefined}
+              <span
+                className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-skyz-surface border border-skyz-border shadow-sm flex items-center justify-center text-skyz-accent ${on ? 'widget-orbit-icon' : ''}`}
               >
                 {n.icon}
-              </motion.span>
+              </span>
             </span>
           ))}
-        </motion.div>
+        </div>
         {/* the core — always working */}
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#080B10] flex items-center justify-center shadow-lg">
-            <motion.span
-              initial={false}
-              animate={on ? { rotate: 360 } : undefined}
-              transition={on ? { duration: 7, repeat: Infinity, ease: 'linear' } : undefined}
-            >
+            <span className={on ? 'widget-core-spin inline-flex' : 'inline-flex'}>
               <RefreshCw className="w-5 h-5 sm:w-6 sm:h-6" />
-            </motion.span>
+            </span>
           </div>
         </div>
       </div>

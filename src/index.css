@@ -133,6 +133,72 @@ body.motion-off .animate-signal-pulse {
   animation: caretBlink 1s steps(1) infinite;
 }
 
+/* ------------------------------------------------------------------ */
+/* Capabilities widget loops — plain CSS, deliberately NOT Motion.      */
+/* Motion's production (WAAPI) path silently kills these infinite
+   keyframe loops in some environments while dev is fine; CSS animations
+   run everywhere (GPU-composited) and are immune to that class of bug. */
+@keyframes widgetBlockPulse {
+  0%, 100% { opacity: 0.35; transform: scale(0.97); }
+  50% { opacity: 1; transform: scale(1); }
+}
+.widget-block-pulse {
+  animation: widgetBlockPulse 3.2s ease-in-out infinite;
+}
+@keyframes widgetPipelineDot {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+.widget-pipeline-dot {
+  animation: widgetPipelineDot 2.4s ease-in-out infinite;
+}
+@keyframes widgetRadarPing {
+  0% { transform: translate(-50%, -50%) scale(0.35); opacity: 0.55; }
+  100% { transform: translate(-50%, -50%) scale(1.6); opacity: 0; }
+}
+.widget-radar-ring {
+  animation: widgetRadarPing 2.8s ease-out infinite;
+}
+@keyframes widgetNodeBlink {
+  0%, 100% { opacity: 0.15; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.25); }
+}
+.widget-node {
+  animation: widgetNodeBlink 2.2s ease-in-out infinite;
+}
+@keyframes widgetBarGrow {
+  0%, 100% { transform: scaleY(0.35); }
+  50% { transform: scaleY(1); }
+}
+.widget-bar {
+  transform-origin: bottom;
+  animation: widgetBarGrow 2.6s ease-in-out infinite;
+}
+@keyframes widgetOrbit {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.widget-orbit {
+  animation: widgetOrbit 16s linear infinite;
+}
+.widget-orbit-icon {
+  animation: widgetOrbit 16s linear infinite reverse;
+}
+.widget-core-spin {
+  animation: widgetOrbit 7s linear infinite;
+}
+/* Ambient loop pause switch (context-driven) */
+body.motion-off .widget-block-pulse,
+body.motion-off .widget-pipeline-dot,
+body.motion-off .widget-radar-ring,
+body.motion-off .widget-node,
+body.motion-off .widget-bar,
+body.motion-off .widget-orbit,
+body.motion-off .widget-orbit-icon,
+body.motion-off .widget-core-spin {
+  animation: none;
+}
+
 /* Interactive Dot Matrix Background */
 .bg-dots-pattern {
   background-image: radial-gradient(var(--border) 1.25px, transparent 1.25px);
