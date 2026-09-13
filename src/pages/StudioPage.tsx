@@ -1,5 +1,6 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { motion, useScroll, useTransform, MotionValue, useReducedMotion, useSpring, useMotionValue, animate } from 'motion/react';
+import { motion, useScroll, useTransform, MotionValue, useSpring, useMotionValue, animate } from 'motion/react';
+import { useMotionPreference } from '../context/MotionPreferenceContext';
 import { ArrowUpRight, ArrowRight } from 'lucide-react';
 import { useNavigation } from '../context/NavigationContext';
 import { STUDIO_CATEGORIES, StudioVisual, StudioWork } from '../data/studio';
@@ -31,7 +32,7 @@ const EASE = [0.16, 1, 0.3, 1] as const;
 /* ------------------------------------------------------------------ */
 const StudioIntro: React.FC = () => {
   const ref = useRef<HTMLElement>(null);
-  const reduced = useReducedMotion();
+  const reduced = !useMotionPreference().motionEnabled;
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
   const yGlow = useTransform(scrollYProgress, [0, 1], [0, 180]);
   const ySub = useTransform(scrollYProgress, [0, 1], [0, 48]);
@@ -206,7 +207,7 @@ const CreativeMarquee: React.FC = () => {
   const sectionRef = useRef<HTMLElement>(null);
   const setRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
-  const reduced = useReducedMotion();
+  const reduced = !useMotionPreference().motionEnabled;
   const [speed, setSpeed] = useState(72);   // px per second
   const pausedRef = useRef(false);
 
@@ -287,7 +288,7 @@ const CreativeMarquee: React.FC = () => {
 /* ------------------------------------------------------------------ */
 const EditorialScene: React.FC<{ work: StudioWork; index: number }> = ({ work, index }) => {
   const ref = useRef<HTMLDivElement>(null);
-  const reduced = useReducedMotion();
+  const reduced = !useMotionPreference().motionEnabled;
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
 
   const imgY = useTransform(scrollYProgress, [0, 1], ['-7%', '7%']);
@@ -345,7 +346,7 @@ const EditorialScene: React.FC<{ work: StudioWork; index: number }> = ({ work, i
 const GraphicWork: React.FC = () => {
   const STUDIO_WORKS = useStudioWorks();
   const ref = useRef<HTMLElement>(null);
-  const reduced = useReducedMotion();
+  const reduced = !useMotionPreference().motionEnabled;
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
   // drift only the inline text (not the full-width block box) so the heading
   // can never push the page wider than the viewport on small screens
@@ -381,7 +382,7 @@ const MotionStrip: React.FC = () => {
   const STUDIO_WORKS = useStudioWorks();
   const sectionRef = useRef<HTMLElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
-  const reduced = useReducedMotion();
+  const reduced = !useMotionPreference().motionEnabled;
   const [dist, setDist] = useState(0);
   const [hovered, setHovered] = useState<string | null>(null);
 

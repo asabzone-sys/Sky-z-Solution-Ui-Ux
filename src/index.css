@@ -115,6 +115,15 @@ h1, h2, h3, h4, h5, h6 {
 .animate-pulse-glow { animation: pulseGlow 6s ease-in-out infinite; }
 .animate-signal-pulse { animation: flowLinePulse 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
 
+/* Motion-off gate: the Footer "Motion: Off" toggle adds body.motion-off —
+   every ambient CSS animation goes static. */
+body.motion-off .animate-float-slow,
+body.motion-off .animate-float-rev,
+body.motion-off .animate-pulse-glow,
+body.motion-off .animate-signal-pulse {
+  animation: none;
+}
+
 /* Interactive Dot Matrix Background */
 .bg-dots-pattern {
   background-image: radial-gradient(var(--border) 1.25px, transparent 1.25px);

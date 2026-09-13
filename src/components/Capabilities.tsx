@@ -4,12 +4,12 @@ import {
   useScroll,
   useTransform,
   useMotionValueEvent,
-  useReducedMotion,
   useMotionTemplate,
   useSpring,
   useVelocity,
   MotionValue,
 } from 'motion/react';
+import { useMotionPreference } from '../context/MotionPreferenceContext';
 import {
   Laptop,
   TrendingUp,
@@ -388,7 +388,7 @@ const ActLayer: React.FC<{
 export const Capabilities: React.FC = () => {
   const { navigate } = useNavigation();
   const runwayRef = useRef<HTMLDivElement>(null);
-  const reduced = useReducedMotion();
+  const reduced = !useMotionPreference().motionEnabled;
 
   const { scrollYProgress } = useScroll({
     target: runwayRef,

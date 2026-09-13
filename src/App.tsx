@@ -4,8 +4,9 @@
  */
 
 import React, { useEffect, useState, useCallback } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, MotionConfig } from 'motion/react';
 import { ThemeProvider } from './context/ThemeContext';
+import { MotionPreferenceProvider, useMotionPreference } from './context/MotionPreferenceContext';
 import { NavigationProvider, useNavigation } from './context/NavigationContext';
 import { AdminProvider } from './admin/AdminContext';
 import { AdminApp } from './admin/AdminApp';
@@ -62,6 +63,17 @@ const AppContent: React.FC = () => {
   );
 };
 
+/**
+ * Bridges the visitor's motion preference into Motion's global config.
+ * reducedMotion 'never' forces animations even under OS Reduce Motion;
+ * 'always' forces the reduced variants — the escape hatch for phones whose
+ * system setting or in-app webview reports reduce-motion unintentionally.
+ */
+const MotionGate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { motionEnabled } = useMotionPreference();
+  return <MotionConfig reducedMotion={motionEnabled ? 'never' : 'always'}>{children}</MotionConfig>;
+};
+
 export default function App() {
   // The admin dashboard renders standalone: no site chrome, no cinematic loader.
   const isAdminRoute =
@@ -89,12 +101,16 @@ export default function App() {
 
   return (
     <ThemeProvider>
-      <NavigationProvider>
-        <AdminProvider>
-          {!loaderDone && <LiquidPortalLoader onDone={handleLoaderDone} />}
-          <AppContent />
-        </AdminProvider>
-      </NavigationProvider>
+      <MotionPreferenceProvider>
+        <MotionGate>
+          <NavigationProvider>
+            <AdminProvider>
+              {!loaderDone && <LiquidPortalLoader onDone={handleLoaderDone} />}
+              <AppContent />
+            </AdminProvider>
+          </NavigationProvider>
+        </MotionGate>
+      </MotionPreferenceProvider>
     </ThemeProvider>
   );
 }

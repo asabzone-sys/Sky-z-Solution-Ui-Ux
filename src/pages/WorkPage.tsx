@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { motion, useScroll, useTransform, useReducedMotion, AnimatePresence } from 'motion/react';
+import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react';
+import { useMotionPreference } from '../context/MotionPreferenceContext';
 import {
   ArrowRight,
   ArrowUpRight,
@@ -84,7 +85,7 @@ const ProjectChapter: React.FC<{
   onOpen: (p: PortfolioProject) => void;
 }> = ({ project, index, onOpen }) => {
   const ref = useRef<HTMLDivElement>(null);
-  const reduced = useReducedMotion();
+  const reduced = !useMotionPreference().motionEnabled;
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
 
   const imgY = useTransform(scrollYProgress, [0, 1], ['-6%', '6%']);
@@ -207,7 +208,7 @@ export const WorkPage: React.FC = () => {
   const HERO_TILES = PORTFOLIO_PROJECTS.slice(0, HERO_TILES_COUNT);
   const [selectedFilter, setSelectedFilter] = useState<'ALL' | ServiceCategory>('ALL');
   const [activeModalProject, setActiveModalProject] = useState<PortfolioProject | null>(null);
-  const reduced = useReducedMotion();
+  const reduced = !useMotionPreference().motionEnabled;
 
   const chaptersRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: chaptersRef, offset: ['start end', 'end start'] });
