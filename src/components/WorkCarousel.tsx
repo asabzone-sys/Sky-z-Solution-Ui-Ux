@@ -74,7 +74,10 @@ export const WorkCarousel: React.FC = () => {
 
   // ── The animation loop ────────────────────────────────────────────────
   useEffect(() => {
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // Motion is always on (product decision): the carousel auto-advances and
+    // springs with the same cinematic feel for every visitor. The old
+    // prefers-reduced-motion special case here silently killed auto-advance
+    // on devices whose OS reports reduce-motion — the belt looked broken.
     let raf = 0;
     let last = 0;
 
@@ -85,17 +88,16 @@ export const WorkCarousel: React.FC = () => {
 
       if (!S.dragging) {
         // Auto-advance: nudge the target one slot forward on a cadence.
-        if (S.visible && !S.pause && !reduce) {
+        if (S.visible && !S.pause) {
           S.autoT += dt;
           if (S.autoT > 2800) {
             S.autoT = 0;
             S.target += 1;
           }
         }
-        // Spring integration (soft, near-critically-damped; quick + subtle
-        // settle when reduced motion is preferred).
-        const k = reduce ? 0.35 : 0.045;
-        const c = reduce ? 0.9 : 0.32;
+        // Spring integration (soft, near-critically-damped)
+        const k = 0.045;
+        const c = 0.32;
         S.vel += (-k * (S.pos - S.target) - c * S.vel) * n;
         S.pos += S.vel * n;
         if (Math.abs(S.vel) < 0.0004 && Math.abs(S.pos - S.target) < 0.0004) {

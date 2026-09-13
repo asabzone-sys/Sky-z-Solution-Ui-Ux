@@ -421,20 +421,14 @@ export const Capabilities: React.FC = () => {
 
   const [activeAct, setActiveAct] = useState(0);
   const [closing, setClosing] = useState(false);
-  const [focusPulled, setFocusPulled] = useState(false);
   const activeRef = useRef(0);
   const closingRef = useRef(false);
-  const focusRef = useRef(false);
 
   useMotionValueEvent(scrollYProgress, 'change', (v) => {
     const a = Math.min(N_ACTS - 1, Math.max(0, Math.floor(v * N_ACTS)));
     const c = v > 0.9;
-    // the lab HUD: a seam is "pulling focus" while the rack dip runs
-    const d = Math.min(Math.abs(v - 1 / N_ACTS), Math.abs(v - 2 / N_ACTS));
-    const f = v > 0.02 && v < 0.95 && d < 0.035;
     if (a !== activeRef.current) { activeRef.current = a; setActiveAct(a); }
     if (c !== closingRef.current) { closingRef.current = c; setClosing(c); }
-    if (f !== focusRef.current) { focusRef.current = f; setFocusPulled(f); }
   });
 
   const closingDim = useTransform(jsProgress, [0.88, 0.97], [1, 0.12]);
@@ -477,29 +471,6 @@ export const Capabilities: React.FC = () => {
             <div className="absolute top-[-10%] left-[15%] w-[480px] h-[480px] rounded-full bg-skyz-accent/5 blur-[130px]" />
             <div className="absolute bottom-[-12%] right-[-8%] w-[520px] h-[520px] rounded-full bg-skyz-accent-secondary/5 blur-[150px]" />
             <div className="absolute inset-0 bg-dots-pattern opacity-25" />
-          </div>
-
-          {/* the lab HUD — focus readout, like a camera viewfinder */}
-          <div
-            className="absolute top-4 left-4 md:top-6 md:left-6 z-30 flex items-center gap-2 font-mono text-[9px] md:text-[10px] tracking-[0.25em] text-skyz-text-muted pointer-events-none select-none"
-            aria-hidden
-          >
-            <span
-              className={`w-1.5 h-1.5 rounded-full transition-colors duration-300 ${
-                focusPulled ? 'bg-amber-400 animate-pulse' : 'bg-emerald-500'
-              }`}
-            />
-            <span>{focusPulled ? 'PULLING FOCUS' : 'FOCUS LOCKED'}</span>
-            <span className="hidden sm:inline text-skyz-border">/</span>
-            <span className="hidden sm:inline">F1.4 · ACT 0{activeAct + 1}/03</span>
-          </div>
-
-          {/* viewfinder corner ticks — quiet lab instrument framing (desktop) */}
-          <div className="hidden md:block absolute inset-5 pointer-events-none z-30" aria-hidden>
-            <span className="absolute top-0 left-0 w-5 h-5 border-t border-l border-skyz-text/15" />
-            <span className="absolute top-0 right-0 w-5 h-5 border-t border-r border-skyz-text/15" />
-            <span className="absolute bottom-0 left-0 w-5 h-5 border-b border-l border-skyz-text/15" />
-            <span className="absolute bottom-0 right-0 w-5 h-5 border-b border-r border-skyz-text/15" />
           </div>
 
           {/* mobile progress bar */}

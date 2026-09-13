@@ -19,13 +19,10 @@ const MotionPreferenceContext = createContext<MotionPreferenceContextType>({
 });
 
 const readStored = (): MotionPreference => {
-  if (typeof window === 'undefined') return 'on';
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return saved === 'off' || saved === 'auto' ? saved : 'on';
-  } catch {
-    return 'on';
-  }
+  // Motion is always on for visitors: any previously stored preference
+  // (e.g. from the brief period when the toggle was exposed) is ignored so
+  // nobody can get permanently stuck in the static fallback.
+  return 'on';
 };
 
 const readSystem = (): boolean => {
@@ -64,13 +61,8 @@ export const MotionPreferenceProvider: React.FC<{ children: React.ReactNode }> =
   }, [motionEnabled]);
 
   const setPreference = useCallback((p: MotionPreference) => {
+    // Programmatic only — there is no visitor-facing control by design.
     setPreferenceState(p);
-    try {
-      if (p === 'auto') localStorage.removeItem(STORAGE_KEY);
-      else localStorage.setItem(STORAGE_KEY, p);
-    } catch {
-      // storage restricted — session-only preference
-    }
   }, []);
 
   return (
