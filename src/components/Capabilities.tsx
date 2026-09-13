@@ -5,6 +5,9 @@ import {
   useTransform,
   useMotionValueEvent,
   useReducedMotion,
+  useMotionTemplate,
+  useSpring,
+  useVelocity,
   MotionValue,
 } from 'motion/react';
 import {
@@ -30,10 +33,17 @@ import { Eyebrow } from '../components/OpalKit';
  * operation — each with its own living motion widget, giant ghost word, and
  * a progress rail. One connected system, told as one continuous scene.
  *
- * Motion discipline (same as the rest of the site): transform/opacity only,
- * springs for state changes, prefers-reduced-motion falls back to a static
- * stacked story. The sticky stage has NO overflow-hidden ancestor (the pin
- * rule from StudioPage) — the stage carries its own overflow clip.
+ * The pacing model is a film cut, not a slide: every act DISSOLVES IN,
+ * HOLDS on a long still plateau (one deliberate beat per scroll gesture),
+ * then DISSOLVES OUT completely before the next act begins. Transitions
+ * pass through a brief rack-focus blur dip — like a lens pull on a film
+ * rig — and fast scroll flings soften the whole stage with depth-of-field
+ * blur, so the story always feels deliberate and premium.
+ *
+ * Motion discipline (same as the rest of the site): transform/opacity/filter
+ * only, springs for state changes, prefers-reduced-motion falls back to a
+ * static stacked story. The sticky stage has NO overflow-hidden ancestor
+ * (the pin rule from StudioPage) — the stage carries its own overflow clip.
  */
 
 const EASE = [0.16, 1, 0.3, 1] as const;
@@ -235,16 +245,17 @@ function AutomateWidget({ on }: { on: boolean }) {
 }
 
 /* ------------------------------------------------------------------ */
-/* ActLayer — scroll-windowed crossfade for one act                     */
+/* ActLayer — film-cut scroll window for one act                        */
 /* ------------------------------------------------------------------ */
 
 const ActLayer: React.FC<{
   index: number;
   progress: MotionValue<number>;   // JS-driven progress (never accelerated)
+  flingBlur: MotionValue<number>;  // depth-of-field while the page flings
   active: boolean;
   closing: boolean;
   reduced: boolean;
-}> = ({ index, progress, active, closing, reduced }) => {
+}> = ({ index, progress, flingBlur, active, closing, reduced }) => {
   const act = ACTS[index];
   const { navigate } = useNavigation();
   const start = index / N_ACTS;
@@ -252,49 +263,62 @@ const ActLayer: React.FC<{
   const drift = index % 2 === 0 ? -40 : 40;
 
   /*
-   * Input ranges MUST stay within [0, 1]: Motion's accelerated scroll path
-   * (useScroll + native scroll-timeline) passes the input range straight
-   * through as WAAPI keyframe offsets, and the browser rejects offsets
-   * outside [0, 1] or non-monotonic ones. Edge acts are clamped/tailored:
-   * act 0 starts settled (visible at p=0), act 2 never fades out (the
-   * closing beat overlays it at the end of the runway).
+   * CINEMA CUT, not a cross-dissolve. Windows are intentionally
+   * NON-overlapping: an act finishes dissolving OUT exactly at the seam
+   * before the next act begins dissolving IN. Headlines are never legible
+   * twice — the seam passes through a brief, intentional rack-focus dip
+   * (everything blurred + dim for a moment), like a lens pull between
+   * shots. Every act then holds a long still plateau, so one scroll
+   * gesture delivers exactly one beat.
    *
-   * Pacing: wide fade windows (FIN/FOUT) + the long runway below give each
-   * act a long settle before the next dissolve — slow, premium rhythm.
+   * All input ranges stay clamped within [0, 1]: Motion's accelerated
+   * scroll path passes ranges straight through as WAAPI keyframe offsets.
+   * (These derived values run on the JS-driven mirror anyway.)
    */
-  const FIN = 0.1;    // scroll-fraction to fully dissolve an act in
-  const FOUT = 0.1;   // scroll-fraction to fully dissolve an act out
+  const FIN = 0.045; // dissolve duration, in runway fraction (~90vh of scroll)
+  const CLAMP = (v: number) => Math.min(1, Math.max(0, v));
+
   const oStops: number[] = [];
   const oVals: number[] = [];
   const yStops: number[] = [];
   const yVals: number[] = [];
   const gStops: number[] = [];
   const gVals: number[] = [];
+  const bStops: number[] = [];
+  const bVals: number[] = [];
+
   if (index === 0) {
-    oStops.push(0, end - 0.02, Math.min(1, end + FOUT)); oVals.push(1, 1, 0);
-    yStops.push(0, end - 0.03, Math.min(1, end + FOUT)); yVals.push(0, 0, -64);
-    gStops.push(0, end - 0.03, Math.min(1, end + FOUT - 0.01)); gVals.push(1, 1, 0);
+    // settled from the start; dissolves out fully by the first seam
+    oStops.push(0, CLAMP(end - FIN), CLAMP(end)); oVals.push(1, 1, 0);
+    yStops.push(0, CLAMP(end - FIN), CLAMP(end)); yVals.push(0, 0, -72);
+    gStops.push(0, CLAMP(end - FIN - 0.01), CLAMP(end - 0.01)); gVals.push(1, 1, 0);
+    bStops.push(0, CLAMP(end - FIN), CLAMP(end)); bVals.push(0, 0, 7);
   } else if (index === N_ACTS - 1) {
-    oStops.push(Math.max(0, start - FIN), start + 0.02, 1); oVals.push(0, 1, 1);
-    yStops.push(Math.max(0, start - FIN), start + 0.03, 1); yVals.push(64, 0, 0);
-    gStops.push(Math.max(0, start - FIN + 0.01), start + 0.03, 1); gVals.push(0, 1, 1);
+    // dissolves in after the last seam; never out (the closing beat overlays it)
+    oStops.push(CLAMP(start), CLAMP(start + FIN), 1); oVals.push(0, 1, 1);
+    yStops.push(CLAMP(start), CLAMP(start + FIN), 1); yVals.push(72, 0, 0);
+    gStops.push(CLAMP(start + 0.01), CLAMP(start + FIN + 0.01), 1); gVals.push(0, 1, 1);
+    bStops.push(CLAMP(start), CLAMP(start + FIN), 1); bVals.push(7, 0, 0);
   } else {
-    oStops.push(Math.max(0, start - FIN), start + 0.02, end - 0.02, Math.min(1, end + FOUT)); oVals.push(0, 1, 1, 0);
-    yStops.push(Math.max(0, start - FIN), start + 0.03, end - 0.03, Math.min(1, end + FOUT)); yVals.push(64, 0, 0, -64);
-    gStops.push(Math.max(0, start - FIN + 0.01), start + 0.03, end - 0.03, Math.min(1, end + FOUT - 0.01)); gVals.push(0, 1, 1, 0);
+    oStops.push(CLAMP(start), CLAMP(start + FIN), CLAMP(end - FIN), CLAMP(end)); oVals.push(0, 1, 1, 0);
+    yStops.push(CLAMP(start), CLAMP(start + FIN), CLAMP(end - FIN), CLAMP(end)); yVals.push(72, 0, 0, -72);
+    gStops.push(CLAMP(start + 0.01), CLAMP(start + FIN + 0.01), CLAMP(end - FIN - 0.01), CLAMP(end - 0.01)); gVals.push(0, 1, 1, 0);
+    bStops.push(CLAMP(start), CLAMP(start + FIN), CLAMP(end - FIN), CLAMP(end)); bVals.push(7, 0, 0, 7);
   }
 
   const opacity = useTransform(progress, oStops, oVals);
   const y = useTransform(progress, yStops, yVals);
   const ghostOpacity = useTransform(progress, gStops, gVals);
   const ghostX = useTransform(progress, [Math.max(0, start), Math.min(1, end)], [drift, -drift]);
+  const actBlur = useTransform(progress, bStops, bVals);
+  const filter = useMotionTemplate`blur(${actBlur}px) blur(${flingBlur}px)`;
 
   const cap = CAPABILITIES.find((c) => c.category === act.key);
 
   return (
     <motion.div
-      style={{ opacity, y, pointerEvents: active && !closing ? 'auto' : 'none' }}
-      className="absolute inset-0 flex items-center"
+      style={{ opacity, y, filter, pointerEvents: active && !closing ? 'auto' : 'none' }}
+      className="absolute inset-0 flex items-center will-change-transform"
     >
       {/* ghost word — the act's quiet backdrop signature */}
       <motion.div
@@ -380,22 +404,48 @@ export const Capabilities: React.FC = () => {
    */
   const jsProgress = useTransform(scrollYProgress, (v: number) => v);
 
+  /*
+   * Depth-of-field on fling: when the visitor flicks through the runway,
+   * the stage softens (velocity → blur, spring-smoothed) instead of
+   * hard-snapping between acts. Slow, deliberate scrolls stay tack sharp —
+   * the blur is a consequence of speed, never a constant haze.
+   */
+  const scrollVelocity = useVelocity(scrollYProgress);
+  const flingBlurRaw = useTransform(
+    scrollVelocity,
+    [-1.4, -0.16, 0, 0.16, 1.4],
+    [10, 0, 0, 0, 10],
+    { clamp: true },
+  );
+  const flingBlur = useSpring(flingBlurRaw, { stiffness: 130, damping: 28, mass: 0.55 });
+
   const [activeAct, setActiveAct] = useState(0);
   const [closing, setClosing] = useState(false);
+  const [focusPulled, setFocusPulled] = useState(false);
   const activeRef = useRef(0);
   const closingRef = useRef(false);
+  const focusRef = useRef(false);
 
   useMotionValueEvent(scrollYProgress, 'change', (v) => {
     const a = Math.min(N_ACTS - 1, Math.max(0, Math.floor(v * N_ACTS)));
     const c = v > 0.9;
+    // the lab HUD: a seam is "pulling focus" while the rack dip runs
+    const d = Math.min(Math.abs(v - 1 / N_ACTS), Math.abs(v - 2 / N_ACTS));
+    const f = v > 0.02 && v < 0.95 && d < 0.035;
     if (a !== activeRef.current) { activeRef.current = a; setActiveAct(a); }
     if (c !== closingRef.current) { closingRef.current = c; setClosing(c); }
+    if (f !== focusRef.current) { focusRef.current = f; setFocusPulled(f); }
   });
 
   const closingDim = useTransform(jsProgress, [0.88, 0.97], [1, 0.12]);
   const closingOpacity = useTransform(jsProgress, [0.9, 0.975], [0, 1]);
   const closingY = useTransform(jsProgress, [0.9, 0.975], [28, 0]);
   const railFill = useTransform(jsProgress, [0.03, 0.9], [0, 1]);
+
+  /* Graceful release: instead of a hard unpin, the stage eases back a
+     touch in the last stretch of the runway — depth cue, then drift out. */
+  const releaseY = useTransform(jsProgress, [0.965, 1], [0, 30]);
+  const releaseScale = useTransform(jsProgress, [0.965, 1], [1, 0.975]);
 
   /* Reduced motion: the same story, stacked statically — no pin, no scroll driving. */
   if (reduced) {
@@ -416,14 +466,40 @@ export const Capabilities: React.FC = () => {
       <StoryHeader navigate={navigate} />
 
       {/* story runway — the pin lives here; no overflow-hidden ancestors.
-          Long runway = slow, breathing scroll pace (premium feel). */}
-      <div ref={runwayRef} className="relative" style={{ height: '420vh' }}>
-        <div className="sticky top-0 h-screen supports-[height:100svh]:h-[100svh] overflow-hidden flex items-center">
+          480vh + long hold plateaus = one deliberate beat per scroll gesture. */}
+      <div ref={runwayRef} className="relative" style={{ height: '480vh' }}>
+        <motion.div
+          style={{ y: releaseY, scale: releaseScale }}
+          className="sticky top-0 h-screen supports-[height:100svh]:h-[100svh] overflow-hidden flex items-center"
+        >
           {/* ambient field — lives INSIDE the stage clip, not an ancestor of it */}
           <div className="absolute inset-0 pointer-events-none" aria-hidden>
             <div className="absolute top-[-10%] left-[15%] w-[480px] h-[480px] rounded-full bg-skyz-accent/5 blur-[130px]" />
             <div className="absolute bottom-[-12%] right-[-8%] w-[520px] h-[520px] rounded-full bg-skyz-accent-secondary/5 blur-[150px]" />
             <div className="absolute inset-0 bg-dots-pattern opacity-25" />
+          </div>
+
+          {/* the lab HUD — focus readout, like a camera viewfinder */}
+          <div
+            className="absolute top-4 left-4 md:top-6 md:left-6 z-30 flex items-center gap-2 font-mono text-[9px] md:text-[10px] tracking-[0.25em] text-skyz-text-muted pointer-events-none select-none"
+            aria-hidden
+          >
+            <span
+              className={`w-1.5 h-1.5 rounded-full transition-colors duration-300 ${
+                focusPulled ? 'bg-amber-400 animate-pulse' : 'bg-emerald-500'
+              }`}
+            />
+            <span>{focusPulled ? 'PULLING FOCUS' : 'FOCUS LOCKED'}</span>
+            <span className="hidden sm:inline text-skyz-border">/</span>
+            <span className="hidden sm:inline">F1.4 · ACT 0{activeAct + 1}/03</span>
+          </div>
+
+          {/* viewfinder corner ticks — quiet lab instrument framing (desktop) */}
+          <div className="hidden md:block absolute inset-5 pointer-events-none z-30" aria-hidden>
+            <span className="absolute top-0 left-0 w-5 h-5 border-t border-l border-skyz-text/15" />
+            <span className="absolute top-0 right-0 w-5 h-5 border-t border-r border-skyz-text/15" />
+            <span className="absolute bottom-0 left-0 w-5 h-5 border-b border-l border-skyz-text/15" />
+            <span className="absolute bottom-0 right-0 w-5 h-5 border-b border-r border-skyz-text/15" />
           </div>
 
           {/* mobile progress bar */}
@@ -456,13 +532,14 @@ export const Capabilities: React.FC = () => {
             <span className="font-mono text-[9px] text-skyz-text-muted">03</span>
           </div>
 
-          {/* the three acts, crossfading under scroll control */}
+          {/* the three acts, film-cutting under scroll control */}
           <motion.div style={{ opacity: closingDim }} className="absolute inset-0">
             {ACTS.map((_, i) => (
               <ActLayer
                 key={ACTS[i].key}
                 index={i}
                 progress={jsProgress}
+                flingBlur={flingBlur}
                 active={i === activeAct}
                 closing={closing}
                 reduced={!!reduced}
@@ -494,8 +571,11 @@ export const Capabilities: React.FC = () => {
               </button>
             </div>
           </motion.div>
-        </div>
+        </motion.div>
       </div>
+
+      {/* breathing spacer — the story exhales before the next section arrives */}
+      <div aria-hidden className="h-[16vh] md:h-[22vh]" />
     </section>
   );
 };
