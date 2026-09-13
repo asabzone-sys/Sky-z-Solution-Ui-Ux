@@ -1,6 +1,5 @@
 import React from 'react';
 import { useNavigation, PageType } from '../context/NavigationContext';
-import { useMotionPreference, MotionPreference } from '../context/MotionPreferenceContext';
 
 export const Footer: React.FC = () => {
   const { navigate } = useNavigation();
@@ -51,53 +50,10 @@ export const Footer: React.FC = () => {
           </button>
           <button type="button" onClick={() => handleNav('contact')} className="hover:text-skyz-text transition-colors cursor-pointer">
             Contact
-          </button>
-          <span className="text-skyz-border">•</span>
+          </button>          <span className="text-skyz-border">•</span>
           <span className="text-skyz-accent font-medium">Build • Grow • Automate</span>
-          <MotionToggle />
         </div>
       </div>
     </footer>
-  );
-};
-
-/**
- * Visitor-facing motion preference control. 'Auto' respects the device's
- * Reduce Motion setting — the accessible default. Phones whose system
- * setting (or in-app webview) reports reduce-motion unintentionally can
- * force the full experience here; the choice persists.
- */
-const MotionToggle: React.FC = () => {
-  const { preference, setPreference } = useMotionPreference();
-  const opts: { key: MotionPreference; label: string }[] = [
-    { key: 'off', label: 'Off' },
-    { key: 'auto', label: 'Auto' },
-    { key: 'on', label: 'On' },
-  ];
-  return (
-    <span
-      className="inline-flex items-center gap-2"
-      title="Motion effects: Auto follows your device's Reduce Motion setting"
-    >
-      <span className="text-skyz-border">•</span>
-      <span className="uppercase tracking-widest">Motion</span>
-      <span className="inline-flex rounded-full border border-skyz-border overflow-hidden">
-        {opts.map((o) => (
-          <button
-            key={o.key}
-            type="button"
-            onClick={() => setPreference(o.key)}
-            aria-pressed={preference === o.key}
-            className={`px-2 py-0.5 text-[10px] font-semibold transition-colors cursor-pointer ${
-              preference === o.key
-                ? 'bg-skyz-accent text-white'
-                : 'text-skyz-text-muted hover:text-skyz-text'
-            }`}
-          >
-            {o.label}
-          </button>
-        ))}
-      </span>
-    </span>
   );
 };

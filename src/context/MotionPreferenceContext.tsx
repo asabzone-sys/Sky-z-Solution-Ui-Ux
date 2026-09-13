@@ -13,18 +13,18 @@ interface MotionPreferenceContextType {
 }
 
 const MotionPreferenceContext = createContext<MotionPreferenceContextType>({
-  preference: 'auto',
+  preference: 'on',
   motionEnabled: true,
   setPreference: () => {},
 });
 
 const readStored = (): MotionPreference => {
-  if (typeof window === 'undefined') return 'auto';
+  if (typeof window === 'undefined') return 'on';
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
-    return saved === 'on' || saved === 'off' ? saved : 'auto';
+    return saved === 'off' || saved === 'auto' ? saved : 'on';
   } catch {
-    return 'auto';
+    return 'on';
   }
 };
 
@@ -35,11 +35,11 @@ const readSystem = (): boolean => {
 
 /**
  * Resolves the effective motion flag:
- * - 'auto': follow the OS Reduce Motion setting live (the accessible default)
- * - 'on'  : force motion even if the OS asks for reduce (visitor override —
- *           the marketing-site escape hatch for phones whose system setting
- *           or in-app webview reports reduce-motion unintentionally)
- * - 'off' : force static even if the OS allows motion
+ * - 'on'  (DEFAULT): full motion for every visitor — the cinematic site is
+ *           the product. OS Reduce Motion is deliberately not followed by
+ *           default because many phones/webviews report it unintentionally.
+ * - 'off' : force static (opt-out, persisted if ever set)
+ * - 'auto': follow the OS setting (kept for completeness, not default)
  */
 export const MotionPreferenceProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [preference, setPreferenceState] = useState<MotionPreference>(readStored);
