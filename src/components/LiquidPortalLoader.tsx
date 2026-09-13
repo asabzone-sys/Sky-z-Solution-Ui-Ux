@@ -14,7 +14,7 @@ import { motion, AnimatePresence } from 'motion/react';
  * Premium layer system (all Canvas 2D, GPU-friendly, no new deps):
  *   - drifting aurora fields behind everything
  *   - slow parallax starfield (subtle depth, recedes with the veil)
- *   - 3D-tilted elliptical portal ring (perspective, not a flat circle)
+ *   - circular liquid glass portal ring (face-on, no tilt)
  *   - rotating specular highlight arcs on the ring rim
  *   - inner glass rim + outer soft aura
  *   - motion-blur streak field through the tunnel
@@ -183,7 +183,7 @@ export const LiquidPortalLoader: React.FC<{ onDone: () => void }> = ({ onDone })
         bctx.restore();
       }
 
-      /* ---------- PORTAL — 3D-tilted liquid glass ring ---------- */
+      /* ---------- PORTAL — face-on circular liquid glass ring ---------- */
       if (portal > 0.01) {
         // Zoom far enough to swallow the viewport diagonal, but no more —
         // keeps the tunnel visible through the whole pass-through on mobile.
@@ -192,25 +192,20 @@ export const LiquidPortalLoader: React.FC<{ onDone: () => void }> = ({ onDone })
         const ringW = minDim * (mobile ? 0.075 : 0.085) * (1 + enter * 0.6);
         const ringA = (1 - smooth(3.6, 4.3, t)) * portal;
 
-        // 3D tilt: as the camera approaches, the ring opens from a shallow
-        // ellipse toward face-on — real perspective, not a flat circle.
-        const tilt = (0.62 - enter * 0.5) * (1 - smooth(3.0, 3.6, t) * 0.4); // squash factor
-        const yaw = 0.35 - smooth(2.7, 3.6, t) * 0.35;                        // radians
-        const cosYaw = Math.cos(yaw);
+        // Face-on circular portal (design decision): no 3D tilt — the ring
+        // stays a perfect circle from formation through the pass-through.
 
         bctx.save();
         bctx.translate(cx, cy);
-        bctx.transform(1, 0, cosYaw * tilt * 0.35, tilt, 0, 0);   // x-shear + y-squash = 3D tilt
         bctx.globalCompositeOperation = 'lighter';
 
-        // outer soft aura (drawn in ring space, offset slightly for depth)
-        const aura = bctx.createRadialGradient(0, ringR * 0.06, ringR * 0.55, 0, ringR * 0.06, ringR * 1.6);
+        const aura = bctx.createRadialGradient(0, 0, ringR * 0.55, 0, 0, ringR * 1.6);
         aura.addColorStop(0, `rgba(${CYAN},${0.16 * ringA})`);
         aura.addColorStop(0.6, `rgba(${BLUE},${0.10 * ringA})`);
         aura.addColorStop(1, 'rgba(0,0,0,0)');
         bctx.fillStyle = aura;
         bctx.beginPath();
-        bctx.arc(0, ringR * 0.06, ringR * 1.6, 0, Math.PI * 2);
+        bctx.arc(0, 0, ringR * 1.6, 0, Math.PI * 2);
         bctx.fill();
 
         // depth fill — liquid glass disc behind the rim, brighter near center
