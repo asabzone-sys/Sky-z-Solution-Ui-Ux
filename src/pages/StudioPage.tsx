@@ -177,31 +177,95 @@ const LineReveal: React.FC<{ text: string; delay?: number; accent?: string }> = 
 
 /* ------------------------------------------------------------------ */
 /* Creative World — the marquee belt: continuous horizontal motion     */
+/* Measured rAF loop instead of a CSS % keyframe: the old animation    */
+/* translated -50% of a belt that carries trailing padding, so "half"  */
+/* never equalled one content set — the loop jumped at the seam        */
+/* (most visible on mobile) and its speed drifted with content width.  */
+/* Now one set's width is measured and the offset loops exactly over   */
+/* it, with viewport-tuned speed and an off-screen pause.              */
 /* ------------------------------------------------------------------ */
+const MarqueeSet: React.FC<{ works: StudioWork[]; ariaHidden?: boolean }> = ({ works, ariaHidden }) => (
+  <div className="flex items-center gap-6 sm:gap-10 pr-6 sm:pr-10" aria-hidden={ariaHidden || undefined}>
+    {works.map((w) => (
+      <React.Fragment key={w.id}>
+        <span className="font-display text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight whitespace-nowrap text-skyz-text/90">
+          {w.title}
+        </span>
+        <span
+          className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+          style={{ backgroundColor: w.accent }}
+          aria-hidden
+        />
+      </React.Fragment>
+    ))}
+  </div>
+);
+
 const CreativeMarquee: React.FC = () => {
   const STUDIO_WORKS = useStudioWorks();
-  const belt = [...STUDIO_WORKS, ...STUDIO_WORKS];
+  const sectionRef = useRef<HTMLElement>(null);
+  const setRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const reduced = useReducedMotion();
+  const [speed, setSpeed] = useState(72);   // px per second
+  const pausedRef = useRef(false);
+
+  // viewport-tuned speed (slower on small screens so titles stay readable)
+  useEffect(() => {
+    const f = () => setSpeed(window.innerWidth < 640 ? 44 : 72);
+    f();
+    window.addEventListener('resize', f);
+    return () => window.removeEventListener('resize', f);
+  }, []);
+
+  useEffect(() => {
+    if (reduced) return;   // reduced motion: belt stays static, fully visible
+    let raf = 0;
+    let last: number | null = null;
+    let visible = true;
+    let offset = 0;
+
+    const io = typeof IntersectionObserver !== 'undefined' && sectionRef.current
+      ? new IntersectionObserver(([e]) => { visible = e.isIntersecting; }, { threshold: 0.05 })
+      : null;
+    if (io && sectionRef.current) io.observe(sectionRef.current);
+
+    const frame = (t: number) => {
+      if (last == null) last = t;
+      const dt = Math.min(48, t - last);
+      last = t;
+      const setW = setRef.current?.offsetWidth ?? 0;
+      if (visible && !pausedRef.current && setW > 0 && trackRef.current) {
+        offset = (offset + (speed * dt) / 1000) % setW;   // loop exactly one set
+        trackRef.current.style.transform = `translate3d(${-offset}px, 0, 0)`;
+      }
+      raf = requestAnimationFrame(frame);
+    };
+    raf = requestAnimationFrame(frame);
+    return () => { cancelAnimationFrame(raf); io?.disconnect(); };
+  }, [reduced, speed]);
+
   return (
-    <section className="relative py-12 sm:py-20 overflow-hidden">
+    <section
+      ref={sectionRef}
+      className="relative py-12 sm:py-20 overflow-hidden"
+      onMouseEnter={() => { pausedRef.current = true; }}
+      onMouseLeave={() => { pausedRef.current = false; }}
+    >
       <div className="text-center mb-8 sm:mb-10 px-4">
         <p className="font-mono text-xs uppercase tracking-[0.3em] text-skyz-text-muted">
           The Creative World
         </p>
       </div>
       <div className="relative">
-        <div className="studio-marquee-track flex items-center gap-6 sm:gap-10 w-max pr-6 sm:pr-10">
-          {belt.map((w, i) => (
-            <React.Fragment key={`${w.id}-${i}`}>
-              <span className="font-display text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight whitespace-nowrap text-skyz-text/90">
-                {w.title}
-              </span>
-              <span
-                className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                style={{ backgroundColor: w.accent }}
-                aria-hidden
-              />
-            </React.Fragment>
-          ))}
+        <div
+          ref={trackRef}
+          className="flex w-max will-change-transform"
+        >
+          <div ref={setRef} className="flex w-max">
+            <MarqueeSet works={STUDIO_WORKS} />
+          </div>
+          <MarqueeSet works={STUDIO_WORKS} ariaHidden />
         </div>
         {/* edge fade — keeps the belt airy as it exits the viewport */}
         <div className="absolute inset-y-0 left-0 w-16 sm:w-40 bg-gradient-to-r from-skyz-bg to-transparent pointer-events-none" aria-hidden />

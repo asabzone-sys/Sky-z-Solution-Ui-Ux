@@ -11,6 +11,8 @@ export interface Testimonial {
   initials: string;
   accent: string;
   service: string;
+  /** public URL of the uploaded avatar (falls back to initials) */
+  avatar?: string;
 }
 
 export const TESTIMONIALS: Testimonial[] = [

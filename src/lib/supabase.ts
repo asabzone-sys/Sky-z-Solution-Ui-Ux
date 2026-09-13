@@ -129,6 +129,8 @@ const mapTestimonial = (r: TestimonialRow): Testimonial => ({
   initials: r.initials ?? '',
   accent: r.accent ?? '#3B82F6',
   service: r.service ?? '',
+  // avatar storage path → public URL (dropped previously, so avatars never showed)
+  avatar: mediaUrl(r.avatar_path) || undefined,
 });
 
 /* ------------------------------------------------------------------ */

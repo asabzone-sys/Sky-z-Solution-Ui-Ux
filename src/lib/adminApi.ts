@@ -175,14 +175,24 @@ export const uploadMedia = async (
 ): Promise<UploadResult> => {
   const sb = need();
 
-  // read dimensions
-  const dims = await new Promise<{ width: number; height: number }>((resolve, reject) => {
-    const img = new Image();
-    const objectUrl = URL.createObjectURL(file);
-    img.onload = () => { URL.revokeObjectURL(objectUrl); resolve({ width: img.naturalWidth, height: img.naturalHeight }); };
-    img.onerror = () => { URL.revokeObjectURL(objectUrl); reject(new Error('Not a readable image')); };
-    img.src = objectUrl;
-  });
+  // Read dimensions in-browser via an object URL. This must NEVER reject the
+  // upload: dimension probing is guidance (ratio hints in the admin UI), not
+  // validation. Wrap the Image promise in an inner try/catch so a decoding
+  // failure falls through to the upload instead of aborting it — previously
+  // storage errors surfaced here as the misleading "Not a readable image".
+  let dims = { width: 0, height: 0 };
+  try {
+    dims = await new Promise<{ width: number; height: number }>((resolve, reject) => {
+      const img = new Image();
+      const objectUrl = URL.createObjectURL(file);
+      const cleanup = () => URL.revokeObjectURL(objectUrl);
+      img.onload = () => { cleanup(); resolve({ width: img.naturalWidth, height: img.naturalHeight }); };
+      img.onerror = () => { cleanup(); reject(new Error('Not a readable image'));; };
+      img.src = objectUrl;
+    });
+  } catch {
+    dims = { width: 0, height: 0 };   // dimensions unknown — still upload
+  }
 
   const actualRatio = dims.width / dims.height;
   const ratioOk = Math.abs(actualRatio - spec.ratio) / spec.ratio < 0.05;   // 5% tolerance
@@ -192,7 +202,15 @@ export const uploadMedia = async (
   const path = `${folder}/${Date.now()}-${safeBase}.${ext}`;
 
   const { error } = await sb.storage.from('media').upload(path, file, { upsert: false, cacheControl: '3600' });
-  if (error) throw error;
+  if (error) {
+    // Surface the real storage error with remediation context — 403 RLS
+    // violations were previously swallowed or mislabeled upstream.
+    const msg = error.message || 'Upload failed';
+    const hint = /row-level security|AccessDenied|403/i.test(msg)
+      ? ' — Storage RLS rejected this upload. Run supabase/migrations/20260913000000_storage_policies_fix.sql, sign out and back in, then retry.'
+      : '';
+    throw new Error(`${msg}${hint}`);
+  }
 
   return { path, width: dims.width, height: dims.height, ratioOk };
 };

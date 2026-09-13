@@ -210,12 +210,20 @@ export const Testimonials: React.FC = () => {
                   </blockquote>
 
                   <figcaption className="mt-10 flex items-center justify-center gap-4">
-                    <span
-                      className="w-11 h-11 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0 shadow-md"
-                      style={{ backgroundColor: t.accent }}
-                    >
-                      {t.initials}
-                    </span>
+                    {t.avatar ? (
+                      <img
+                        src={t.avatar}
+                        alt={t.name}
+                        className="w-11 h-11 rounded-full object-cover flex-shrink-0 shadow-md border border-skyz-border"
+                      />
+                    ) : (
+                      <span
+                        className="w-11 h-11 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0 shadow-md"
+                        style={{ backgroundColor: t.accent }}
+                      >
+                        {t.initials}
+                      </span>
+                    )}
                     <span className="text-left">
                       <span className="block font-display font-bold text-skyz-text text-sm sm:text-base">{t.name}</span>
                       <span className="block text-xs sm:text-sm text-skyz-text-muted">{t.role}</span>

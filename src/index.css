@@ -169,17 +169,6 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
-/* Studio — editorial marquee belt */
-@keyframes studioMarquee {
-  from { transform: translate3d(0, 0, 0); }
-  to { transform: translate3d(-50%, 0, 0); }
-}
-.studio-marquee-track {
-  animation: studioMarquee 32s linear infinite;
-  will-change: transform;
-}
-@media (prefers-reduced-motion: reduce) {
-  .studio-marquee-track {
-    animation: none;
-  }
-}
+/* Studio — editorial marquee belt is driven by a measured rAF loop in
+   StudioPage.tsx (exact one-set looping + viewport-tuned speed), so no CSS
+   keyframes are needed here anymore. */

@@ -1,285 +1,562 @@
-import React from 'react';
-import { motion } from 'motion/react';
-import { Laptop, Bot, TrendingUp, ArrowRight, Code, Activity, Database, RefreshCw, Cloud } from 'lucide-react';
+import React, { useRef, useState } from 'react';
+import {
+  motion,
+  useScroll,
+  useTransform,
+  useMotionValueEvent,
+  useReducedMotion,
+  MotionValue,
+} from 'motion/react';
+import {
+  Laptop,
+  TrendingUp,
+  Bot,
+  ArrowRight,
+  Code,
+  Activity,
+  Database,
+  RefreshCw,
+  Cloud,
+} from 'lucide-react';
 import { CAPABILITIES } from '../data/content';
 import { useNavigation } from '../context/NavigationContext';
-import { Reveal, SectionShell, Blob, Eyebrow } from '../components/OpalKit';
+import { Eyebrow } from '../components/OpalKit';
 
-export const Capabilities: React.FC = () => {
-  const { navigate } = useNavigation();
-  const buildCap = CAPABILITIES.find((c) => c.category === 'BUILD')!;
-  const growCap = CAPABILITIES.find((c) => c.category === 'GROW')!;
-  const automateCap = CAPABILITIES.find((c) => c.category === 'AUTOMATE')!;
+/**
+ * Capabilities — "Build. Grow. Automate." as a scroll-driven story.
+ *
+ * The section pins to the viewport and vertical scroll walks the visitor
+ * through three acts — BUILD the foundation, GROW the reach, AUTOMATE the
+ * operation — each with its own living motion widget, giant ghost word, and
+ * a progress rail. One connected system, told as one continuous scene.
+ *
+ * Motion discipline (same as the rest of the site): transform/opacity only,
+ * springs for state changes, prefers-reduced-motion falls back to a static
+ * stacked story. The sticky stage has NO overflow-hidden ancestor (the pin
+ * rule from StudioPage) — the stage carries its own overflow clip.
+ */
 
-  const cardBase =
-    'rounded-[2rem] bg-skyz-bg border border-skyz-border p-6 sm:p-8 relative overflow-hidden group hover:shadow-xl transition-all duration-300 flex flex-col justify-between';
+const EASE = [0.16, 1, 0.3, 1] as const;
+const N_ACTS = 3;
 
+type ActDef = {
+  key: 'BUILD' | 'GROW' | 'AUTOMATE';
+  label: string;
+  title: string;
+  story: string;
+  Widget: React.FC<{ on: boolean }>;
+};
+
+const ACTS: ActDef[] = [
+  {
+    key: 'BUILD',
+    label: '01 // BUILD',
+    title: 'First, we build the foundation.',
+    story: 'Every system starts as architecture — resilient, fast, and accessible from the first wireframe to the last deploy.',
+    Widget: BuildWidget,
+  },
+  {
+    key: 'GROW',
+    label: '02 // GROW',
+    title: 'Then, we make it impossible to miss.',
+    story: 'Search, campaigns, and brand creative compound on top of that foundation — reach that keeps working after we stop pushing.',
+    Widget: GrowWidget,
+  },
+  {
+    key: 'AUTOMATE',
+    label: '03 // AUTOMATE',
+    title: 'Finally, it runs itself.',
+    story: 'AI agents and integrations take over the repetitive work, so the system keeps producing while your team sleeps.',
+    Widget: AutomateWidget,
+  },
+];
+
+/* ------------------------------------------------------------------ */
+/* Act widgets — living motion graphics, transform/opacity only         */
+/* ------------------------------------------------------------------ */
+
+/** BUILD — a browser skeleton assembling itself while the pipeline pulses. */
+function BuildWidget({ on }: { on: boolean }) {
+  const blocks = [
+    'col-span-2 h-14',
+    'col-span-1 h-14',
+    'col-span-1 h-10',
+    'col-span-2 h-10',
+  ];
   return (
-    <SectionShell id="services">
-      <div className="bg-skyz-surface border border-skyz-border rounded-[inherit] px-5 sm:px-12 py-16 sm:py-24 relative overflow-hidden">
-        <Blob className="w-[360px] h-[330px] -top-24 left-1/3 opacity-60" color="rgba(124, 58, 237, 0.06)" duration={13} />
+    <div className="relative rounded-[2rem] border border-skyz-border bg-skyz-bg p-4 sm:p-7 overflow-hidden w-full max-w-md mx-auto">
+      <div className="rounded-2xl border border-skyz-border bg-skyz-surface overflow-hidden shadow-sm">
+        {/* browser chrome */}
+        <div className="flex items-center gap-1.5 px-4 py-3 border-b border-skyz-border">
+          <span className="w-2 h-2 rounded-full bg-skyz-border" />
+          <span className="w-2 h-2 rounded-full bg-skyz-border" />
+          <span className="w-2 h-2 rounded-full bg-skyz-border" />
+          <span className="ml-3 h-5 flex-1 max-w-[160px] rounded-full bg-skyz-surface-subtle border border-skyz-border flex items-center px-3">
+            <span className="text-[9px] font-mono text-skyz-text-muted">skyz.dev</span>
+          </span>
+        </div>
+        {/* skeleton blocks assembling */}
+        <div className="p-4 sm:p-5 grid grid-cols-3 gap-2.5 sm:gap-3">
+          {blocks.map((cls, i) => (
+            <motion.div
+              key={i}
+              className={`rounded-xl bg-skyz-surface-subtle border border-skyz-border ${cls}`}
+              initial={false}
+              animate={on ? { opacity: [0.35, 1, 0.35], scale: [0.97, 1, 0.97] } : { opacity: 0.85 }}
+              transition={on ? { duration: 3.2, repeat: Infinity, delay: i * 0.45, ease: 'easeInOut' } : undefined}
+            />
+          ))}
+        </div>
+      </div>
+      {/* pipeline pulse — a dot traveling the delivery line */}
+      <div className="mt-5 relative">
+        <div className="h-px bg-skyz-border relative overflow-hidden" aria-hidden>
+          <motion.div
+            className="absolute inset-0 flex items-center"
+            initial={false}
+            animate={on ? { x: ['-100%', '100%'] } : { x: '40%' }}
+            transition={on ? { duration: 2.4, repeat: Infinity, ease: 'easeInOut' } : undefined}
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-skyz-accent shadow-[0_0_10px_rgba(124,58,237,0.8)]" />
+          </motion.div>
+        </div>
+        <div className="mt-2.5 flex items-center justify-between font-mono text-[9px] sm:text-[10px] text-skyz-text-muted tracking-widest">
+          <span className="flex items-center gap-1.5"><Code className="w-3 h-3 text-skyz-accent" /> ARCHITECT</span>
+          <span className="flex items-center gap-1.5"><Laptop className="w-3 h-3 text-skyz-accent" /> ENGINEER</span>
+          <span className="flex items-center gap-1.5"><ArrowRight className="w-3 h-3 text-emerald-500" /> DEPLOY</span>
+        </div>
+      </div>
+    </div>
+  );
+}
 
-        <div className="relative z-10 max-w-7xl mx-auto">
-          {/* Section Header */}
-          <Reveal>
-            <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 sm:mb-14 gap-6">
-              <div className="max-w-2xl space-y-4">
-                <Eyebrow>Core Capabilities</Eyebrow>
-                <h2 className="font-display text-3xl sm:text-5xl text-skyz-text tracking-tight font-bold">
-                  Build. Grow. Automate.
-                </h2>
-                <p className="text-base sm:text-lg text-skyz-text-muted leading-relaxed">
-                  Three pillars, one connected system — resilient products, market reach, and autonomous workflows.
-                </p>
-              </div>
+/** GROW — radar rings + audience nodes lighting up + compounding bars. */
+function GrowWidget({ on }: { on: boolean }) {
+  const nodes = [
+    { top: '8%', left: '18%' }, { top: '14%', right: '16%' },
+    { top: '42%', left: '4%' }, { top: '46%', right: '4%' },
+    { bottom: '10%', left: '26%' }, { bottom: '6%', right: '28%' },
+  ];
+  return (
+    <div className="relative rounded-[2rem] border border-skyz-border bg-skyz-bg p-4 sm:p-7 overflow-hidden w-full max-w-md mx-auto">
+      {/* radar */}
+      <div className="relative h-36 sm:h-44" aria-hidden>
+        {[0, 1, 2].map((i) => (
+          <motion.span
+            key={i}
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 sm:w-28 sm:h-28 rounded-full border border-skyz-accent/40"
+            initial={false}
+            animate={on ? { scale: [0.35, 1.6], opacity: [0.55, 0] } : { scale: 0.8 + i * 0.35, opacity: 0.25 }}
+            transition={on ? { duration: 2.8, repeat: Infinity, delay: i * 0.9, ease: 'easeOut' } : undefined}
+          />
+        ))}
+        <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-skyz-accent shadow-[0_0_14px_rgba(124,58,237,0.7)]" />
+        {nodes.map((pos, i) => (
+          <motion.span
+            key={i}
+            className="absolute w-1.5 h-1.5 rounded-full"
+            style={{ ...pos, backgroundColor: i % 2 ? 'var(--accent-secondary)' : 'var(--accent)' }}
+            initial={false}
+            animate={on ? { opacity: [0.15, 1, 0.15], scale: [0.8, 1.25, 0.8] } : { opacity: 0.6 }}
+            transition={on ? { duration: 2.2, repeat: Infinity, delay: i * 0.35, ease: 'easeInOut' } : undefined}
+          />
+        ))}
+      </div>
+      {/* compounding bars */}
+      <div className="mt-4 flex items-end justify-center gap-2 sm:gap-2.5 h-14 sm:h-16" aria-hidden>
+        {[0.45, 0.65, 0.8, 1].map((h, i) => (
+          <motion.div
+            key={i}
+            className="w-5 sm:w-7 rounded-t-lg bg-gradient-to-t from-skyz-accent/25 to-skyz-accent origin-bottom"
+            style={{ height: `${h * 100}%` }}
+            initial={false}
+            animate={on ? { scaleY: [0.35, 1, 0.35] } : { scaleY: 1 }}
+            transition={on ? { duration: 2.6, repeat: Infinity, delay: i * 0.3, ease: 'easeInOut' } : undefined}
+          />
+        ))}
+      </div>
+      <div className="mt-3 flex items-center justify-center gap-2 font-mono text-[9px] sm:text-[10px] text-skyz-text-muted tracking-widest">
+        <Activity className="w-3 h-3 text-skyz-accent" /> ORGANIC REACH — COMPOUNDING
+      </div>
+    </div>
+  );
+}
 
-              <button
-                type="button"
-                onClick={() => navigate('services')}
-                className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-skyz-text hover:text-skyz-accent transition-colors self-start md:self-auto cursor-pointer"
+/** AUTOMATE — an orbit of integrations around a working core. */
+function AutomateWidget({ on }: { on: boolean }) {
+  const orbitNodes = [
+    { pos: 'left-1/2 top-0 -translate-x-1/2 -translate-y-1/2', icon: <Database className="w-3.5 h-3.5" /> },
+    { pos: 'right-0 top-1/2 translate-x-1/2 -translate-y-1/2', icon: <Cloud className="w-3.5 h-3.5" /> },
+    { pos: 'left-0 top-1/2 -translate-x-1/2 -translate-y-1/2', icon: <Activity className="w-3.5 h-3.5" /> },
+  ];
+  return (
+    <div className="relative rounded-[2rem] border border-skyz-border bg-skyz-bg p-4 sm:p-7 overflow-hidden w-full max-w-md mx-auto">
+      <div className="relative h-40 sm:h-48" aria-hidden>
+        {/* dashed orbit ring */}
+        <div className="absolute inset-5 sm:inset-7 rounded-full border border-dashed border-skyz-border" />
+        {/* rotating orbit with upright nodes */}
+        <motion.div
+          className="absolute inset-5 sm:inset-7"
+          initial={false}
+          animate={on ? { rotate: 360 } : undefined}
+          transition={on ? { duration: 16, repeat: Infinity, ease: 'linear' } : undefined}
+        >
+          {orbitNodes.map((n, i) => (
+            <span key={i} className={`absolute ${n.pos}`}>
+              <motion.span
+                className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-skyz-surface border border-skyz-border shadow-sm flex items-center justify-center text-skyz-accent"
+                initial={false}
+                animate={on ? { rotate: -360 } : undefined}
+                transition={on ? { duration: 16, repeat: Infinity, ease: 'linear' } : undefined}
               >
-                <span>Explore All Services</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
-          </Reveal>
-
-          {/* 3-Pillar Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-7">
-            {/* Card 1: BUILD */}
-            <Reveal className="h-full">
-              <div className={`${cardBase} h-full`}>
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="w-12 h-12 rounded-2xl bg-skyz-surface-subtle shadow-sm flex items-center justify-center border border-skyz-border group-hover:scale-105 transition-transform">
-                      <Laptop className="w-6 h-6 text-skyz-accent" />
-                    </div>
-                    <span className="text-[11px] font-mono px-3 py-1 rounded-full bg-skyz-surface-subtle border border-skyz-border text-skyz-text-muted font-bold tracking-wider">
-                      01 // BUILD
-                    </span>
-                  </div>
-                  <h3 className="font-display text-xl sm:text-2xl text-skyz-text font-bold">
-                    {buildCap.title}
-                  </h3>
-                  <p className="text-sm sm:text-base text-skyz-text-muted mt-2">
-                    {buildCap.description}
-                  </p>
-                </div>
-
-                {/* Interactive Visual Widget */}
-                <div className="my-6 p-3 sm:p-4 rounded-2xl bg-skyz-surface-subtle shadow-sm border border-skyz-border">
-                  <div className="flex items-center justify-between relative overflow-hidden">
-                    <div className="flex flex-col items-center gap-1 z-10 flex-shrink-0">
-                      <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-skyz-surface border border-skyz-border flex items-center justify-center text-skyz-text font-semibold text-[11px] sm:text-xs shadow-sm">
-                        <span className="w-1.5 h-1.5 rounded-full bg-skyz-accent absolute top-1 right-1 animate-pulse" />
-                        UI/UX
-                      </div>
-                      <span className="text-[10px] sm:text-[11px] text-skyz-text-muted whitespace-nowrap">Architecture</span>
-                    </div>
-
-                    <div className="flex-1 h-1.5 sm:h-2 bg-skyz-border mx-1.5 sm:mx-2.5 relative rounded-full overflow-hidden">
-                      <motion.div
-                        className="absolute top-0 bottom-0 w-8 sm:w-12 bg-gradient-to-r from-transparent via-skyz-accent to-skyz-accent-secondary rounded-full shadow-[0_0_8px_rgba(124,58,237,0.7)]"
-                        animate={{ x: ['-100%', '300%'] }}
-                        transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
-                      />
-                    </div>
-
-                    <div className="flex flex-col items-center gap-1 z-10 flex-shrink-0">
-                      <div className="relative w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-skyz-text dark:bg-skyz-accent text-skyz-bg dark:text-[#080B10] flex items-center justify-center shadow-md">
-                        <Code className="w-4 h-4 sm:w-5 sm:h-5" />
-                      </div>
-                      <span className="text-[10px] sm:text-[11px] text-skyz-text dark:text-skyz-accent font-bold whitespace-nowrap">Engineering</span>
-                    </div>
-
-                    <div className="flex-1 h-1.5 sm:h-2 bg-skyz-border mx-1.5 sm:mx-2.5 relative rounded-full overflow-hidden">
-                      <motion.div
-                        className="absolute top-0 bottom-0 w-8 sm:w-12 bg-gradient-to-r from-transparent via-skyz-accent-secondary to-skyz-accent rounded-full shadow-[0_0_8px_rgba(96,165,250,0.7)]"
-                        animate={{ x: ['-100%', '300%'] }}
-                        transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut', delay: 0.9 }}
-                      />
-                    </div>
-
-                    <div className="flex flex-col items-center gap-1 z-10 flex-shrink-0">
-                      <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-skyz-surface border border-skyz-border flex items-center justify-center text-skyz-accent font-semibold text-[11px] sm:text-xs shadow-sm">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 absolute top-1 right-1 animate-pulse" />
-                        PROD
-                      </div>
-                      <span className="text-[10px] sm:text-[11px] text-skyz-text-muted whitespace-nowrap">Deployment</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Services List */}
-                <div className="pt-4 border-t border-skyz-border">
-                  <div className="flex flex-wrap gap-1.5 mb-3">
-                    {buildCap.services.map((service) => (
-                      <span key={service} className="text-xs px-2.5 py-1 rounded-full bg-skyz-surface-subtle text-skyz-text border border-skyz-border">
-                        {service}
-                      </span>
-                    ))}
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => navigate('contact', { serviceCategory: 'BUILD' })}
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-skyz-text hover:text-skyz-accent cursor-pointer"
-                  >
-                    <span>Inquire about Build services</span>
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                  </button>
-                </div>
-              </div>
-            </Reveal>
-
-            {/* Card 2: GROW */}
-            <Reveal delay={0.07} className="h-full">
-              <div className={`${cardBase} h-full`}>
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="w-12 h-12 rounded-2xl bg-skyz-surface-subtle shadow-sm flex items-center justify-center border border-skyz-border group-hover:scale-105 transition-transform">
-                      <TrendingUp className="w-6 h-6 text-skyz-accent" />
-                    </div>
-                    <span className="text-[11px] font-mono px-3 py-1 rounded-full bg-skyz-surface-subtle border border-skyz-border text-skyz-text-muted font-bold tracking-wider">
-                      02 // GROW
-                    </span>
-                  </div>
-                  <h3 className="font-display text-xl sm:text-2xl text-skyz-text font-bold">
-                    {growCap.title}
-                  </h3>
-                  <p className="text-sm sm:text-base text-skyz-text-muted mt-2">
-                    {growCap.description}
-                  </p>
-                </div>
-
-                {/* Growth Architecture Widget */}
-                <div className="my-6 p-4 rounded-2xl bg-skyz-surface-subtle shadow-sm flex items-center justify-center gap-4 border border-skyz-border">
-                  <div className="w-36 h-28 rounded-2xl bg-skyz-bg p-3 flex flex-col justify-between border border-skyz-border">
-                    <div className="flex items-center justify-between text-[10px] text-skyz-text-muted font-mono">
-                      <span>SEARCH AUDIT</span>
-                      <span className="text-skyz-accent font-bold">100%</span>
-                    </div>
-                    <div className="space-y-1.5">
-                      <div className="h-2 rounded-full bg-skyz-border w-full" />
-                      <div className="h-2 rounded-full bg-skyz-accent/40 w-3/4" />
-                      <div className="h-2 rounded-full bg-skyz-accent w-5/6" />
-                    </div>
-                    <div className="text-[10px] text-skyz-text-muted font-mono">Core Web Vitals</div>
-                  </div>
-                  <div className="w-36 h-28 rounded-2xl bg-skyz-text dark:bg-[#1E293B] text-skyz-bg dark:text-white p-3 flex flex-col justify-between shadow-md group-hover:scale-105 transition-transform">
-                    <span className="text-[11px] font-semibold text-skyz-bg/90 dark:text-white/90">Organic Growth</span>
-                    <div className="flex items-center justify-center my-auto text-skyz-accent">
-                      <Activity className="w-6 h-6" />
-                    </div>
-                    <span className="text-[10px] text-center text-skyz-bg/70 dark:text-white/70">Audience Discovery</span>
-                  </div>
-                </div>
-
-                {/* Services List */}
-                <div className="pt-4 border-t border-skyz-border">
-                  <div className="flex flex-wrap gap-1.5 mb-3">
-                    {growCap.services.map((service) => (
-                      <span key={service} className="text-xs px-2.5 py-1 rounded-full bg-skyz-surface-subtle text-skyz-text border border-skyz-border">
-                        {service}
-                      </span>
-                    ))}
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => navigate('contact', { serviceCategory: 'GROW' })}
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-skyz-text hover:text-skyz-accent cursor-pointer"
-                  >
-                    <span>Inquire about Grow services</span>
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                  </button>
-                </div>
-              </div>
-            </Reveal>
-
-            {/* Card 3: AUTOMATE — full width */}
-            <Reveal delay={0.1} className="lg:col-span-2">
-              <div className={cardBase}>
-                <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6 mb-6">
-                  <div>
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="w-12 h-12 rounded-2xl bg-skyz-surface-subtle shadow-sm flex items-center justify-center border border-skyz-border group-hover:scale-105 transition-transform">
-                        <Bot className="w-6 h-6 text-skyz-accent" />
-                      </div>
-                      <span className="text-[11px] font-mono px-3 py-1 rounded-full bg-skyz-surface-subtle border border-skyz-border text-skyz-text-muted font-bold tracking-wider">
-                        03 // AUTOMATE
-                      </span>
-                    </div>
-                    <h3 className="font-display text-2xl sm:text-3xl text-skyz-text font-bold">
-                      {automateCap.title}
-                    </h3>
-                    <p className="text-sm sm:text-base text-skyz-text-muted mt-2 max-w-2xl">
-                      {automateCap.description}
-                    </p>
-                  </div>
-
-                  <div className="flex-shrink-0">
-                    <button
-                      type="button"
-                      onClick={() => navigate('contact', { serviceCategory: 'AUTOMATE' })}
-                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#080B10] text-xs sm:text-sm font-semibold hover:bg-skyz-accent dark:hover:bg-skyz-accent-secondary transition-all cursor-pointer"
-                    >
-                      <span>Scope Automation</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Interactive API Integrations Module */}
-                <div className="my-6 p-4 sm:p-5 rounded-2xl bg-skyz-surface-subtle shadow-sm flex items-center justify-around border border-skyz-border">
-                  <div className="flex items-center gap-2 sm:gap-6 w-full max-w-2xl justify-around">
-                    <div className="flex flex-col items-center">
-                      <div className="w-9 h-9 rounded-xl bg-skyz-bg border border-skyz-border flex items-center justify-center text-skyz-text shadow-sm">
-                        <Database className="w-4 h-4 text-skyz-accent" />
-                      </div>
-                      <span className="text-[10px] text-skyz-text-muted mt-1 font-medium">CRM / DB</span>
-                    </div>
-                    <div className="flex-1 max-w-[80px] h-0.5 bg-skyz-border relative">
-                      <div className="w-2 h-2 rounded-full bg-skyz-accent absolute -top-[3px] animate-ping" />
-                    </div>
-                    <div className="flex flex-col items-center">
-                      <div className="w-10 h-10 rounded-xl bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#080B10] flex items-center justify-center shadow-md">
-                        <RefreshCw className="w-4 h-4" />
-                      </div>
-                      <span className="text-[10px] text-skyz-text dark:text-skyz-accent font-bold mt-1">API Workflow</span>
-                    </div>
-                    <div className="flex-1 max-w-[80px] h-0.5 bg-skyz-border relative">
-                      <div className="w-2 h-2 rounded-full bg-skyz-accent-secondary absolute -top-[3px] animate-ping" style={{ animationDelay: '0.8s' }} />
-                    </div>
-                    <div className="flex flex-col items-center">
-                      <div className="w-9 h-9 rounded-xl bg-skyz-bg border border-skyz-border flex items-center justify-center text-skyz-text shadow-sm">
-                        <Cloud className="w-4 h-4 text-skyz-accent" />
-                      </div>
-                      <span className="text-[10px] text-skyz-text-muted mt-1 font-medium">Cloud Webhooks</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Automate Services List */}
-                <div className="pt-4 border-t border-skyz-border flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  <div className="flex flex-wrap gap-1.5">
-                    {automateCap.services.map((service) => (
-                      <span key={service} className="text-xs px-2.5 py-1 rounded-full bg-skyz-surface-subtle text-skyz-text border border-skyz-border">
-                        {service}
-                      </span>
-                    ))}
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => navigate('services', { serviceCategory: 'AUTOMATE' })}
-                    className="text-xs font-semibold text-skyz-accent hover:underline whitespace-nowrap cursor-pointer"
-                  >
-                    Explore all automation specs →
-                  </button>
-                </div>
-              </div>
-            </Reveal>
+                {n.icon}
+              </motion.span>
+            </span>
+          ))}
+        </motion.div>
+        {/* the core — always working */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#080B10] flex items-center justify-center shadow-lg">
+            <motion.span
+              initial={false}
+              animate={on ? { rotate: 360 } : undefined}
+              transition={on ? { duration: 7, repeat: Infinity, ease: 'linear' } : undefined}
+            >
+              <RefreshCw className="w-5 h-5 sm:w-6 sm:h-6" />
+            </motion.span>
           </div>
         </div>
       </div>
-    </SectionShell>
+      <div className="mt-3 flex items-center justify-center gap-2 font-mono text-[9px] sm:text-[10px] text-skyz-text-muted tracking-widest">
+        <Bot className="w-3 h-3 text-skyz-accent" /> CRM · API · WEBHOOKS — ALWAYS ON
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* ActLayer — scroll-windowed crossfade for one act                     */
+/* ------------------------------------------------------------------ */
+
+const ActLayer: React.FC<{
+  index: number;
+  progress: MotionValue<number>;   // JS-driven progress (never accelerated)
+  active: boolean;
+  closing: boolean;
+  reduced: boolean;
+}> = ({ index, progress, active, closing, reduced }) => {
+  const act = ACTS[index];
+  const { navigate } = useNavigation();
+  const start = index / N_ACTS;
+  const end = (index + 1) / N_ACTS;
+  const drift = index % 2 === 0 ? -40 : 40;
+
+  /*
+   * Input ranges MUST stay within [0, 1]: Motion's accelerated scroll path
+   * (useScroll + native scroll-timeline) passes the input range straight
+   * through as WAAPI keyframe offsets, and the browser rejects offsets
+   * outside [0, 1] or non-monotonic ones. Edge acts are clamped/tailored:
+   * act 0 starts settled (visible at p=0), act 2 never fades out (the
+   * closing beat overlays it at the end of the runway).
+   *
+   * Pacing: wide fade windows (FIN/FOUT) + the long runway below give each
+   * act a long settle before the next dissolve — slow, premium rhythm.
+   */
+  const FIN = 0.1;    // scroll-fraction to fully dissolve an act in
+  const FOUT = 0.1;   // scroll-fraction to fully dissolve an act out
+  const oStops: number[] = [];
+  const oVals: number[] = [];
+  const yStops: number[] = [];
+  const yVals: number[] = [];
+  const gStops: number[] = [];
+  const gVals: number[] = [];
+  if (index === 0) {
+    oStops.push(0, end - 0.02, Math.min(1, end + FOUT)); oVals.push(1, 1, 0);
+    yStops.push(0, end - 0.03, Math.min(1, end + FOUT)); yVals.push(0, 0, -64);
+    gStops.push(0, end - 0.03, Math.min(1, end + FOUT - 0.01)); gVals.push(1, 1, 0);
+  } else if (index === N_ACTS - 1) {
+    oStops.push(Math.max(0, start - FIN), start + 0.02, 1); oVals.push(0, 1, 1);
+    yStops.push(Math.max(0, start - FIN), start + 0.03, 1); yVals.push(64, 0, 0);
+    gStops.push(Math.max(0, start - FIN + 0.01), start + 0.03, 1); gVals.push(0, 1, 1);
+  } else {
+    oStops.push(Math.max(0, start - FIN), start + 0.02, end - 0.02, Math.min(1, end + FOUT)); oVals.push(0, 1, 1, 0);
+    yStops.push(Math.max(0, start - FIN), start + 0.03, end - 0.03, Math.min(1, end + FOUT)); yVals.push(64, 0, 0, -64);
+    gStops.push(Math.max(0, start - FIN + 0.01), start + 0.03, end - 0.03, Math.min(1, end + FOUT - 0.01)); gVals.push(0, 1, 1, 0);
+  }
+
+  const opacity = useTransform(progress, oStops, oVals);
+  const y = useTransform(progress, yStops, yVals);
+  const ghostOpacity = useTransform(progress, gStops, gVals);
+  const ghostX = useTransform(progress, [Math.max(0, start), Math.min(1, end)], [drift, -drift]);
+
+  const cap = CAPABILITIES.find((c) => c.category === act.key);
+
+  return (
+    <motion.div
+      style={{ opacity, y, pointerEvents: active && !closing ? 'auto' : 'none' }}
+      className="absolute inset-0 flex items-center"
+    >
+      {/* ghost word — the act's quiet backdrop signature */}
+      <motion.div
+        aria-hidden
+        style={{ opacity: reduced ? 0.05 : ghostOpacity, x: reduced ? 0 : ghostX }}
+        className="absolute inset-0 flex items-center justify-center pointer-events-none select-none"
+      >
+        <span
+          className="font-display font-black tracking-tight text-skyz-text"
+          style={{ fontSize: 'clamp(5rem, 20vw, 18rem)', color: 'currentColor', opacity: 0.045 }}
+        >
+          {act.key}
+        </span>
+      </motion.div>
+
+      <div className="relative z-10 max-w-6xl mx-auto w-full px-5 sm:px-8 grid md:grid-cols-2 gap-8 md:gap-14 items-center">
+        {/* story column */}
+        <div className="text-center md:text-left">
+          <div className="flex items-center justify-center md:justify-start gap-3 mb-4">
+            <span className="w-2 h-2 rounded-full bg-skyz-accent animate-pulse" />
+            <span className="font-mono text-[10px] sm:text-xs tracking-[0.3em] text-skyz-accent font-bold">
+              {act.label}
+            </span>
+          </div>
+          <h3 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-skyz-text leading-[1.05]">
+            {act.title}
+          </h3>
+          <p className="mt-4 sm:mt-5 text-sm sm:text-lg text-skyz-text-muted leading-relaxed max-w-lg mx-auto md:mx-0">
+            {act.story}
+          </p>
+
+          {/* services chips — same content contract as before */}
+          <div className="mt-5 sm:mt-6 flex flex-wrap justify-center md:justify-start gap-1.5">
+            {(cap?.services ?? []).map((s) => (
+              <span
+                key={s}
+                className="text-xs px-2.5 py-1 rounded-full bg-skyz-surface-subtle text-skyz-text border border-skyz-border"
+              >
+                {s}
+              </span>
+            ))}
+          </div>
+
+          <button
+            type="button"
+            onClick={() => navigate('contact', { serviceCategory: act.key })}
+            className="group mt-6 inline-flex items-center gap-2 text-sm font-semibold text-skyz-text hover:text-skyz-accent transition-colors cursor-pointer"
+          >
+            <span>Inquire about {act.key.charAt(0) + act.key.slice(1).toLowerCase()} services</span>
+            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+          </button>
+        </div>
+
+        {/* widget column — compact on phones, full on desktop */}
+        <div className="w-full scale-90 sm:scale-100 origin-top">
+          <act.Widget on={!reduced} />
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+/* ------------------------------------------------------------------ */
+/* Capabilities — the pinned story                                      */
+/* ------------------------------------------------------------------ */
+
+export const Capabilities: React.FC = () => {
+  const { navigate } = useNavigation();
+  const runwayRef = useRef<HTMLDivElement>(null);
+  const reduced = useReducedMotion();
+
+  const { scrollYProgress } = useScroll({
+    target: runwayRef,
+    offset: ['start start', 'end end'],
+  });
+
+  /*
+   * JS-driven mirror of scrollYProgress. The accelerated native
+   * scroll-timeline path only honors identity [0,1] input ranges reliably;
+   * partial per-act ranges drift under it. A function transformer opts this
+   * value out of acceleration, so every derived range below computes
+   * exactly on the JS path.
+   */
+  const jsProgress = useTransform(scrollYProgress, (v: number) => v);
+
+  const [activeAct, setActiveAct] = useState(0);
+  const [closing, setClosing] = useState(false);
+  const activeRef = useRef(0);
+  const closingRef = useRef(false);
+
+  useMotionValueEvent(scrollYProgress, 'change', (v) => {
+    const a = Math.min(N_ACTS - 1, Math.max(0, Math.floor(v * N_ACTS)));
+    const c = v > 0.9;
+    if (a !== activeRef.current) { activeRef.current = a; setActiveAct(a); }
+    if (c !== closingRef.current) { closingRef.current = c; setClosing(c); }
+  });
+
+  const closingDim = useTransform(jsProgress, [0.88, 0.97], [1, 0.12]);
+  const closingOpacity = useTransform(jsProgress, [0.9, 0.975], [0, 1]);
+  const closingY = useTransform(jsProgress, [0.9, 0.975], [28, 0]);
+  const railFill = useTransform(jsProgress, [0.03, 0.9], [0, 1]);
+
+  /* Reduced motion: the same story, stacked statically — no pin, no scroll driving. */
+  if (reduced) {
+    return (
+      <section id="services" className="relative w-full px-2 sm:px-4 lg:px-6 py-6 sm:py-8">
+        <StoryHeader navigate={navigate} />
+        <div className="max-w-7xl mx-auto space-y-5 mt-10">
+          {ACTS.map((act, i) => (
+            <ActStatic key={act.key} index={i} />
+          ))}
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section id="services" className="relative w-full">
+      <StoryHeader navigate={navigate} />
+
+      {/* story runway — the pin lives here; no overflow-hidden ancestors.
+          Long runway = slow, breathing scroll pace (premium feel). */}
+      <div ref={runwayRef} className="relative" style={{ height: '420vh' }}>
+        <div className="sticky top-0 h-screen supports-[height:100svh]:h-[100svh] overflow-hidden flex items-center">
+          {/* ambient field — lives INSIDE the stage clip, not an ancestor of it */}
+          <div className="absolute inset-0 pointer-events-none" aria-hidden>
+            <div className="absolute top-[-10%] left-[15%] w-[480px] h-[480px] rounded-full bg-skyz-accent/5 blur-[130px]" />
+            <div className="absolute bottom-[-12%] right-[-8%] w-[520px] h-[520px] rounded-full bg-skyz-accent-secondary/5 blur-[150px]" />
+            <div className="absolute inset-0 bg-dots-pattern opacity-25" />
+          </div>
+
+          {/* mobile progress bar */}
+          <div className="absolute top-0 inset-x-0 h-0.5 bg-skyz-border-subtle md:hidden" aria-hidden>
+            <motion.div style={{ scaleX: scrollYProgress }} className="h-full origin-left bg-skyz-accent/70" />
+          </div>
+
+          {/* desktop progress rail */}
+          <div className="hidden md:flex absolute left-8 top-1/2 -translate-y-1/2 flex-col items-center gap-3" aria-hidden>
+            <span className="font-mono text-[9px] text-skyz-text-muted tracking-widest [writing-mode:vertical-lr]">
+              THE STORY
+            </span>
+            <div className="relative w-px h-44 bg-skyz-border">
+              <motion.div
+                style={{ scaleY: railFill }}
+                className="absolute inset-0 origin-top bg-skyz-accent"
+              />
+              {ACTS.map((a, i) => (
+                <span
+                  key={a.key}
+                  className={`absolute -left-[3.5px] w-2 h-2 rounded-full border transition-colors duration-500 ${
+                    i <= activeAct
+                      ? 'bg-skyz-accent border-skyz-accent'
+                      : 'bg-skyz-bg border-skyz-border'
+                  }`}
+                  style={{ top: `${(i / (N_ACTS - 1)) * 100}%`, transform: 'translateY(-50%)' }}
+                />
+              ))}
+            </div>
+            <span className="font-mono text-[9px] text-skyz-text-muted">03</span>
+          </div>
+
+          {/* the three acts, crossfading under scroll control */}
+          <motion.div style={{ opacity: closingDim }} className="absolute inset-0">
+            {ACTS.map((_, i) => (
+              <ActLayer
+                key={ACTS[i].key}
+                index={i}
+                progress={jsProgress}
+                active={i === activeAct}
+                closing={closing}
+                reduced={!!reduced}
+              />
+            ))}
+          </motion.div>
+
+          {/* scroll hint */}
+          <div className="absolute bottom-6 right-6 hidden md:flex items-center gap-2 font-mono text-[10px] text-skyz-text-muted" aria-hidden>
+            SCROLL <span className="inline-block">↓</span>
+          </div>
+
+          {/* closing beat — one connected studio */}
+          <motion.div
+            style={{ opacity: closingOpacity, y: closingY, pointerEvents: closing ? 'auto' : 'none' }}
+            className="absolute bottom-10 sm:bottom-14 left-1/2 -translate-x-1/2 w-[calc(100%-2.5rem)] max-w-xl z-20"
+          >
+            <div className="rounded-[2rem] bg-skyz-surface border border-skyz-border shadow-xl px-6 sm:px-8 py-6 text-center">
+              <p className="font-display text-lg sm:text-2xl font-bold tracking-tight text-skyz-text">
+                One connected studio — <span className="text-skyz-accent">every pillar feeds the next.</span>
+              </p>
+              <button
+                type="button"
+                onClick={() => navigate('services')}
+                className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#080B10] text-xs sm:text-sm font-semibold shadow-md hover:bg-skyz-accent dark:hover:bg-skyz-accent-secondary transition-all cursor-pointer"
+              >
+                Explore all services
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+/* ------------------------------------------------------------------ */
+/* Header + reduced-motion static acts                                  */
+/* ------------------------------------------------------------------ */
+
+const StoryHeader: React.FC<{ navigate: (p: 'services') => void }> = ({ navigate }) => (
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-24 pb-6 sm:pb-10">
+    <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <div className="max-w-2xl space-y-4">
+        <Eyebrow>Core Capabilities</Eyebrow>
+        <h2 className="font-display text-3xl sm:text-5xl text-skyz-text tracking-tight font-bold">
+          Build. Grow. Automate.
+        </h2>
+        <p className="text-base sm:text-lg text-skyz-text-muted leading-relaxed">
+          Three pillars, one connected system — told as a story. Keep scrolling.
+        </p>
+      </div>
+      <button
+        type="button"
+        onClick={() => navigate('services')}
+        className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-skyz-text hover:text-skyz-accent transition-colors self-start md:self-auto cursor-pointer"
+      >
+        <span>Explore All Services</span>
+        <ArrowRight className="w-4 h-4" />
+      </button>
+    </div>
+  </div>
+);
+
+const ActStatic: React.FC<{ index: number }> = ({ index }) => {
+  const act = ACTS[index];
+  const { navigate } = useNavigation();
+  const cap = CAPABILITIES.find((c) => c.category === act.key);
+  return (
+    <div className="rounded-[2rem] bg-skyz-surface border border-skyz-border p-6 sm:p-10 grid md:grid-cols-2 gap-8 items-center">
+      <div>
+        <span className="font-mono text-[10px] tracking-[0.3em] text-skyz-accent font-bold">{act.label}</span>
+        <h3 className="mt-3 font-display text-2xl sm:text-4xl font-bold tracking-tight text-skyz-text">
+          {act.title}
+        </h3>
+        <p className="mt-3 text-sm sm:text-base text-skyz-text-muted leading-relaxed">{act.story}</p>
+        <div className="mt-4 flex flex-wrap gap-1.5">
+          {(cap?.services ?? []).map((s) => (
+            <span key={s} className="text-xs px-2.5 py-1 rounded-full bg-skyz-surface-subtle text-skyz-text border border-skyz-border">
+              {s}
+            </span>
+          ))}
+        </div>
+        <button
+          type="button"
+          onClick={() => navigate('contact', { serviceCategory: act.key })}
+          className="group mt-5 inline-flex items-center gap-2 text-sm font-semibold text-skyz-text hover:text-skyz-accent transition-colors cursor-pointer"
+        >
+          Inquire about {act.key.charAt(0) + act.key.slice(1).toLowerCase()} services
+          <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+        </button>
+      </div>
+      <act.Widget on={false} />
+    </div>
   );
 };
