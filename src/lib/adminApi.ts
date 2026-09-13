@@ -3,7 +3,8 @@
  * Every call requires a signed-in user; RLS is the real security boundary.
  * Roles come from public.profiles ('admin' | 'editor').
  */
-import { supabase } from './supabase';
+import { getClient } from './supabase';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { PortfolioProject } from '../data/portfolio';
 import { StudioWork } from '../data/studio';
 import { Testimonial } from '../data/testimonials';
@@ -21,14 +22,18 @@ export class NotConfiguredError extends Error {
   constructor() { super('Supabase is not configured (missing VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY).'); }
 }
 
-const need = () => { if (!supabase) throw new NotConfiguredError(); return supabase; };
+const need = async (): Promise<SupabaseClient> => {
+  const sb = await getClient();
+  if (!sb) throw new NotConfiguredError();
+  return sb;
+};
 
 /* ------------------------------------------------------------------ */
 /* Auth + profile                                                      */
 /* ------------------------------------------------------------------ */
 export const auth = {
   async signIn(email: string, password: string): Promise<AdminUser> {
-    const sb = need();
+    const sb = await need();
     const { data, error } = await sb.auth.signInWithPassword({ email, password });
     if (error) throw error;
     const { data: profile } = await sb.from('profiles').select('*').eq('id', data.user.id).single();
@@ -39,10 +44,11 @@ export const auth = {
       fullName: profile?.full_name || '',
     };
   },
-  async signOut() { await need().auth.signOut(); },
+  async signOut() { await (await need()).auth.signOut(); },
   async onUser(cb: (u: AdminUser | null) => void): Promise<() => void> {
-    if (!supabase) { cb(null); return () => {}; }
-    const { data: sub } = supabase.auth.onAuthStateChange(async () => {
+    const sb = await getClient();
+    if (!sb) { cb(null); return () => {}; }
+    const { data: sub } = sb.auth.onAuthStateChange(async () => {
       const u = await auth.currentUser();
       cb(u);
     });
@@ -51,10 +57,11 @@ export const auth = {
     return () => sub.subscription.unsubscribe();
   },
   async currentUser(): Promise<AdminUser | null> {
-    if (!supabase) return null;
-    const { data } = await supabase.auth.getUser();
+    const sb = await getClient();
+    if (!sb) return null;
+    const { data } = await sb.auth.getUser();
     if (!data.user) return null;
-    const { data: profile } = await supabase.from('profiles').select('*').eq('id', data.user.id).single();
+    const { data: profile } = await sb.from('profiles').select('*').eq('id', data.user.id).single();
     return {
       id: data.user.id,
       email: data.user.email || '',
@@ -69,12 +76,12 @@ export const auth = {
 /* ------------------------------------------------------------------ */
 export const team = {
   async list(): Promise<Array<{ id: string; email: string; role: Role; fullName: string }>> {
-    const { data, error } = await need().from('profiles').select('*').order('created_at');
+    const { data, error } = await (await need()).from('profiles').select('*').order('created_at');
     if (error) throw error;
     return (data || []).map((p) => ({ id: p.id, email: p.email, role: p.role, fullName: p.full_name || '' }));
   },
   async setRole(id: string, role: Role): Promise<void> {
-    const { error } = await need().from('profiles').update({ role }).eq('id', id);
+    const { error } = await (await need()).from('profiles').update({ role }).eq('id', id);
     if (error) throw error;
   },
 };
@@ -85,16 +92,16 @@ export const team = {
 function crud<T extends { id: string }>(table: string, orderCol = 'order_index') {
   return {
     async list(): Promise<T[]> {
-      const { data, error } = await need().from(table).select('*').order(orderCol);
+      const { data, error } = await (await need()).from(table).select('*').order(orderCol);
       if (error) throw error;
       return (data || []) as T[];
     },
     async save(row: Partial<T> & { id: string }): Promise<void> {
-      const { error } = await need().from(table).upsert({ ...row, updated_at: new Date().toISOString() });
+      const { error } = await (await need()).from(table).upsert({ ...row, updated_at: new Date().toISOString() });
       if (error) throw error;
     },
     async remove(id: string): Promise<void> {
-      const { error } = await need().from(table).delete().eq('id', id);
+      const { error } = await (await need()).from(table).delete().eq('id', id);
       if (error) throw error;
     },
   };
@@ -121,16 +128,16 @@ export interface Lead {
 
 export const leadsApi = {
   async list(): Promise<Lead[]> {
-    const { data, error } = await need().from('leads').select('*').order('created_at', { ascending: false });
+    const { data, error } = await (await need()).from('leads').select('*').order('created_at', { ascending: false });
     if (error) throw error;
     return (data || []) as Lead[];
   },
   async setStatus(id: string, status: Lead['status']): Promise<void> {
-    const { error } = await need().from('leads').update({ status }).eq('id', id);
+    const { error } = await (await need()).from('leads').update({ status }).eq('id', id);
     if (error) throw error;
   },
   async remove(id: string): Promise<void> {
-    const { error } = await need().from('leads').delete().eq('id', id);
+    const { error } = await (await need()).from('leads').delete().eq('id', id);
     if (error) throw error;
   },
 };
@@ -142,12 +149,12 @@ export interface ContentEntry { key: string; value: unknown; group_name: string;
 
 export const contentApi = {
   async list(): Promise<ContentEntry[]> {
-    const { data, error } = await need().from('site_content').select('*').order('group_name');
+    const { data, error } = await (await need()).from('site_content').select('*').order('group_name');
     if (error) throw error;
     return (data || []) as ContentEntry[];
   },
   async save(key: string, value: unknown): Promise<void> {
-    const { error } = await need().from('site_content').upsert({ key, value, updated_at: new Date().toISOString() });
+    const { error } = await (await need()).from('site_content').upsert({ key, value, updated_at: new Date().toISOString() });
     if (error) throw error;
   },
 };
@@ -173,7 +180,7 @@ export const uploadMedia = async (
   folder: 'work' | 'studio' | 'testimonials' | 'site',
   spec: RatioSpec,
 ): Promise<UploadResult> => {
-  const sb = need();
+  const sb = await need();
 
   // Read dimensions in-browser via an object URL. This must NEVER reject the
   // upload: dimension probing is guidance (ratio hints in the admin UI), not
@@ -216,7 +223,7 @@ export const uploadMedia = async (
 };
 
 export const deleteMedia = async (path: string): Promise<void> => {
-  const { error } = await need().storage.from('media').remove([path]);
+  const { error } = await (await need()).storage.from('media').remove([path]);
   if (error) throw error;
 };
 

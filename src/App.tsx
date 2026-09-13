@@ -3,22 +3,27 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useEffect, useState, useCallback } from 'react';
-import { motion, AnimatePresence, MotionConfig } from 'motion/react';
+import React, { Suspense, lazy, useEffect, useState, useCallback } from 'react';
 import { ThemeProvider } from './context/ThemeContext';
 import { MotionPreferenceProvider, useMotionPreference } from './context/MotionPreferenceContext';
 import { NavigationProvider, useNavigation } from './context/NavigationContext';
-import { AdminProvider } from './admin/AdminContext';
-import { AdminApp } from './admin/AdminApp';
 import { LiquidPortalLoader } from './components/LiquidPortalLoader';
+
+// Admin dashboard is code-split: public visitors never download the admin
+// bundle (Supabase CRUD UI, upload widgets, etc.) — it loads only on /admin.
+const AdminApp = lazy(() => import('./admin/AdminApp').then((m) => ({ default: m.AdminApp })));
+const AdminProvider = lazy(() => import('./admin/AdminContext').then((m) => ({ default: m.AdminProvider })));
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { HomePage } from './pages/HomePage';
-import { AboutPage } from './pages/AboutPage';
-import { ServicesPage } from './pages/ServicesPage';
-import { WorkPage } from './pages/WorkPage';
-import { StudioPage } from './pages/StudioPage';
-import { ContactPage } from './pages/ContactPage';
+
+// Non-home pages are code-split: the home page (the LCP path) loads eagerly,
+// every other page downloads only when the visitor navigates to it.
+const AboutPage = lazy(() => import('./pages/AboutPage').then((m) => ({ default: m.AboutPage })));
+const ServicesPage = lazy(() => import('./pages/ServicesPage').then((m) => ({ default: m.ServicesPage })));
+const WorkPage = lazy(() => import('./pages/WorkPage').then((m) => ({ default: m.WorkPage })));
+const StudioPage = lazy(() => import('./pages/StudioPage').then((m) => ({ default: m.StudioPage })));
+const ContactPage = lazy(() => import('./pages/ContactPage').then((m) => ({ default: m.ContactPage })));
 
 const AppContent: React.FC = () => {
   const { currentPage } = useNavigation();
@@ -39,23 +44,18 @@ const AppContent: React.FC = () => {
       <Navbar />
       
       <main className="flex-1 w-full pt-16 md:pt-20">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentPage}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.28, ease: 'easeOut' }}
-            className="w-full"
-          >
+        {/* CSS keyframe entrance per page — keeps motion/react out of the
+            eager bundle; the visual is identical to the old AnimatePresence. */}
+        <div key={currentPage} className="w-full skz-page-in">
+          <Suspense fallback={<div className="min-h-[60vh]" />}>
             {currentPage === 'home' && <HomePage />}
             {currentPage === 'about' && <AboutPage />}
             {currentPage === 'services' && <ServicesPage />}
             {currentPage === 'work' && <WorkPage />}
             {currentPage === 'studio' && <StudioPage />}
             {currentPage === 'contact' && <ContactPage />}
-          </motion.div>
-        </AnimatePresence>
+          </Suspense>
+        </div>
       </main>
 
       <Footer />
@@ -68,11 +68,23 @@ const AppContent: React.FC = () => {
  * reducedMotion 'never' forces animations even under OS Reduce Motion;
  * 'always' forces the reduced variants — the escape hatch for phones whose
  * system setting or in-app webview reports reduce-motion unintentionally.
+ *
+ * MotionConfig lives inside the lazy shell so motion/react itself is only
+ * downloaded when a page that actually uses Motion is displayed.
  */
 const MotionGate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { motionEnabled } = useMotionPreference();
-  return <MotionConfig reducedMotion={motionEnabled ? 'never' : 'always'}>{children}</MotionConfig>;
+  return <MotionConfigProvider enabled={motionEnabled}>{children}</MotionConfigProvider>;
 };
+
+const MotionConfigProvider = lazy(() =>
+  import('motion/react').then(({ MotionConfig }) => {
+    const C: React.FC<{ enabled: boolean; children: React.ReactNode }> = ({ enabled, children }) => (
+      <MotionConfig reducedMotion={enabled ? 'never' : 'always'}>{children}</MotionConfig>
+    );
+    return { default: C };
+  }),
+);
 
 export default function App() {
   // The admin dashboard renders standalone: no site chrome, no cinematic loader.
@@ -92,9 +104,11 @@ export default function App() {
   if (isAdminRoute) {
     return (
       <ThemeProvider>
-        <AdminProvider>
-          <AdminApp />
-        </AdminProvider>
+        <Suspense fallback={<div className="min-h-screen bg-skyz-bg" />}>
+          <AdminProvider>
+            <AdminApp />
+          </AdminProvider>
+        </Suspense>
       </ThemeProvider>
     );
   }
@@ -104,10 +118,8 @@ export default function App() {
       <MotionPreferenceProvider>
         <MotionGate>
           <NavigationProvider>
-            <AdminProvider>
-              {!loaderDone && <LiquidPortalLoader onDone={handleLoaderDone} />}
-              <AppContent />
-            </AdminProvider>
+            {!loaderDone && <LiquidPortalLoader onDone={handleLoaderDone} />}
+            <AppContent />
           </NavigationProvider>
         </MotionGate>
       </MotionPreferenceProvider>

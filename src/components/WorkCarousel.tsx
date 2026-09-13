@@ -329,10 +329,14 @@ export const WorkCarousel: React.FC = () => {
                   type="button"
                   aria-label={`Show ${p.title}`}
                   onClick={() => goTo(i)}
-                  className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
-                    i === activeSlot ? 'w-6 bg-skyz-accent' : 'w-1.5 bg-skyz-border hover:bg-skyz-text-muted'
-                  }`}
-                />
+                  className={`rounded-full transition-all duration-300 cursor-pointer w-12 h-12 flex items-center justify-center group`}
+                >
+                  <span
+                    className={`block h-1.5 rounded-full transition-all duration-300 ${
+                      i === activeSlot ? 'w-6 bg-skyz-accent' : 'w-1.5 bg-skyz-border group-hover:bg-skyz-text-muted'
+                    }`}
+                  />
+                </button>
               ))}
             </div>
 

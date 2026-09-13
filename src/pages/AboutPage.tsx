@@ -120,7 +120,7 @@ export const AboutPage: React.FC = () => {
             <FloatingTag className="top-1 sm:top-2 right-[2%] sm:right-[8%] bg-green-400 text-black -rotate-6" delay={0.5}>
               ✦ FAST
             </FloatingTag>
-            <FloatingTag className="top-14 sm:top-24 right-[8%] sm:right-[22%] bg-pink-400 text-white rotate-3" delay={0.8}>
+            <FloatingTag className="top-14 sm:top-24 right-[8%] sm:right-[22%] bg-pink-400/90 text-slate-900 rotate-3" delay={0.8}>
               ✦ CLEAN
             </FloatingTag>
             <FloatingTag className="top-28 sm:top-44 right-[2%] sm:right-[4%] bg-blue-400 text-white rotate-6" delay={1.1}>

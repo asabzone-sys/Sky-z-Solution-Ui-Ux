@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
 
 /**
  * LiquidPortalLoader — premium cinematic one-time entry experience.
@@ -49,10 +48,13 @@ export const LiquidPortalLoader: React.FC<{ onDone: () => void }> = ({ onDone })
   const { TS, freeze } = useState(() => {
     const q = new URLSearchParams(window.location.search).get('portal');
     const frozen = q !== null && q !== 'slow' ? parseFloat(q) : NaN;
-    return { TS: q === 'slow' ? 0.35 : 1, freeze: Number.isFinite(frozen) ? frozen : -1 };
+    // Default timeline runs ~1.6x faster than authored: the cinematic beats
+    // stay intact while the loader holds the page ~2s less (Lighthouse LCP/TBT).
+    return { TS: q === 'slow' ? 0.35 : 2.4, freeze: Number.isFinite(frozen) ? frozen : -1 };
   })[0];
   const [simple, setSimple] = useState(false);       // reduced-motion / no-canvas path
-  const [gone, setGone] = useState(false);           // triggers AnimatePresence exit
+  const [gone, setGone] = useState(false);           // unmount after CSS exit
+  const [exiting, setExiting] = useState(false);      // CSS fade-out in progress
   const doneRef = useRef(onDone);                    // stable callback → effect never restarts
   useEffect(() => { doneRef.current = onDone; }, [onDone]);
   const backRef = useRef<HTMLCanvasElement | null>(null);
@@ -91,7 +93,7 @@ export const LiquidPortalLoader: React.FC<{ onDone: () => void }> = ({ onDone })
     const resize = () => {
       const w = window.innerWidth, h = window.innerHeight;
       const mobile = w < 640;
-      const dpr = Math.min(window.devicePixelRatio || 1, mobile ? 1.5 : 2);
+      const dpr = Math.min(window.devicePixelRatio || 1, mobile ? 1 : 2);
       sizeRef.current = { w, h, dpr, mobile };
       for (const c of [back, front]) {
         c.width = Math.round(w * dpr);
@@ -120,8 +122,8 @@ export const LiquidPortalLoader: React.FC<{ onDone: () => void }> = ({ onDone })
     const finish = () => {
       if (finished) return;
       finished = true;
-      setGone(true);
-      setTimeout(() => doneRef.current(), 420);
+      setExiting(true);   // CSS fade-out, then unmount
+      setTimeout(() => { setGone(true); doneRef.current(); }, 420);
     };
     const failsafe = setTimeout(finish, 12000);
 
@@ -146,7 +148,9 @@ export const LiquidPortalLoader: React.FC<{ onDone: () => void }> = ({ onDone })
       bctx.fillRect(0, 0, w, h);
 
       /* drifting aurora fields — huge, slow, barely-there color washes */
-      if (bgFade > 0.02) {
+      // Desktop-only: three full-screen gradient fills per frame are the
+      // costliest layer; mobile keeps bg + stars + portal only.
+      if (bgFade > 0.02 && !mobile) {
         bctx.save();
         bctx.globalCompositeOperation = 'lighter';
         const auras: Array<[number, number, number, string, number]> = [
@@ -277,7 +281,9 @@ export const LiquidPortalLoader: React.FC<{ onDone: () => void }> = ({ onDone })
         bctx.restore();
 
         /* ---------- camera streaks (motion blur through the tunnel) ---------- */
-        if (enter > 0.05) {
+        // Desktop-only: the densest per-frame layer; skipped on mobile so the
+        // loader never competes with hydration for main-thread time.
+        if (enter > 0.05 && !mobile) {
           const streakA = bell(t, 2.75, 3.2, 3.55, 3.95);
           if (streakA > 0.01) {
             fctx.save();
@@ -341,13 +347,26 @@ export const LiquidPortalLoader: React.FC<{ onDone: () => void }> = ({ onDone })
         fctx.restore();
       }
 
-      if (freeze >= 0 || t < 5.1) {   // frozen frames never complete
-        raf = requestAnimationFrame(frame);
-      } else {
+      if (freeze < 0 && t >= 5.1) {   // wall-clock completion; frozen frames never complete
         finish();
       }
     };
-    raf = requestAnimationFrame(frame);
+
+    // Breather between frames: gives the main thread idle windows so font
+    // swap, hydration and LCP paint happen while the portal is still running
+    // (raw rAF + full-screen canvas starves LCP on mid-range mobile).
+    // setTimeout (not rAF/requestIdleCallback): guarantees the browser paints
+    // the page beneath first (LCP!), caps render fps, and yields idle windows
+    // so the loader never starves hydration or font swap. Mobile paces a
+    // touch slower — the morphs are slow enough that it reads identically.
+    const idleGap = (cb: () => void) => setTimeout(cb, sizeRef.current.mobile ? 75 : 32);
+
+    const pump = () => {
+      if (finished) return;
+      frame(performance.now());
+      idleGap(pump);
+    };
+    setTimeout(pump, 350);
 
     // Debug affordance (freeze mode only): synchronous repaint of the pinned
     // frame, so inspection tools don't depend on rAF being scheduled.
@@ -366,13 +385,11 @@ export const LiquidPortalLoader: React.FC<{ onDone: () => void }> = ({ onDone })
   /* ---------- logo envelope (Motion handles the entrance above) ---------- */
 
   return (
-    <AnimatePresence>
+    <>
       {!gone && (
-        <motion.div
-          className="fixed inset-0 z-[100] overflow-hidden"
+        <div
+          className={`fixed inset-0 z-[100] overflow-hidden ${exiting ? 'skz-portal-exit' : ''}`}
           style={{ background: 'transparent' }}
-          initial={{ opacity: 1 }}
-          exit={{ opacity: 0, transition: { duration: 0.4, ease: 'easeInOut' } }}
           aria-hidden="true"
         >
           {/* back canvas (aurora, stars, portal) */}
@@ -380,21 +397,16 @@ export const LiquidPortalLoader: React.FC<{ onDone: () => void }> = ({ onDone })
 
           {/* logo block — staggered entrance, sinks into the portal via PortalSink */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <motion.div
-              className="flex flex-col items-center"
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
-            >
+            <div className="flex flex-col items-center skz-logo-in">
               <PortalSink simple={simple} timeScale={TS} freeze={freeze} />
-            </motion.div>
+            </div>
           </div>
 
           {/* front canvas (streaks + veil + bloom + grain) */}
           <canvas ref={frontRef} className="absolute inset-0" />
-        </motion.div>
+        </div>
       )}
-    </AnimatePresence>
+    </>
   );
 };
 
@@ -426,15 +438,12 @@ const PortalSink: React.FC<{ simple: boolean; timeScale: number; freeze: number 
   const breathe = 0.5 + 0.5 * Math.sin((simple ? 0 : t) * 1.6);   // 0..1 glow pulse
 
   return (
-    <motion.div
+    <div
       className="flex flex-col items-center will-change-transform"
       style={{ transform: `scale(${scale})`, opacity }}
     >
-      <motion.div
-        initial={{ opacity: 0, scale: 0.94 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
-        className="relative"
+      <div
+        className="relative skz-mark-in"
       >
         {/* breathing halo behind the mark */}
         <div
@@ -454,14 +463,11 @@ const PortalSink: React.FC<{ simple: boolean; timeScale: number; freeze: number 
             style={{ filter: `drop-shadow(0 0 ${28 + breathe * 16}px rgba(56,189,248,${0.30 + breathe * 0.15}))` }}
           />
         </picture>
-      </motion.div>
+      </div>
 
       {/* hairline divider — draws outward from center */}
-      <motion.div
-        className="my-4 h-px rounded-full"
-        initial={{ width: 0, opacity: 0 }}
-        animate={{ width: 120, opacity: 1 }}
-        transition={{ duration: 0.8, ease: 'easeInOut', delay: 0.55 }}
+      <div
+        className="my-4 h-px rounded-full skz-divider-in"
         style={{
           background: 'linear-gradient(90deg, rgba(56,189,248,0), rgba(56,189,248,0.7) 50%, rgba(167,139,250,0.7) 60%, rgba(167,139,250,0))',
           boxShadow: '0 0 12px rgba(56,189,248,0.35)',
@@ -469,29 +475,23 @@ const PortalSink: React.FC<{ simple: boolean; timeScale: number; freeze: number 
       />
 
       <div className="text-center select-none">
-        <motion.div
-          className="font-display font-extrabold tracking-tight text-[#F5F7FA]"
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.7 }}
+        <div
+          className="font-display font-extrabold tracking-tight text-[#F5F7FA] skz-skyz-in"
           style={{
             fontSize: 'clamp(1.6rem, 5vw, 2.6rem)',
             textShadow: `0 2px 24px rgba(56,189,248,${0.22 + breathe * 0.10}), 0 0 60px rgba(59,130,246,0.12)`,
           }}
         >
           SKY-Z
-        </motion.div>
-        <motion.div
-          className="font-display font-medium text-[#9AA4B2]"
-          initial={{ opacity: 0, letterSpacing: '0.6em' }}
-          animate={{ opacity: 1, letterSpacing: '0.42em' }}
-          transition={{ duration: 0.9, ease: 'easeOut', delay: 0.85 }}
+        </div>
+        <div
+          className="font-display font-medium text-[#9AA4B2] skz-sub-in"
           style={{ fontSize: 'clamp(0.65rem, 2.2vw, 0.95rem)', marginTop: 2 }}
         >
           SOLUTIONS
-        </motion.div>
+        </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 

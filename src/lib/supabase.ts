@@ -6,7 +6,7 @@
  * even when env vars are missing, the project is paused, or the network fails.
  * The admin app writes through `AdminAPI`, which requires real credentials.
  */
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { useEffect, useState } from 'react';
 import { PORTFOLIO_PROJECTS, PortfolioProject } from '../data/portfolio';
 import { STUDIO_WORKS, StudioWork } from '../data/studio';
@@ -15,9 +15,21 @@ import { TESTIMONIALS, Testimonial } from '../data/testimonials';
 const url = import.meta.env.VITE_SUPABASE_URL as string | undefined;
 const anon = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
 
-/** Shared client. Null when env vars are absent — everything degrades gracefully. */
-export const supabase: SupabaseClient | null = url && anon ? createClient(url, anon) : null;
-export const hasBackend = !!supabase;
+/**
+ * The Supabase SDK loads on demand (dynamic import), so the public site's
+ * eager bundle never pays for @supabase/supabase-js (~40 kB gz): content
+ * reads start from bundled fallbacks and hydrate once the SDK arrives.
+ */
+let clientPromise: Promise<SupabaseClient | null> | null = null;
+export const getClient = (): Promise<SupabaseClient | null> => {
+  if (!clientPromise) {
+    clientPromise = url && anon
+      ? import('@supabase/supabase-js').then(({ createClient }) => createClient(url, anon))
+      : Promise.resolve(null);
+  }
+  return clientPromise;
+};
+export const hasBackend = !!(url && anon);
 
 /** Public URL for a storage path (works even without the client for SSR-ish contexts). */
 export const mediaUrl = (path?: string | null): string | null => {
@@ -29,15 +41,18 @@ export const mediaUrl = (path?: string | null): string | null => {
 /* ------------------------------------------------------------------ */
 /* Generic read-with-fallback hook                                     */
 /* ------------------------------------------------------------------ */
-type Fetcher<T> = () => Promise<{ data: T | null; error: unknown }>;
+type Fetcher<T> = (sb: SupabaseClient) => Promise<T | null>;
 
 function useBackendContent<T>(fetcher: Fetcher<T> | null, fallback: T, deps: unknown[] = []): T {
   const [value, setValue] = useState<T>(fallback);
   useEffect(() => {
     let alive = true;
-    if (!supabase || !fetcher) return;
-    fetcher().then(({ data }) => {
-      if (alive && data && (Array.isArray(data) ? data.length > 0 : true)) setValue(data);
+    if (!fetcher) return;
+    getClient().then((sb) => {
+      if (!sb || !alive) return;
+      fetcher(sb).then((data) => {
+        if (alive && data && (Array.isArray(data) ? data.length > 0 : true)) setValue(data);
+      });
     });
     return () => { alive = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -138,31 +153,31 @@ const mapTestimonial = (r: TestimonialRow): Testimonial => ({
 /* ------------------------------------------------------------------ */
 export const useProjects = (): PortfolioProject[] =>
   useBackendContent(
-    supabase ? async () => {
-      const { data, error } = await supabase.from('projects')
+    async (sb) => {
+      const { data } = await sb.from('projects')
         .select('*').eq('published', true).order('order_index', { ascending: true });
-      return { data: (data || []).map(mapProject), error };
-    } : null,
+      return (data || []).map(mapProject);
+    },
     PORTFOLIO_PROJECTS,
   );
 
 export const useStudioWorks = (): StudioWork[] =>
   useBackendContent(
-    supabase ? async () => {
-      const { data, error } = await supabase.from('studio_works')
+    async (sb) => {
+      const { data } = await sb.from('studio_works')
         .select('*').eq('published', true).order('order_index', { ascending: true });
-      return { data: (data || []).map(mapStudio), error };
-    } : null,
+      return (data || []).map(mapStudio);
+    },
     STUDIO_WORKS,
   );
 
 export const useTestimonials = (): Testimonial[] =>
   useBackendContent(
-    supabase ? async () => {
-      const { data, error } = await supabase.from('testimonials')
+    async (sb) => {
+      const { data } = await sb.from('testimonials')
         .select('*').eq('published', true).order('order_index', { ascending: true });
-      return { data: (data || []).map(mapTestimonial), error };
-    } : null,
+      return (data || []).map(mapTestimonial);
+    },
     TESTIMONIALS,
   );
 
@@ -174,14 +189,16 @@ export const useText = (key: string, fallback: string): string => {
   const [value, setValue] = useState(fallback);
   useEffect(() => {
     let alive = true;
-    if (!supabase) return;
-    supabase.from('site_content').select('value').eq('key', key).single()
-      .then(({ data }) => {
-        if (alive && data?.value != null) {
-          const v = typeof data.value === 'string' ? data.value : String(data.value);
-          if (v) setValue(v);
-        }
-      });
+    getClient().then((sb) => {
+      if (!sb || !alive) return;
+      sb.from('site_content').select('value').eq('key', key).single()
+        .then(({ data }) => {
+          if (alive && data?.value != null) {
+            const v = typeof data.value === 'string' ? data.value : String(data.value);
+            if (v) setValue(v);
+          }
+        });
+    });
     return () => { alive = false; };
   }, [key]);
   return value;
@@ -200,7 +217,8 @@ export interface LeadInput {
 }
 
 export const submitLead = async (lead: LeadInput): Promise<{ ok: boolean; stored: boolean }> => {
-  if (!supabase) return { ok: true, stored: false };   // graceful no-backend mode
-  const { error } = await supabase.from('leads').insert(lead);
+  const sb = await getClient();
+  if (!sb) return { ok: true, stored: false };   // graceful no-backend mode
+  const { error } = await sb.from('leads').insert(lead);
   return { ok: !error, stored: !error };
 };

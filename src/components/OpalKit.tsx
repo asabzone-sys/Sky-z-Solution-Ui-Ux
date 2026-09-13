@@ -1,26 +1,62 @@
-import React, { useState } from 'react';
-import { motion } from 'motion/react';
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import React, { useEffect, useRef, useState } from 'react';
 import { Play, Youtube, ExternalLink } from 'lucide-react';
 
+/* Performance note: this module is intentionally free of `motion/react`.
+ * It is imported by the eager home-page shell (Navbar, Hero, WorkCarousel,
+ * ContactCTA), so keeping it Motion-free keeps the animation library out of
+ * the initial bundle. Reveal/Blob/FloatingTag reproduce the exact same visual
+ * behavior with IntersectionObserver + CSS keyframes (compositor-driven and
+ * immune to library-level issues). */
+
 /* ------------------------------------------------------------------ */
-/* Reveal — soft motion-driven scroll reveal (Opal/Labs feel)          */
+/* Reveal — soft scroll reveal (Opal/Labs feel), once per element      */
 /* ------------------------------------------------------------------ */
 export const Reveal: React.FC<{
   children: React.ReactNode;
   delay?: number;
   y?: number;
   className?: string;
-}> = ({ children, delay = 0, y = 28, className = '' }) => (
-  <motion.div
-    className={className}
-    initial={{ opacity: 0, y }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true, margin: '-70px' }}
-    transition={{ duration: 0.75, delay, ease: [0.16, 1, 0.3, 1] }}
-  >
-    {children}
-  </motion.div>
-);
+}> = ({ children, delay = 0, y = 28, className = '' }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [shown, setShown] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (typeof IntersectionObserver === 'undefined') { setShown(true); return; }
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setShown(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: '-70px 0px -70px 0px' },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      className={className}
+      style={{
+        opacity: shown ? 1 : 0,
+        transform: shown ? 'none' : `translateY(${y}px)`,
+        transition: `opacity 0.75s cubic-bezier(0.16,1,0.3,1) ${delay}s, transform 0.75s cubic-bezier(0.16,1,0.3,1) ${delay}s`,
+        willChange: 'opacity, transform',
+      }}
+    >
+      {children}
+    </div>
+  );
+};
 
 /* ------------------------------------------------------------------ */
 /* SectionShell — Opal-style floating rounded section with breathing   */
@@ -41,6 +77,7 @@ export const SectionShell: React.FC<{
 
 /* ------------------------------------------------------------------ */
 /* Blob — soft organic color shape (labs.google playful background)    */
+/* Now pure CSS: compositor bob + gentle rotate, GPU-cheap.            */
 /* ------------------------------------------------------------------ */
 export const Blob: React.FC<{
   className?: string;
@@ -48,15 +85,14 @@ export const Blob: React.FC<{
   animate?: boolean;
   duration?: number;
 }> = ({ className = '', color = 'rgba(124, 58, 237, 0.10)', animate = true, duration = 10 }) => (
-  <motion.div
+  <div
     aria-hidden
-    className={`pointer-events-none absolute ${className}`}
+    className={`pointer-events-none absolute ${animate ? 'skz-blob-float' : ''} ${className}`}
     style={{
       backgroundColor: color,
       borderRadius: '38% 62% 63% 37% / 41% 44% 56% 59%',
+      animationDuration: `${duration}s`,
     }}
-    animate={animate ? { y: [0, -16, 0], rotate: [0, 3, 0] } : undefined}
-    transition={{ duration, repeat: Infinity, ease: 'easeInOut' }}
   />
 );
 
@@ -127,6 +163,8 @@ export const VideoSection: React.FC<{
                 <img
                   src={`https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`}
                   alt={title}
+                  loading="lazy"
+                  decoding="async"
                   className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
                   onError={(e) => {
                     (e.target as HTMLImageElement).src = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
@@ -164,28 +202,25 @@ export const Eyebrow: React.FC<{ children: React.ReactNode; className?: string }
 
 /* ------------------------------------------------------------------ */
 /* FloatingTag — tiny cursor-tag chips that float around hero type     */
-/* (Putty hero playful badges)                                         */
+/* (Putty hero playful badges) — CSS pop-in + bob loop                 */
 /* ------------------------------------------------------------------ */
 export const FloatingTag: React.FC<{
   children: React.ReactNode;
   className?: string;
   delay?: number;
 }> = ({ children, className = '', delay = 0 }) => (
-  <motion.span
+  <span
     aria-hidden
-    className={`absolute inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-mono font-bold shadow-sm sm:shadow-md pointer-events-none select-none z-10 ${className}`}
-    initial={{ opacity: 0, scale: 0.6 }}
-    animate={{ opacity: 1, scale: 1 }}
-    transition={{ delay, type: 'spring', stiffness: 260, damping: 18 }}
+    className={`absolute skz-tag-pop inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-mono font-bold shadow-sm sm:shadow-md pointer-events-none select-none z-10 ${className}`}
+    style={{ animationDelay: `${delay}s` }}
   >
-    <motion.span
-      className="inline-flex items-center gap-1.5"
-      animate={{ y: [0, -7, 0] }}
-      transition={{ duration: 4 + delay, repeat: Infinity, ease: 'easeInOut' }}
+    <span
+      className="inline-flex items-center gap-1.5 skz-tag-bob"
+      style={{ animationDelay: `${delay}s` }}
     >
       {children}
-    </motion.span>
-  </motion.span>
+    </span>
+  </span>
 );
 
 export { ExternalLink };

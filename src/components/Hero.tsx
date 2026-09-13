@@ -156,7 +156,7 @@ export const Hero: React.FC = () => {
           <FloatingTag className="top-[-18px] sm:top-[-14px] left-[2%] sm:left-[8%] bg-green-400 text-black -rotate-6" delay={0.6}>
             ✦ FAST
           </FloatingTag>
-          <FloatingTag className="top-[6px] sm:top-[-26px] right-[2%] sm:right-[9%] bg-pink-400 text-white rotate-3" delay={0.9}>
+          <FloatingTag className="top-[6px] sm:top-[-26px] right-[2%] sm:right-[9%] bg-pink-400/90 text-slate-900 rotate-3" delay={0.9}>
             ✦ CONNECTED
           </FloatingTag>
         </div>

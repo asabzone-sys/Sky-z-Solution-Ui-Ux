@@ -64,9 +64,30 @@ function aistudioMediaPlugin(): Plugin {
 }
 // LINT.ThenChange(//depot/google3/java/com/google/alkali/boq/makersuite/applet_dev_service/templates/initializers/react_theme/vite.config.ts:aistudio_media_plugin)
 
+// Performance: inline the small first-party CSS into index.html so the
+// initial paint never waits on a second render-blocking stylesheet request.
+function inlineCriticalCss(): Plugin {
+  return {
+    name: 'inline-critical-css',
+    apply: 'build',
+    transformIndexHtml(html, ctx) {
+      const cssName = ctx.bundle
+        ? Object.keys(ctx.bundle).find((n) => n.endsWith('.css'))
+        : undefined;
+      if (!cssName || !ctx.bundle) return html;
+      const asset = ctx.bundle[cssName] as { source?: unknown } | undefined;
+      const css = typeof asset?.source === 'string' ? asset.source : '';
+      if (!css || css.length > 200000) return html;
+      return html.replace(
+        /<link rel="stylesheet" crossorigin href="[^"]*.css">/,
+        `<style>${css.replace(/$/g, '$$')}</style>`
+      );
+    },
+  };
+}
 export default defineConfig(() => {
   return {
-    plugins: [react(), tailwindcss(), aistudioMediaPlugin()],
+    plugins: [react(), tailwindcss(), aistudioMediaPlugin(), inlineCriticalCss()],
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),

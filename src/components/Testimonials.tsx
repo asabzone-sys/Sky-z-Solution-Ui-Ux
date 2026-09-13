@@ -211,7 +211,7 @@ export const Testimonials: React.FC = () => {
 
                   <figcaption className="mt-10 flex items-center justify-center gap-4">
                     {t.avatar ? (
-                      <img
+                      <img loading="lazy" decoding="async"
                         src={t.avatar}
                         alt={t.name}
                         className="w-11 h-11 rounded-full object-cover flex-shrink-0 shadow-md border border-skyz-border"

@@ -3,15 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="/skyz-mark.png" />
     <title>SkyZ Solutions</title>
     <meta name="description" content="Autonomous digital architecture, bespoke web development, and AI workflow automation." />
     <meta property="og:title" content="SkyZ Solutions" />
     <meta property="og:description" content="Autonomous digital architecture, bespoke web development, and AI workflow automation." />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="preload" href="/fonts/geist-var.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin />
     <script>
       (function() {
         try {
@@ -31,8 +31,17 @@
     </script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Static first-paint shell: instant hero text before JS mounts.
+           React (createRoot) replaces this content on mount. -->
+      <div class="relative w-full min-h-[780px] sm:min-h-[840px] flex flex-col items-center justify-center px-4 bg-skyz-bg text-skyz-text">
+        <div class="flex items-center gap-2 px-4 py-1.5 rounded-full bg-skyz-surface shadow-sm border border-skyz-border">
+          <span class="text-[11px] sm:text-xs text-skyz-text-muted tracking-wider uppercase font-semibold">Digital Architecture &amp; AI Systems</span>
+        </div>
+        <h1 class="font-display text-4xl sm:text-6xl md:text-7xl text-skyz-text tracking-tighter max-w-4xl mx-auto font-black leading-tight text-center mt-6">We build <span class="text-skyz-accent">what comes next.</span></h1>
+        <p class="text-base sm:text-lg md:text-xl text-skyz-text-muted max-w-2xl mx-auto mt-5 text-center px-2 leading-relaxed">Web systems, growth engines, and autonomous AI automation — built as one connected studio.</p>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-

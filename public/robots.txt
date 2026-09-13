@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Keep the admin dashboard out of search indexes
+Disallow: /admin

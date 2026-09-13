@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { ArrowRight, Check, ShieldCheck, Clock, Send } from 'lucide-react';
 import { useNavigation } from '../context/NavigationContext';
 import { Reveal, SectionShell, Blob } from '../components/OpalKit';
-import { submitLead } from '../lib/supabase';
 
 export const ContactCTA: React.FC = () => {
   const { navigate } = useNavigation();
@@ -13,12 +12,17 @@ export const ContactCTA: React.FC = () => {
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
-    submitLead({
-      name: formData.name,
-      email: formData.email,
-      project_type: formData.projectType,
-      message: formData.message,
-    })
+    // Dynamic import: keeps @supabase/supabase-js out of the eager home bundle
+    // (it downloads only when a lead is actually submitted).
+    import('../lib/supabase')
+      .then(({ submitLead }) =>
+        submitLead({
+          name: formData.name,
+          email: formData.email,
+          project_type: formData.projectType,
+          message: formData.message,
+        })
+      )
       .catch(() => { /* user still gets success confirmation; lead is not lost silently in UI */ })
       .finally(() => {
         setTimeout(() => {
