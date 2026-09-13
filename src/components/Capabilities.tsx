@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   motion,
   useScroll,
@@ -85,6 +85,38 @@ const ACTS: ActDef[] = [
 /* Act widgets — living motion graphics, transform/opacity only         */
 /* ------------------------------------------------------------------ */
 
+/**
+ * Typing text hook — reveals a string character by character with human-feel
+ * cadence. Three modes: 'run' types from empty; 'hold' waits empty (the act
+ * is off-screen — its moment must not be spent before the visitor arrives);
+ * 'static' shows the full string (reduced-motion / stacked render).
+ */
+type TypeMode = 'run' | 'hold' | 'static';
+function useTypewriter(text: string, mode: TypeMode, speed = 55, startDelay = 0) {
+  const [count, setCount] = useState(mode === 'static' ? text.length : 0);
+  useEffect(() => {
+    if (mode === 'static') { setCount(text.length); return; }
+    if (mode === 'hold') { setCount(0); return; }
+    setCount(0);
+    let raf = 0;
+    let stop = false;
+    let elapsed = -startDelay;
+    let last = performance.now();
+    const step = (t: number) => {
+      if (stop) return;
+      elapsed += t - last;
+      last = t;
+      // steady per-char cadence with a start beat — reads as typing
+      const target = Math.min(text.length, Math.max(0, Math.floor(elapsed / speed)));
+      setCount((c) => (target > c ? target : c));
+      if (target < text.length) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => { stop = true; cancelAnimationFrame(raf); };
+  }, [text, mode, speed, startDelay]);
+  return { shown: text.slice(0, count), done: count >= text.length };
+}
+
 /** BUILD — a browser skeleton assembling itself while the pipeline pulses. */
 function BuildWidget({ on }: { on: boolean }) {
   const blocks = [
@@ -93,17 +125,55 @@ function BuildWidget({ on }: { on: boolean }) {
     'col-span-1 h-10',
     'col-span-2 h-10',
   ];
+  // The typewriter must run when the STORY reaches the visitor, not on page
+  // load — the act sits far down the page and its moment would be over
+  // before anyone arrives. An IO gate starts typing on first sight.
+  const rootRef = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') { setInView(true); return; }
+    const io = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) { setInView(true); io.disconnect(); } },
+      { threshold: 0.25 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  const live = on && inView;
+  const typeMode: TypeMode = !on ? 'static' : inView ? 'run' : 'hold';
+  const url = useTypewriter('skyz.dev/build', typeMode, 90, 600);
+  const cmd = useTypewriter('npm run build', typeMode, 48, 2100);
+  const deployed = live && url.done && cmd.done;
   return (
-    <div className="relative rounded-[2rem] border border-skyz-border bg-skyz-bg p-4 sm:p-7 overflow-hidden w-full max-w-md mx-auto">
+    <div ref={rootRef} className="relative rounded-[2rem] border border-skyz-border bg-skyz-bg p-4 sm:p-7 overflow-hidden w-full max-w-md mx-auto">
       <div className="rounded-2xl border border-skyz-border bg-skyz-surface overflow-hidden shadow-sm">
-        {/* browser chrome */}
+        {/* browser chrome — the URL types itself in */}
         <div className="flex items-center gap-1.5 px-4 py-3 border-b border-skyz-border">
           <span className="w-2 h-2 rounded-full bg-skyz-border" />
           <span className="w-2 h-2 rounded-full bg-skyz-border" />
           <span className="w-2 h-2 rounded-full bg-skyz-border" />
           <span className="ml-3 h-5 flex-1 max-w-[160px] rounded-full bg-skyz-surface-subtle border border-skyz-border flex items-center px-3">
-            <span className="text-[9px] font-mono text-skyz-text-muted">skyz.dev</span>
+            <span className="text-[9px] font-mono text-skyz-text-muted">
+              {url.shown}
+              {!url.done && <span className="type-caret">▌</span>}
+            </span>
           </span>
+        </div>
+        {/* build terminal — the command types, then the deploy check lands */}
+        <div className="px-4 pt-3 pb-1 font-mono text-[9px] sm:text-[10px]">
+          <div className="text-skyz-text-muted">
+            <span className="text-emerald-500">$</span> {cmd.shown}
+            {!cmd.done && <span className="type-caret">▌</span>}
+          </div>
+          <motion.div
+            initial={false}
+            animate={deployed && on ? { opacity: 1, y: 0 } : { opacity: 0, y: 4 }}
+            transition={{ duration: 0.35, ease: 'easeOut' }}
+            className="mt-1 text-emerald-500"
+          >
+            ✓ built — deploying to edge
+          </motion.div>
         </div>
         {/* skeleton blocks assembling */}
         <div className="p-4 sm:p-5 grid grid-cols-3 gap-2.5 sm:gap-3">
