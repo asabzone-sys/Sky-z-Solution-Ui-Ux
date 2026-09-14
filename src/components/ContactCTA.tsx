@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ArrowRight, Check, ShieldCheck, Clock, Send } from 'lucide-react';
 import { useNavigation } from '../context/NavigationContext';
 import { Reveal, SectionShell, Blob } from '../components/OpalKit';
+import { ModalPortal } from './ModalPortal';
 
 export const ContactCTA: React.FC = () => {
   const { navigate } = useNavigation();
@@ -107,6 +108,7 @@ export const ContactCTA: React.FC = () => {
 
         {/* Inquiry Modal */}
         {inquiryModalOpen && (
+          <ModalPortal>
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
             <div className="bg-skyz-surface rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-skyz-border relative">
               <button
@@ -193,6 +195,7 @@ export const ContactCTA: React.FC = () => {
               )}
             </div>
           </div>
+          </ModalPortal>
         )}
       </div>
     </SectionShell>

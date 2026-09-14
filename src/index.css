@@ -345,4 +345,4 @@ body.motion-off .widget-core-spin {
   from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: none; }
 }
-.skz-page-in { animation: skz-page-in 0.28s ease-out both; }
+.skz-page-in { animation: skz-page-in 0.28s ease-out backwards; animation-fill-mode: backwards; }

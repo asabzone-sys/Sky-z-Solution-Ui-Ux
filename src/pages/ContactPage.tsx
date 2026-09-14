@@ -14,13 +14,18 @@ import {
   Bot,
   ArrowRight,
   Mail,
+  Calendar,
 } from 'lucide-react';
+import { InlineWidget, PopupModal } from 'react-calendly';
 import { useNavigation } from '../context/NavigationContext';
 import { SectionShell, Reveal, Blob, FloatingTag, Eyebrow } from '../components/OpalKit';
 import { submitLead } from '../lib/supabase';
 
 export const ContactPage: React.FC = () => {
   const { selectedServiceCategory } = useNavigation();
+
+  // Calendly scheduling link (VITE_CALENDLY_URL) with a sensible fallback.
+  const calendlyUrl = import.meta.env.VITE_CALENDLY_URL || 'https://calendly.com/skyz-solution/30min';
 
   const servicesList = [
     { id: 'web-development', name: 'Web Development', icon: <Globe className="w-4 h-4 text-sky-500" /> },
@@ -47,6 +52,7 @@ export const ContactPage: React.FC = () => {
   });
 
   const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [calendlyOpen, setCalendlyOpen] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
@@ -449,6 +455,107 @@ export const ContactPage: React.FC = () => {
 
         </div>
       </SectionShell>
+
+      {/* ============================================================== */}
+      {/* 3.5 BOOK A CALL — Calendly scheduling, premium floating shell */}
+      {/* ============================================================== */}
+      <SectionShell id="book-a-call">
+        <div className="relative bg-skyz-surface border border-skyz-border rounded-[inherit] px-5 sm:px-10 lg:px-14 py-14 sm:py-20 overflow-hidden">
+          <Blob className="w-[380px] h-[340px] -top-24 -right-28 opacity-60" color="rgba(124, 58, 237, 0.08)" duration={12} />
+          <div className="absolute top-6 right-6 hidden lg:block text-[11px] font-mono text-skyz-text-muted tracking-widest">
+            SCHEDULE.MEET
+          </div>
+
+          <div className="relative z-10 max-w-6xl mx-auto grid lg:grid-cols-[1fr_1.1fr] gap-10 lg:gap-14 items-center">
+            {/* pitch column */}
+            <div className="text-center lg:text-left space-y-5">
+              <Reveal>
+                <Eyebrow>
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  Skip the back-and-forth
+                </Eyebrow>
+              </Reveal>
+
+              <Reveal delay={0.08}>
+                <h2 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-skyz-text leading-[1.05]">
+                  Book your schedule<span className="text-skyz-accent">.</span>
+                </h2>
+              </Reveal>
+
+              <Reveal delay={0.14}>
+                <p className="text-sm sm:text-base text-skyz-text-muted leading-relaxed max-w-md mx-auto lg:mx-0">
+                  Prefer talking it through? Grab a free 30-minute strategy call directly
+                  on our calendar — pick a slot, get the meeting link instantly, and come
+                  with questions. No commitment, no sales script.
+                </p>
+              </Reveal>
+
+              <Reveal delay={0.2}>
+                <ul className="space-y-2.5 text-sm text-skyz-text-muted text-left max-w-md mx-auto lg:mx-0">
+                  {[
+                    'Instant confirmation — meeting link arrives by email',
+                    'Video call with the people who will actually build it',
+                    'Reschedule or cancel anytime, one click',
+                  ].map((point) => (
+                    <li key={point} className="flex items-start gap-2.5">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
+                      <span>{point}</span>
+                    </li>
+                  ))}
+                </ul>
+              </Reveal>
+
+              <Reveal delay={0.26}>
+                <button
+                  type="button"
+                  onClick={() => setCalendlyOpen(true)}
+                  className="group inline-flex items-center gap-3 px-8 py-4 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#080B10] font-semibold text-sm sm:text-base shadow-lg hover:bg-skyz-accent dark:hover:bg-skyz-accent-secondary hover:shadow-xl transition-all cursor-pointer"
+                >
+                  <Calendar className="w-5 h-5" />
+                  <span>Book your schedule</span>
+                  <span className="w-px h-5 bg-current opacity-25" aria-hidden />
+                  <span className="text-xs font-mono opacity-70">30 MIN — FREE</span>
+                </button>
+              </Reveal>
+
+              <Reveal delay={0.3}>
+                <p className="text-xs font-mono text-skyz-text-muted tracking-wide">
+                  CAN'T FIND A SLOT?{' '}
+                  <button type="button" onClick={scrollToBrief} className="underline underline-offset-2 hover:text-skyz-text cursor-pointer">
+                    WRITE THE BRIEF INSTEAD
+                  </button>
+                </p>
+              </Reveal>
+            </div>
+
+            {/* live availability column — the actual Calendly widget */}
+            <Reveal delay={0.1} className="w-full">
+              <div className="relative rounded-[2rem] border border-skyz-border bg-skyz-bg p-2 sm:p-3 shadow-2xl">
+                <div className="flex items-center justify-between px-3 py-2">
+                  <span className="font-mono text-[10px] tracking-widest text-skyz-text-muted">LIVE AVAILABILITY</span>
+                  <span className="flex items-center gap-1.5 text-[10px] font-mono text-emerald-500">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> OPEN
+                  </span>
+                </div>
+                <div className="rounded-3xl overflow-hidden bg-white">
+                  <InlineWidget
+                    url={calendlyUrl}
+                    styles={{ height: '630px' }}
+                  />
+                </div>
+              </div>
+            </Reveal>
+          </div>
+        </div>
+      </SectionShell>
+
+      {/* Calendly popup — opened by the "Book your schedule" button */}
+      <PopupModal
+        url={calendlyUrl}
+        rootElement={document.getElementById('root') as unknown as HTMLElement}
+        onModalClose={() => setCalendlyOpen(false)}
+        open={calendlyOpen}
+      />
 
       {/* ============================================================ */}
       {/* 4. CLOSING PILL — minimal exit toward the work                */}

@@ -25,6 +25,7 @@ import {
   Eyebrow,
 } from '../components/OpalKit';
 import { useProjects } from '../lib/supabase';
+import { ModalPortal } from '../components/ModalPortal';
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -405,6 +406,7 @@ export const WorkPage: React.FC = () => {
       {/* ============================================================ */}
       <AnimatePresence>
         {activeModalProject && (
+          <ModalPortal>
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/70 backdrop-blur-sm">
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -497,6 +499,7 @@ export const WorkPage: React.FC = () => {
               </div>
             </motion.div>
           </div>
+          </ModalPortal>
         )}
       </AnimatePresence>
 
