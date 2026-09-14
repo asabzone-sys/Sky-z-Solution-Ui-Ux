@@ -91,13 +91,20 @@ export default function App() {
   const isAdminRoute =
     typeof window !== 'undefined' && window.location.pathname.replace(/\/+$/, '') === '/admin';
 
-  // One-time cinematic entry — session-scoped so normal navigation within the
-  // session never replays it, but a fresh visit/refresh does.
-  const [loaderDone, setLoaderDone] = useState(
-    () => sessionStorage.getItem('skyz_portal_seen') === '1'
-  );
+  // One-time cinematic entry — time-scoped instead of session-scoped.
+  // sessionStorage resets on every new browser session (and in mobile
+  // in-app browsers, on nearly every visit), which replayed the loader
+  // far too often. A 12h localStorage window keeps the intro special for
+  // genuinely new visits without nagging returning ones.
+  const loaderSeenRecently = () => {
+    try {
+      const at = Number(localStorage.getItem('skyz_portal_seen_at'));
+      return !!at && Date.now() - at < 12 * 60 * 60 * 1000;
+    } catch { return false; }
+  };
+  const [loaderDone, setLoaderDone] = useState(loaderSeenRecently);
   const handleLoaderDone = useCallback(() => {
-    try { sessionStorage.setItem('skyz_portal_seen', '1'); } catch { /* private mode */ }
+    try { localStorage.setItem('skyz_portal_seen_at', String(Date.now())); } catch { /* private mode */ }
     setLoaderDone(true);
   }, []);
 

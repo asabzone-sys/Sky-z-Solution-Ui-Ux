@@ -8,6 +8,7 @@ const WorkCarousel = lazy(() => import('../components/WorkCarousel').then((m) =>
 const Capabilities = lazy(() => import('../components/Capabilities').then((m) => ({ default: m.Capabilities })));
 const Testimonials = lazy(() => import('../components/Testimonials').then((m) => ({ default: m.Testimonials })));
 const ContactCTA = lazy(() => import('../components/ContactCTA').then((m) => ({ default: m.ContactCTA })));
+const BookingStrip = lazy(() => import('../components/BookingStrip').then((m) => ({ default: m.BookingStrip })));
 
 export const HomePage: React.FC = () => (
   <>
@@ -16,6 +17,7 @@ export const HomePage: React.FC = () => (
       <WorkCarousel />
       <Capabilities />
       <Testimonials />
+      <BookingStrip />
       <ContactCTA />
     </Suspense>
   </>

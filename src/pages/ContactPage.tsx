@@ -17,6 +17,7 @@ import {
   Calendar,
 } from 'lucide-react';
 import { InlineWidget, PopupModal } from 'react-calendly';
+import { CALENDLY_URL } from '../lib/calendly';
 import { useNavigation } from '../context/NavigationContext';
 import { SectionShell, Reveal, Blob, FloatingTag, Eyebrow } from '../components/OpalKit';
 import { submitLead } from '../lib/supabase';
@@ -24,8 +25,8 @@ import { submitLead } from '../lib/supabase';
 export const ContactPage: React.FC = () => {
   const { selectedServiceCategory } = useNavigation();
 
-  // Calendly scheduling link (VITE_CALENDLY_URL) with a sensible fallback.
-  const calendlyUrl = import.meta.env.VITE_CALENDLY_URL || 'https://calendly.com/skyz-solutions2000/30min';
+  // Calendly link comes from the shared lib (VITE_CALENDLY_URL with fallback).
+  const calendlyUrl = CALENDLY_URL;
 
   const servicesList = [
     { id: 'web-development', name: 'Web Development', icon: <Globe className="w-4 h-4 text-sky-500" /> },
