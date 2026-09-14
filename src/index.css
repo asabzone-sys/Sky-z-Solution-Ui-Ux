@@ -354,3 +354,95 @@ body.motion-off .widget-core-spin {
   50% { transform: translateY(-7px); }
 }
 .skz-levitate { animation: skz-levitate 7s ease-in-out infinite; }
+
+/* ---------------------------------------------------------------- */
+/* Calendly popup modal — themed to match the site's rounded shell.  */
+/* react-calendly injects its stylesheet at runtime (after ours), so */
+/* every override here is body-prefixed to win the cascade.          */
+/* ---------------------------------------------------------------- */
+
+/* backdrop: deep glass like our own modals */
+body .calendly-overlay {
+  background-color: rgba(8, 11, 16, 0.72);
+  -webkit-backdrop-filter: blur(10px);
+  animation: skz-fade-in 0.25s ease-out both;
+}
+/* the CSS pipeline keeps the -webkit- form and drops the standard one;
+   re-assert the standard property inside @supports so Firefox gets it */
+@supports (backdrop-filter: blur(1px)) {
+  body .calendly-overlay { backdrop-filter: blur(10px); }
+}
+
+/* desktop shell: rounded card, hairline border, soft shadow */
+body .calendly-popup {
+  border-radius: 2rem;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 40px 90px -20px rgba(0, 0, 0, 0.55);
+}
+
+/* content: gentle scale-in (transform lives on content — the popup's
+   own transform is used for centering and must not be animated) */
+body .calendly-popup .calendly-popup-content {
+  animation: skz-popup-in 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* mobile shell: floating card with margins — their default glues the
+   popup to the screen edges with zero radius */
+@media (max-width: 768px) {
+  body .calendly-popup {
+    top: 4rem;
+    left: 0.5rem;
+    right: 0.5rem;
+    bottom: 0.75rem;
+    border-radius: 1.75rem;
+  }
+  body .calendly-popup-close {
+    top: 0.85rem;
+    right: 0.85rem;
+  }
+}
+
+/* kill the visible scrollbar on the popup's own scroll layer —
+   touch/wheel scrolling still works, the ugly bar doesn't */
+body .calendly-popup .calendly-popup-content {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+body .calendly-popup .calendly-popup-content::-webkit-scrollbar {
+  display: none;
+}
+
+/* close button: glass circle instead of the floating bare X
+   (the button is a sibling of .calendly-popup, not a child) */
+body .calendly-popup-close {
+  width: 2.25rem !important;
+  height: 2.25rem !important;
+  top: 1rem;
+  right: 1rem;
+  border-radius: 9999px;
+  background-color: rgba(15, 18, 26, 0.55) !important;
+  background-image: url(https://assets.calendly.com/assets/external/close-icon.svg) !important;
+  background-size: 0.85rem !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+body .calendly-popup-close:hover {
+  transform: scale(1.08);
+  background-color: rgba(15, 18, 26, 0.8);
+}
+
+@keyframes skz-popup-in {
+  from { opacity: 0; transform: translateY(16px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes skz-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

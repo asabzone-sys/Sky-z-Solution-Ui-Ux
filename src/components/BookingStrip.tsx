@@ -7,6 +7,7 @@ import React, { useEffect, useState } from 'react';
 import { PopupModal } from 'react-calendly';
 import { Calendar, ArrowUpRight } from 'lucide-react';
 import { Reveal } from './OpalKit';
+import { usePageScrollLock } from './ModalPortal';
 import { CALENDLY_URL } from '../lib/calendly';
 
 /**
@@ -46,6 +47,9 @@ const LiveClock: React.FC = () => {
 
 export const BookingStrip: React.FC = () => {
   const [open, setOpen] = useState(false);
+  // The Calendly popup never locks the page beneath itself — do it here so
+  // the site scrollbar doesn't sit beside the modal.
+  usePageScrollLock(open);
 
   return (
     <section className="relative w-full px-2 sm:px-4 lg:px-6 py-6 sm:py-10" aria-label="Book a call">
@@ -116,6 +120,12 @@ export const BookingStrip: React.FC = () => {
         rootElement={document.getElementById('root') as HTMLElement}
         onModalClose={() => setOpen(false)}
         open={open}
+        pageSettings={{
+          // calendar-only layout: no details panel → no internal scrollbar,
+          // and the accents pick up the brand purple
+          hideEventTypeDetails: true,
+          primaryColor: '7c3aed',
+        }}
       />
     </section>
   );

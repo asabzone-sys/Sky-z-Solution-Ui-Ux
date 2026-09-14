@@ -20,6 +20,7 @@ import { InlineWidget, PopupModal } from 'react-calendly';
 import { CALENDLY_URL } from '../lib/calendly';
 import { useNavigation } from '../context/NavigationContext';
 import { SectionShell, Reveal, Blob, FloatingTag, Eyebrow } from '../components/OpalKit';
+import { usePageScrollLock } from '../components/ModalPortal';
 import { submitLead } from '../lib/supabase';
 
 export const ContactPage: React.FC = () => {
@@ -54,6 +55,8 @@ export const ContactPage: React.FC = () => {
 
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [calendlyOpen, setCalendlyOpen] = useState(false);
+  // lock the page while the Calendly popup is up (it never does it itself)
+  usePageScrollLock(calendlyOpen);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
@@ -542,6 +545,10 @@ export const ContactPage: React.FC = () => {
                   <InlineWidget
                     url={calendlyUrl}
                     styles={{ height: '630px' }}
+                    pageSettings={{
+                      hideEventTypeDetails: true,
+                      primaryColor: '7c3aed',
+                    }}
                   />
                 </div>
               </div>
@@ -556,6 +563,10 @@ export const ContactPage: React.FC = () => {
         rootElement={document.getElementById('root') as unknown as HTMLElement}
         onModalClose={() => setCalendlyOpen(false)}
         open={calendlyOpen}
+        pageSettings={{
+          hideEventTypeDetails: true,
+          primaryColor: '7c3aed',
+        }}
       />
 
       {/* ============================================================ */}

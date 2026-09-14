@@ -7,6 +7,25 @@ import React, { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 
 /**
+ * Locks page scroll while `locked` is true (html + body, restored on release).
+ * Used by surfaces that embed third-party overlays (e.g. the Calendly
+ * popup), whose own chrome never locks the page underneath.
+ */
+export const usePageScrollLock = (locked: boolean) => {
+  useEffect(() => {
+    if (!locked) return;
+    const restore: Array<[HTMLElement, string]> = [];
+    for (const target of [document.documentElement, document.body] as HTMLElement[]) {
+      restore.push([target, target.style.overflow]);
+      target.style.overflow = 'hidden';
+    }
+    return () => {
+      for (const [target, prev] of restore) target.style.overflow = prev;
+    };
+  }, [locked]);
+};
+
+/**
  * Renders children into a portal attached directly to <body>.
  *
  * Why this exists: any ancestor with a CSS `transform`, `filter`,
@@ -30,9 +49,6 @@ export const ModalPortal: React.FC<{ children: React.ReactNode }> = ({ children 
     const host = el.current;
     if (!host) return;
     document.body.appendChild(host);
-    // Lock background scroll on BOTH html and body: overflow on body alone is
-    // propagated to the viewport (and can still be moved programmatically),
-    // while a hidden overflow on documentElement hard-locks the scroller.
     const restore: Array<[HTMLElement, string]> = [];
     for (const target of [document.documentElement, document.body] as HTMLElement[]) {
       restore.push([target, target.style.overflow]);
