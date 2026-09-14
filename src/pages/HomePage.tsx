@@ -14,6 +14,7 @@ export const HomePage: React.FC = () => (
     <Hero />
     <Suspense fallback={<div className="min-h-[60vh]" />}>
       <WorkCarousel />
+      <Capabilities />
       <Testimonials />
       <ContactCTA />
     </Suspense>
