@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
-  Inbox, FolderKanban, Sparkles, Quote, Type, Users, LogOut, Menu, X, Sun, Moon, ExternalLink,
+  Inbox, FolderKanban, Sparkles, Quote, Type, Users, LogOut, Menu, X, Sun, Moon, ExternalLink, CalendarClock,
 } from 'lucide-react';
 import { useAdmin } from './AdminContext';
 import { useTheme } from '../context/ThemeContext';
 
-export type AdminSection = 'leads' | 'work' | 'studio' | 'testimonials' | 'content' | 'team';
+export type AdminSection = 'leads' | 'meetings' | 'work' | 'studio' | 'testimonials' | 'content' | 'team';
 
 export const ADMIN_NAV: Array<{ id: AdminSection; label: string; icon: React.ReactNode; adminOnly?: boolean }> = [
   { id: 'leads', label: 'Leads Inbox', icon: <Inbox className="w-4.5 h-4.5" /> },
+  { id: 'meetings', label: 'Meetings', icon: <CalendarClock className="w-4.5 h-4.5" /> },
   { id: 'work', label: 'Work Projects', icon: <FolderKanban className="w-4.5 h-4.5" /> },
   { id: 'studio', label: 'Studio Works', icon: <Sparkles className="w-4.5 h-4.5" /> },
   { id: 'testimonials', label: 'Testimonials', icon: <Quote className="w-4.5 h-4.5" /> },

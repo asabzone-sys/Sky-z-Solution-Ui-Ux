@@ -5,6 +5,7 @@ import { AdminLogin } from './AdminLogin';
 import { leadsApi, projectsApi, studioApi, testimonialsApi } from '../lib/adminApi';
 import { hasBackend } from '../lib/supabase';
 import { LeadsInbox } from './sections/LeadsInbox';
+import { MeetingsInbox } from './sections/MeetingsInbox';
 import { ContentManager } from './sections/ContentManager';
 import { TeamSection } from './sections/TeamSection';
 import { SiteContentSection } from './sections/SiteContentSection';
@@ -174,6 +175,9 @@ export const AdminApp: React.FC = () => {
       <div className="max-w-5xl mx-auto">
         {section === 'leads' && (
           configured ? <LeadsInbox onData={refreshUnread} /> : <NeedsBackend feature="Leads Inbox" />
+        )}
+        {section === 'meetings' && (
+          configured ? <MeetingsInbox /> : <NeedsBackend feature="Meetings" />
         )}
         {section === 'work' && (
           <ContentManager

@@ -346,3 +346,11 @@ body.motion-off .widget-core-spin {
   to { opacity: 1; transform: none; }
 }
 .skz-page-in { animation: skz-page-in 0.28s ease-out backwards; animation-fill-mode: backwards; }
+
+/* Contact — booking widget shell levitates gently (same soft register as
+   the hero blobs; compositor-only transform, no layout cost). */
+@keyframes skz-levitate {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+.skz-levitate { animation: skz-levitate 7s ease-in-out infinite; }

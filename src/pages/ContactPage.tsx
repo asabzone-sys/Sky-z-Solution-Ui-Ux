@@ -25,7 +25,7 @@ export const ContactPage: React.FC = () => {
   const { selectedServiceCategory } = useNavigation();
 
   // Calendly scheduling link (VITE_CALENDLY_URL) with a sensible fallback.
-  const calendlyUrl = import.meta.env.VITE_CALENDLY_URL || 'https://calendly.com/skyz-solution/30min';
+  const calendlyUrl = import.meta.env.VITE_CALENDLY_URL || 'https://calendly.com/skyz-solutions2000/30min';
 
   const servicesList = [
     { id: 'web-development', name: 'Web Development', icon: <Globe className="w-4 h-4 text-sky-500" /> },
@@ -460,7 +460,7 @@ export const ContactPage: React.FC = () => {
       {/* 3.5 BOOK A CALL — Calendly scheduling, premium floating shell */}
       {/* ============================================================== */}
       <SectionShell id="book-a-call">
-        <div className="relative bg-skyz-surface border border-skyz-border rounded-[inherit] px-5 sm:px-10 lg:px-14 py-14 sm:py-20 overflow-hidden">
+        <div className="relative bg-skyz-surface border border-skyz-border rounded-[inherit] px-5 sm:px-10 lg:px-14 py-24 sm:py-32 overflow-hidden">
           <Blob className="w-[380px] h-[340px] -top-24 -right-28 opacity-60" color="rgba(124, 58, 237, 0.08)" duration={12} />
           <div className="absolute top-6 right-6 hidden lg:block text-[11px] font-mono text-skyz-text-muted tracking-widest">
             SCHEDULE.MEET
@@ -468,7 +468,7 @@ export const ContactPage: React.FC = () => {
 
           <div className="relative z-10 max-w-6xl mx-auto grid lg:grid-cols-[1fr_1.1fr] gap-10 lg:gap-14 items-center">
             {/* pitch column */}
-            <div className="text-center lg:text-left space-y-5">
+            <div className="text-center lg:text-left space-y-7">
               <Reveal>
                 <Eyebrow>
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -530,7 +530,7 @@ export const ContactPage: React.FC = () => {
 
             {/* live availability column — the actual Calendly widget */}
             <Reveal delay={0.1} className="w-full">
-              <div className="relative rounded-[2rem] border border-skyz-border bg-skyz-bg p-2 sm:p-3 shadow-2xl">
+              <div className="relative rounded-[2rem] border border-skyz-border bg-skyz-bg p-2 sm:p-3 shadow-2xl skz-levitate">
                 <div className="flex items-center justify-between px-3 py-2">
                   <span className="font-mono text-[10px] tracking-widest text-skyz-text-muted">LIVE AVAILABILITY</span>
                   <span className="flex items-center gap-1.5 text-[10px] font-mono text-emerald-500">

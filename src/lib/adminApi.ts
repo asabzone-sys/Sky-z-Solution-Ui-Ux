@@ -143,6 +143,39 @@ export const leadsApi = {
 };
 
 /* ------------------------------------------------------------------ */
+/* Meetings (Calendly bookings, written by the calendly-webhook fn)     */
+/* ------------------------------------------------------------------ */
+export interface Meeting {
+  id: string;
+  invitee_uri: string;
+  event_uri: string;
+  event_type: string;
+  invitee_name: string;
+  invitee_email: string;
+  start_time: string | null;
+  timezone: string | null;
+  status: 'scheduled' | 'rescheduled' | 'canceled';
+  question_answers: Array<{ question: string; answer: string }> | null;
+  created_at: string;
+}
+
+export const meetingsApi = {
+  async list(): Promise<Meeting[]> {
+    const { data, error } = await (await need()).from('meetings').select('*').order('start_time', { ascending: false, nullsFirst: false });
+    if (error) throw error;
+    return (data || []) as Meeting[];
+  },
+  async setStatus(id: string, status: Meeting['status']): Promise<void> {
+    const { error } = await (await need()).from('meetings').update({ status, updated_at: new Date().toISOString() }).eq('id', id);
+    if (error) throw error;
+  },
+  async remove(id: string): Promise<void> {
+    const { error } = await (await need()).from('meetings').delete().eq('id', id);
+    if (error) throw error;
+  },
+};
+
+/* ------------------------------------------------------------------ */
 /* Site content                                                        */
 /* ------------------------------------------------------------------ */
 export interface ContentEntry { key: string; value: unknown; group_name: string; label: string; }
