@@ -34,6 +34,8 @@ const DL = 'C:/Users/asabs/Downloads';
 const BLACK = path.join(DL, 'KY Z.png');
 const WHITE = path.join(DL, 'KY Z (1).png');
 const MARK = path.join(DL, 'KY Z (3).png');
+// light-theme lockup: dark ink + violet mark on transparency (user-provided)
+const LIGHT_LOCKUP = path.join(__dirname, '..', 'brand-masters', 'KY Z light.png');
 
 const OUT_PUBLIC = 'public';
 const OUT_BRAND = path.join(OUT_PUBLIC, 'brand');
@@ -128,6 +130,35 @@ async function run() {
   await sharp(plateBuf).resize({ width: Math.min(1200, pMeta.width) }).webp({ quality: 90 }).toFile(path.join(OUT_BRAND, 'lockup-plate.webp'));
   await sharp(plateBuf).resize({ width: Math.min(1200, pMeta.width) }).png().toFile(path.join(OUT_BRAND, 'lockup-plate.png'));
   console.log(`lockup-plate: ${pMeta.width}x${pMeta.height} (bbox-trimmed)`);
+
+  /* ---------- 1c. light-theme lockup: dark ink + violet mark, transparent ----------
+   * User-provided master already carries dark text (readable on light
+   * backgrounds) and a transparent backdrop. Trimmed to its bbox. */
+  const LK = 1600;
+  const lkBuf = await sharp(LIGHT_LOCKUP).resize({ width: LK }).png().toBuffer();
+  const lt = await sharp(lkBuf).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  const lw = lt.info.width, lh = lt.info.height, lc = lt.info.channels;
+  let lminX = lw, lminY = lh, lmaxX = -1, lmaxY = -1;
+  for (let y = 0; y < lh; y++) {
+    for (let x = 0; x < lw; x++) {
+      if (lt.data[(y * lw + x) * lc + 3] > ALPHA_CUTOFF) {
+        if (x < lminX) lminX = x;
+        if (x > lmaxX) lmaxX = x;
+        if (y < lminY) lminY = y;
+        if (y > lmaxY) lmaxY = y;
+      }
+    }
+  }
+  if (lmaxX < 0) throw new Error('light lockup: no opaque pixels found');
+  const lexL = Math.max(0, lminX - pad), lexT = Math.max(0, lminY - pad);
+  const lexW = Math.min(lw, lmaxX + 1 + pad) - lexL, lexH = Math.min(lh, lmaxY + 1 + pad) - lexT;
+  const lightLockup = await sharp(lkBuf)
+    .extract({ left: lexL, top: lexT, width: lexW, height: lexH })
+    .png().toBuffer();
+  const lMeta = await sharp(lightLockup).metadata();
+  await sharp(lightLockup).webp({ quality: 90 }).toFile(path.join(OUT_BRAND, 'lockup-light.webp'));
+  await sharp(lightLockup).png().toFile(path.join(OUT_BRAND, 'lockup-light.png'));
+  console.log(`lockup-light: ${lMeta.width}x${lMeta.height} (bbox-trimmed)`);
 
   /* ---------- 2. provenance copies (as-rendered on solid backgrounds) ---------- */
   await sharp(BLACK).resize({ width: 2400 }).png().toFile(path.join(OUT_BRAND, 'lockup-on-black.png'));

@@ -50,11 +50,11 @@ export const Navbar: React.FC = () => {
             aria-label="SKY Z Solutions — home"
           >
             <img
-              src="/brand/lockup-plate.webp"
+              src="/brand/lockup-light.webp"
               alt="SKY Z Solutions"
-              width={1200}
-              height={358}
-              className="dark:hidden h-9 sm:h-10 w-auto object-contain rounded-lg transition-transform duration-300 group-hover:scale-[1.02]"
+              width={1573}
+              height={480}
+              className="dark:hidden h-9 sm:h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-[1.02]"
               draggable={false}
             />
             <img

@@ -23,14 +23,14 @@ export const Footer: React.FC = () => {
                 ink needs its native black plate to stay readable. Dark theme:
                 the transparent full-color version of the same artwork. */}
             <img
-              src="/brand/lockup-plate.webp"
+              src="/brand/lockup-light.webp"
               alt="SKY Z Solutions"
-              width={1200}
-              height={358}
+              width={1573}
+              height={480}
               loading="lazy"
               decoding="async"
               draggable={false}
-              className="dark:hidden h-8 sm:h-9 w-auto object-contain rounded-md transition-transform duration-300 group-hover:scale-[1.02]"
+              className="dark:hidden h-8 sm:h-9 w-auto object-contain transition-transform duration-300 group-hover:scale-[1.02]"
             />
             <img
               src="/brand/lockup-transparent.webp"
