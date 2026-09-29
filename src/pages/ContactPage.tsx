@@ -188,7 +188,7 @@ export const ContactPage: React.FC = () => {
             <button
               type="button"
               onClick={scrollToBrief}
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#160F26] font-semibold text-sm shadow-md hover:bg-skyz-accent transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full skz-cta font-semibold text-sm transition-all cursor-pointer"
             >
               <Mail className="w-4 h-4" />
               <span>Write to the studio</span>
@@ -407,7 +407,7 @@ export const ContactPage: React.FC = () => {
                       <span className="flex items-center gap-3 text-xs sm:text-sm text-skyz-text-muted font-medium truncate">
                         {isSubmitting ? 'Sending your brief…' : 'Ready when you are —'}
                       </span>
-                      <span className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#160F26] text-xs sm:text-sm font-semibold flex-shrink-0 transition-transform group-hover:translate-x-0.5">
+                      <span className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full skz-cta text-xs sm:text-sm font-semibold flex-shrink-0 transition-transform group-hover:translate-x-0.5">
                         {isSubmitting ? (
                           <span className="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin" />
                         ) : (
@@ -513,7 +513,7 @@ export const ContactPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setCalendlyOpen(true)}
-                  className="group inline-flex items-center gap-3 px-8 py-4 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#160F26] font-semibold text-sm sm:text-base shadow-lg hover:bg-skyz-accent dark:hover:bg-skyz-accent-secondary hover:shadow-xl transition-all cursor-pointer"
+                  className="group inline-flex items-center gap-3 px-8 py-4 rounded-full skz-cta font-semibold text-sm sm:text-base transition-all hover:shadow-xl cursor-pointer"
                 >
                   <Calendar className="w-5 h-5" />
                   <span>Book your schedule</span>

@@ -13,9 +13,10 @@
  *   public/skyz-mark.png / .webp            320x384 mark (loader, header)
  *   public/skyz-mark-96.webp                96px mark (loader source set)
  *   public/favicon-96.png, favicon.ico, apple-touch-icon.png
- *   public/brand/lockup-transparent.{png,webp}   full-color transparent lockup (footer)
- *   public/brand/lockup-on-black.{png,webp}      provenance copy (dark bg)
- *   public/brand/lockup-on-white.png             provenance copy (light bg)
+ *   public/brand/lockup-transparent.{png,webp}   full-color transparent lockup (dark theme)
+ *   public/brand/lockup-plate.{png,webp}         complete logo on its native black plate (light theme)
+ *   public/brand/lockup-on-black.{png,webp}      provenance copy (dark bg, full canvas)
+ *   public/brand/lockup-on-white.png             provenance copy (light bg, full canvas)
  *   public/brand/mark-master.{png,webp}          1024px transparent square mark
  *
  * Key technique — two-matte alpha recovery: the black-bg and white-bg renders
@@ -66,8 +67,67 @@ async function run() {
 
   const lockup = sharp(out, { raw: { width: bw, height: bh, channels: 4 } });
   const lockupBuf = await lockup.png().toBuffer();
-  await sharp(lockupBuf).webp({ quality: 90 }).toFile(path.join(OUT_BRAND, 'lockup-transparent.webp'));
-  await sharp(lockupBuf).toFile(path.join(OUT_BRAND, 'lockup-transparent.png'));
+
+  /* trim to the artwork bbox via a raw alpha scan (noise pixels with alpha
+   * <= ALPHA_CUTOFF are background; sharp's built-in trim is too fragile) */
+  const ALPHA_CUTOFF = 24;
+  const t = await sharp(lockupBuf).raw().toBuffer({ resolveWithObject: true });
+  const tw = t.info.width, th = t.info.height, tc = t.info.channels;
+  let minX = tw, minY = th, maxX = -1, maxY = -1;
+  for (let y = 0; y < th; y++) {
+    for (let x = 0; x < tw; x++) {
+      if (t.data[(y * tw + x) * tc + 3] > ALPHA_CUTOFF) {
+        if (x < minX) minX = x;
+        if (x > maxX) maxX = x;
+        if (y < minY) minY = y;
+        if (y > maxY) maxY = y;
+      }
+    }
+  }
+  if (maxX < 0) throw new Error('lockup: no opaque pixels found');
+  const pad = 12;
+  const exL = Math.max(0, minX - pad), exT = Math.max(0, minY - pad);
+  const exW = Math.min(tw, maxX + 1 + pad) - exL, exH = Math.min(th, maxY + 1 + pad) - exT;
+  const trimmedTransparent = await sharp(lockupBuf)
+    .extract({ left: exL, top: exT, width: exW, height: exH })
+    .png().toBuffer();
+  const tMeta = await sharp(trimmedTransparent).metadata();
+  await sharp(trimmedTransparent).webp({ quality: 90 }).toFile(path.join(OUT_BRAND, 'lockup-transparent.webp'));
+  await sharp(trimmedTransparent).png().toFile(path.join(OUT_BRAND, 'lockup-transparent.png'));
+  console.log(`lockup-transparent: ${tMeta.width}x${tMeta.height} (bbox-trimmed)`);
+
+  /* ---------- 1b. light-theme plate: complete logo on its native black ----------
+   * The white "SOLUTIONS" ink has no contrast on light backgrounds, so the
+   * light theme uses the complete logo as-is on its black plate (user option
+   * A: "use the complete Dark Theme logo on the Light Theme"). Trimmed to the
+   * artwork bbox so the plate hugs the logo. */
+  const PW = 2400;
+  const p = await sharp(BLACK).resize({ width: PW }).raw().toBuffer({ resolveWithObject: true });
+  const pw = p.info.width, ph = p.info.height, pc = p.info.channels;
+  let pminX = pw, pminY = ph, pmaxX = -1, pmaxY = -1;
+  for (let y = 0; y < ph; y++) {
+    for (let x = 0; x < pw; x++) {
+      const i = (y * pw + x) * pc;
+      const lum = Math.max(p.data[i], p.data[i + 1], p.data[i + 2]);
+      if (lum > 24) {
+        if (x < pminX) pminX = x;
+        if (x > pmaxX) pmaxX = x;
+        if (y < pminY) pminY = y;
+        if (y > pmaxY) pmaxY = y;
+      }
+    }
+  }
+  if (pmaxX < 0) throw new Error('plate: no artwork pixels found');
+  const pPad = 16;
+  const pexL = Math.max(0, pminX - pPad), pexT = Math.max(0, pminY - pPad);
+  const pexW = Math.min(pw, pmaxX + 1 + pPad) - pexL, pexH = Math.min(ph, pmaxY + 1 + pPad) - pexT;
+  const plateBuf = await sharp(BLACK).resize({ width: PW })
+    .extract({ left: pexL, top: pexT, width: pexW, height: pexH })
+    .png().toBuffer();
+  const pMeta = await sharp(plateBuf).metadata();
+  await sharp(plateBuf).resize({ width: Math.min(1200, pMeta.width) }).webp({ quality: 90 }).toFile(path.join(OUT_BRAND, 'lockup-plate.webp'));
+  await sharp(plateBuf).resize({ width: Math.min(1200, pMeta.width) }).png().toFile(path.join(OUT_BRAND, 'lockup-plate.png'));
+  console.log(`lockup-plate: ${pMeta.width}x${pMeta.height} (bbox-trimmed)`);
 
   /* ---------- 2. provenance copies (as-rendered on solid backgrounds) ---------- */
   await sharp(BLACK).resize({ width: 2400 }).png().toFile(path.join(OUT_BRAND, 'lockup-on-black.png'));

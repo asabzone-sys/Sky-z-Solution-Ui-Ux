@@ -38,28 +38,33 @@ export const Navbar: React.FC = () => {
       }`}
     >
       <div className="h-16 md:h-[4.5rem] max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-2 sm:gap-4">
-        {/* Brand: real logo mark + wordmark */}
-        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+        {/* Brand: the original complete logo. Light theme uses the dark-plate
+            version (white ink needs the native black background for contrast);
+            dark theme uses the transparent full-color version. Same artwork,
+            original aspect ratio, no redesign. */}
+        <div className="flex items-center min-w-0">
           <button
             type="button"
             onClick={() => handleNavClick('home')}
-            className="flex items-center gap-2.5 group flex-shrink-0 text-left cursor-pointer"
-            aria-label="SkyZ Solutions — home"
+            className="group flex-shrink-0 cursor-pointer"
+            aria-label="SKY Z Solutions — home"
           >
-            <div className="w-9 h-9 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center shadow-sm bg-skyz-surface border border-skyz-border transition-transform duration-300 group-hover:scale-105">
-              <img
-                src="/skyz-mark.png"
-                alt=""
-                width={36}
-                height={43}
-                className="w-full h-full object-contain p-[3px]"
-                draggable={false}
-              />
-            </div>
-            <div className="flex items-baseline gap-1.5">
-              <span className="font-display text-lg sm:text-xl tracking-tight text-skyz-text font-bold">SKY Z</span>
-              <span className="font-display text-lg sm:text-xl tracking-tight text-skyz-accent font-semibold">Solutions</span>
-            </div>
+            <img
+              src="/brand/lockup-plate.webp"
+              alt="SKY Z Solutions"
+              width={1200}
+              height={358}
+              className="dark:hidden h-9 sm:h-10 w-auto object-contain rounded-lg transition-transform duration-300 group-hover:scale-[1.02]"
+              draggable={false}
+            />
+            <img
+              src="/brand/lockup-transparent.webp"
+              alt="SKY Z Solutions"
+              width={1568}
+              height={478}
+              className="hidden dark:block h-9 sm:h-10 w-auto object-contain rounded-lg transition-transform duration-300 group-hover:scale-[1.02]"
+              draggable={false}
+            />
           </button>
         </div>
 

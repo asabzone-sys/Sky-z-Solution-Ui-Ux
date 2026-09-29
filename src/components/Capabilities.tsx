@@ -272,27 +272,32 @@ function AutomateWidget({ on }: { on: boolean }) {
   ];
   return (
     <div className="relative rounded-[2rem] border border-skyz-border bg-skyz-bg p-4 sm:p-7 overflow-hidden w-full max-w-md mx-auto">
+      {/* True circular orbit: ring, rotating layer and core live inside a
+          centered square (diameter = stage height), so rotation can never
+          push the side nodes outside the widget — no clipping, no overflow. */}
       <div className="relative h-40 sm:h-48" aria-hidden>
-        {/* dashed orbit ring */}
-        <div className="absolute inset-5 sm:inset-7 rounded-full border border-dashed border-skyz-border" />
-        {/* rotating orbit with upright nodes — CSS loops (see index.css note) */}
-        <div className={`absolute inset-5 sm:inset-7 ${on ? 'widget-orbit' : ''}`}>
-          {orbitNodes.map((n, i) => (
-            <span key={i} className={`absolute ${n.pos}`}>
-              <span
-                className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-skyz-surface border border-skyz-border shadow-sm flex items-center justify-center text-skyz-accent ${on ? 'widget-orbit-icon' : ''}`}
-              >
-                {n.icon}
+        <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 aspect-square">
+          {/* dashed orbit ring */}
+          <div className="absolute inset-5 sm:inset-6 rounded-full border border-dashed border-skyz-border" />
+          {/* rotating orbit with upright nodes — CSS loops (see index.css note) */}
+          <div className={`absolute inset-5 sm:inset-6 ${on ? 'widget-orbit' : ''}`}>
+            {orbitNodes.map((n, i) => (
+              <span key={i} className={`absolute ${n.pos}`}>
+                <span
+                  className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-skyz-surface border border-skyz-border shadow-sm flex items-center justify-center text-skyz-accent ${on ? 'widget-orbit-icon' : ''}`}
+                >
+                  {n.icon}
+                </span>
               </span>
-            </span>
-          ))}
-        </div>
-        {/* the core — always working */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#160F26] flex items-center justify-center shadow-lg">
-            <span className={on ? 'widget-core-spin inline-flex' : 'inline-flex'}>
-              <RefreshCw className="w-5 h-5 sm:w-6 sm:h-6" />
-            </span>
+            ))}
+          </div>
+          {/* the core — always working */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#160F26] flex items-center justify-center shadow-lg">
+              <span className={on ? 'widget-core-spin inline-flex' : 'inline-flex'}>
+                <RefreshCw className="w-5 h-5 sm:w-6 sm:h-6" />
+              </span>
+            </div>
           </div>
         </div>
       </div>

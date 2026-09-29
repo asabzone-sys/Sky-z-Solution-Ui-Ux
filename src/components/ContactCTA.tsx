@@ -69,7 +69,7 @@ export const ContactCTA: React.FC = () => {
                 <Send className="w-4 h-4 text-skyz-accent flex-shrink-0" />
                 Tell us what you want to build
               </span>
-              <span className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#160F26] text-xs sm:text-sm font-semibold flex-shrink-0 transition-transform group-hover:translate-x-0.5">
+              <span className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full skz-cta text-xs sm:text-sm font-semibold flex-shrink-0 transition-transform group-hover:translate-x-0.5">
                 Start
                 <ArrowRight className="w-3.5 h-3.5" />
               </span>
