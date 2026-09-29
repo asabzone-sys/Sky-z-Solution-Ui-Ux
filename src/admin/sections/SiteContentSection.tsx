@@ -120,7 +120,7 @@ export const SiteContentSection: React.FC<{ isAdmin: boolean }> = ({ isAdmin }) 
                         disabled={!dirty[entry.key] || busy === entry.key || !isAdmin}
                         onClick={() => save(entry.key)}
                         title={isAdmin ? undefined : 'Only admins can publish changes'}
-                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#080B10] text-[11px] font-semibold cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed hover:bg-skyz-accent dark:hover:bg-skyz-accent-secondary transition-all"
+                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#160F26] text-[11px] font-semibold cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed hover:bg-skyz-accent dark:hover:bg-skyz-accent-secondary transition-all"
                       >
                         {savedKey === entry.key ? <Check className="w-3 h-3" /> : <Save className="w-3 h-3" />}
                         {savedKey === entry.key ? 'Saved' : busy === entry.key ? 'Saving…' : 'Save'}

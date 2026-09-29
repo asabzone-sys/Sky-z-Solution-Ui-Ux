@@ -37,8 +37,8 @@ export const ContactCTA: React.FC = () => {
   return (
     <SectionShell id="contact">
       <div className="relative rounded-[inherit] bg-skyz-accent-muted border border-skyz-accent/20 px-5 sm:px-12 py-20 sm:py-28 text-center overflow-hidden transition-colors duration-200">
-        <Blob className="w-[340px] h-[320px] -top-24 -left-24 opacity-80" color="rgba(124, 58, 237, 0.12)" duration={11} />
-        <Blob className="w-[360px] h-[330px] -bottom-28 -right-24 opacity-80" color="rgba(56, 189, 248, 0.12)" duration={13} />
+        <Blob className="w-[340px] h-[320px] -top-24 -left-24 opacity-80" color="rgba(124, 77, 224, 0.12)" duration={11} />
+        <Blob className="w-[360px] h-[330px] -bottom-28 -right-24 opacity-80" color="rgba(159, 122, 234, 0.12)" duration={13} />
 
         <div className="relative z-10 max-w-3xl mx-auto space-y-8">
           <Reveal>
@@ -69,7 +69,7 @@ export const ContactCTA: React.FC = () => {
                 <Send className="w-4 h-4 text-skyz-accent flex-shrink-0" />
                 Tell us what you want to build
               </span>
-              <span className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#080B10] text-xs sm:text-sm font-semibold flex-shrink-0 transition-transform group-hover:translate-x-0.5">
+              <span className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#160F26] text-xs sm:text-sm font-semibold flex-shrink-0 transition-transform group-hover:translate-x-0.5">
                 Start
                 <ArrowRight className="w-3.5 h-3.5" />
               </span>
@@ -186,7 +186,7 @@ export const ContactCTA: React.FC = () => {
                   </div>
                   <button
                     type="submit"
-                    className="w-full py-3 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#080B10] font-semibold text-sm shadow-md hover:bg-skyz-accent dark:hover:bg-skyz-accent-secondary transition-all flex items-center justify-center gap-2 cursor-pointer"
+                    className="w-full py-3 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#160F26] font-semibold text-sm shadow-md hover:bg-skyz-accent dark:hover:bg-skyz-accent-secondary transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <span>Submit Project Brief</span>
                     <Send className="w-4 h-4" />

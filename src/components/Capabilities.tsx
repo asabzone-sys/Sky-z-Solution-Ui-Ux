@@ -193,7 +193,7 @@ function BuildWidget({ on }: { on: boolean }) {
             className={`absolute inset-0 flex items-center ${on ? 'widget-pipeline-dot' : ''}`}
             style={on ? undefined : { transform: 'translateX(40%)' }}
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-skyz-accent shadow-[0_0_10px_rgba(124,58,237,0.8)]" />
+            <span className="w-1.5 h-1.5 rounded-full bg-skyz-accent shadow-[0_0_10px_rgba(124,77,224,0.8)]" />
           </div>
         </div>
         <div className="mt-2.5 flex items-center justify-between font-mono text-[9px] sm:text-[10px] text-skyz-text-muted tracking-widest">
@@ -228,7 +228,7 @@ function GrowWidget({ on }: { on: boolean }) {
             }
           />
         ))}
-        <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-skyz-accent shadow-[0_0_14px_rgba(124,58,237,0.7)]" />
+        <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-skyz-accent shadow-[0_0_14px_rgba(124,77,224,0.7)]" />
         {nodes.map((pos, i) => (
           <span
             key={i}
@@ -289,7 +289,7 @@ function AutomateWidget({ on }: { on: boolean }) {
         </div>
         {/* the core — always working */}
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#080B10] flex items-center justify-center shadow-lg">
+          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#160F26] flex items-center justify-center shadow-lg">
             <span className={on ? 'widget-core-spin inline-flex' : 'inline-flex'}>
               <RefreshCw className="w-5 h-5 sm:w-6 sm:h-6" />
             </span>
@@ -594,7 +594,7 @@ export const Capabilities: React.FC = () => {
               <button
                 type="button"
                 onClick={() => navigate('services')}
-                className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#080B10] text-xs sm:text-sm font-semibold shadow-md hover:bg-skyz-accent dark:hover:bg-skyz-accent-secondary transition-all cursor-pointer"
+                className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#160F26] text-xs sm:text-sm font-semibold shadow-md hover:bg-skyz-accent dark:hover:bg-skyz-accent-secondary transition-all cursor-pointer"
               >
                 Explore all services
                 <ArrowRight className="w-4 h-4" />

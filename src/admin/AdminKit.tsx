@@ -211,7 +211,7 @@ export const PrimaryButton: React.FC<{
     type={type}
     onClick={onClick}
     disabled={disabled}
-    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#080B10] font-semibold text-sm shadow-md hover:bg-skyz-accent dark:hover:bg-skyz-accent-secondary transition-all cursor-pointer disabled:opacity-60 disabled:cursor-wait"
+    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#160F26] font-semibold text-sm shadow-md hover:bg-skyz-accent dark:hover:bg-skyz-accent-secondary transition-all cursor-pointer disabled:opacity-60 disabled:cursor-wait"
   >
     {children}
   </motion.button>

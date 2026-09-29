@@ -86,7 +86,7 @@ export const AdminLogin: React.FC = () => {
           <button
             type="submit"
             disabled={busy}
-            className="w-full py-3 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#080B10] font-semibold text-sm shadow-md hover:bg-skyz-accent dark:hover:bg-skyz-accent-secondary transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60 disabled:cursor-wait"
+            className="w-full py-3 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#160F26] font-semibold text-sm shadow-md hover:bg-skyz-accent dark:hover:bg-skyz-accent-secondary transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60 disabled:cursor-wait"
           >
             {busy ? 'Signing in…' : 'Sign in'}
             {!busy && <ArrowRight className="w-4 h-4" />}

@@ -11,3 +11,6 @@ coverage/
 .freebuff/
 supabase/.temp/
 supabase/tmp_dump.sql
+
+# raw 40MP brand masters (40+ MB, not for the repo/web)
+brand-masters/

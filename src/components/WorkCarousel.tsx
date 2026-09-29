@@ -258,7 +258,7 @@ export const WorkCarousel: React.FC = () => {
   return (
     <SectionShell id="work">
       <div className="bg-skyz-surface border border-skyz-border rounded-[inherit] px-0 py-16 sm:py-24 relative overflow-hidden">
-        <Blob className="w-[380px] h-[340px] top-1/3 -left-32 opacity-70" color="rgba(59, 130, 246, 0.10)" duration={12} />
+        <Blob className="w-[380px] h-[340px] top-1/3 -left-32 opacity-70" color="rgba(139, 92, 246, 0.10)" duration={12} />
         <Blob className="w-[360px] h-[330px] -top-20 right-[-110px] opacity-70" color="rgba(16, 185, 129, 0.09)" duration={10} />
 
         <div className="relative z-10 flex flex-col items-center">
@@ -370,7 +370,7 @@ export const WorkCarousel: React.FC = () => {
                 type="button"
                 id="view-all-projects-btn"
                 onClick={() => navigate('work')}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#080B10] font-semibold text-xs sm:text-sm shadow-md hover:bg-skyz-accent transition-all cursor-pointer"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#160F26] font-semibold text-xs sm:text-sm shadow-md hover:bg-skyz-accent transition-all cursor-pointer"
               >
                 <span>See the Work</span>
                 <ArrowUpRight className="w-3.5 h-3.5" />

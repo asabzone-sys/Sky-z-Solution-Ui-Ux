@@ -39,7 +39,7 @@ export const AdminShell: React.FC<{
             onClick={() => { onSection(n.id); setDrawer(false); }}
             className={`flex items-center justify-between gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors cursor-pointer text-left ${
               active
-                ? 'bg-skyz-text text-skyz-bg dark:bg-skyz-accent dark:text-[#080B10] font-semibold'
+                ? 'bg-skyz-text text-skyz-bg dark:bg-skyz-accent dark:text-[#160F26] font-semibold'
                 : 'text-skyz-text-muted hover:text-skyz-text hover:bg-skyz-surface-subtle'
             }`}
           >
@@ -49,7 +49,7 @@ export const AdminShell: React.FC<{
             </span>
             {n.id === 'leads' && unreadCount > 0 && (
               <span className={`min-w-5 h-5 px-1.5 rounded-full text-[10px] font-bold flex items-center justify-center ${
-                active ? 'bg-skyz-bg/20 text-skyz-bg dark:bg-[#080B10]/20 dark:text-[#080B10]' : 'bg-skyz-accent text-white'
+                active ? 'bg-skyz-bg/20 text-skyz-bg dark:bg-[#160F26]/20 dark:text-[#160F26]' : 'bg-skyz-accent text-white'
               }`}>
                 {unreadCount}
               </span>

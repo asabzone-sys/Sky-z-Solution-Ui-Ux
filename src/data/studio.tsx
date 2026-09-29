@@ -62,7 +62,7 @@ export const STUDIO_WORKS: StudioWork[] = [
     category: 'GRAPHIC DESIGN',
     year: '2025',
     client: 'Kiln Ceramics',
-    accent: '#EC4899',
+    accent: '#A78BFA',
   },
   {
     id: 'northbeam',
@@ -73,7 +73,7 @@ export const STUDIO_WORKS: StudioWork[] = [
     category: 'CAMPAIGN CREATIVE',
     year: '2025',
     client: 'Northbeam Outdoor',
-    accent: '#0EA5E9',
+    accent: '#6D3FD4',
   },
   {
     id: 'pulse',
@@ -84,7 +84,7 @@ export const STUDIO_WORKS: StudioWork[] = [
     category: 'MOTION / VIDEO',
     year: '2026',
     client: 'Pulse Audio',
-    accent: '#F59E0B',
+    accent: '#6D28D9',
     video: 'dYISWlAxUVs',
   },
   {
@@ -96,7 +96,7 @@ export const STUDIO_WORKS: StudioWork[] = [
     category: 'BRAND IDENTITY',
     year: '2024',
     client: 'Meridian Advisory',
-    accent: '#3B82F6',
+    accent: '#7C4DE0',
   },
   {
     id: 'lumen',
@@ -107,7 +107,7 @@ export const STUDIO_WORKS: StudioWork[] = [
     category: 'GRAPHIC DESIGN',
     year: '2024',
     client: 'Lumen Skincare',
-    accent: '#10B981',
+    accent: '#9F7AEA',
   },
 ];
 

@@ -108,9 +108,9 @@ export const LiquidPortalLoader: React.FC<{ onDone: () => void }> = ({ onDone })
     window.addEventListener('resize', resize);
 
     /* ----- palette ----- */
-    const CYAN = '56,189,248';    // brand accent
-    const BLUE = '59,130,246';
-    const VIOLET = '167,139,250'; // brand secondary
+    const LAV = '167,139,250';    // brand accent — lavender
+    const DEEP = '139,92,246';    // deep violet
+    const SOFT = '196,181,253';   // soft lavender
     const WHITE = '255,255,255';
 
     let raf = 0;
@@ -141,9 +141,9 @@ export const LiquidPortalLoader: React.FC<{ onDone: () => void }> = ({ onDone })
       /* ---------- back canvas: bg + aurora + stars + portal ---------- */
       bctx.clearRect(0, 0, w, h);
       const bg = bctx.createRadialGradient(cx, cy * 0.92, minDim * 0.1, cx, cy, Math.max(w, h) * 0.75);
-      bg.addColorStop(0, `rgba(10,30,60,${0.98 * bgFade})`);
-      bg.addColorStop(0.55, `rgba(6,18,36,${0.99 * bgFade})`);
-      bg.addColorStop(1, `rgba(3,8,18,${bgFade})`);
+      bg.addColorStop(0, `rgba(24,16,48,${0.98 * bgFade})`);
+      bg.addColorStop(0.55, `rgba(15,10,32,${0.99 * bgFade})`);
+      bg.addColorStop(1, `rgba(7,5,14,${bgFade})`);
       bctx.fillStyle = bg;
       bctx.fillRect(0, 0, w, h);
 
@@ -155,9 +155,9 @@ export const LiquidPortalLoader: React.FC<{ onDone: () => void }> = ({ onDone })
         bctx.globalCompositeOperation = 'lighter';
         const auras: Array<[number, number, number, string, number]> = [
           // cx-fraction, cy-fraction, radius fraction, color, alpha
-          [0.24 + Math.sin(t * 0.16) * 0.05, 0.26 + Math.cos(t * 0.13) * 0.04, 0.5, BLUE, 0.10],
-          [0.78 + Math.cos(t * 0.11) * 0.05, 0.72 + Math.sin(t * 0.15) * 0.04, 0.55, CYAN, 0.07],
-          [0.62 + Math.sin(t * 0.09 + 2) * 0.06, 0.18 + Math.cos(t * 0.12 + 1) * 0.05, 0.4, VIOLET, 0.05],
+          [0.24 + Math.sin(t * 0.16) * 0.05, 0.26 + Math.cos(t * 0.13) * 0.04, 0.5, DEEP, 0.10],
+          [0.78 + Math.cos(t * 0.11) * 0.05, 0.72 + Math.sin(t * 0.15) * 0.04, 0.55, LAV, 0.07],
+          [0.62 + Math.sin(t * 0.09 + 2) * 0.06, 0.18 + Math.cos(t * 0.12 + 1) * 0.05, 0.4, SOFT, 0.05],
         ];
         for (const [ax, ay, ar, col, al] of auras) {
           const g = bctx.createRadialGradient(ax * w, ay * h, 0, ax * w, ay * h, ar * Math.max(w, h));
@@ -179,7 +179,7 @@ export const LiquidPortalLoader: React.FC<{ onDone: () => void }> = ({ onDone })
           const sy = ((hash01(i + 99) + t * 0.003 * depth) % 1) * h;
           const r = 0.4 + depth * 1.1;
           const tw = 0.35 + 0.3 * Math.sin(t * (0.6 + depth) + i); // twinkle
-          bctx.fillStyle = `rgba(${i % 7 === 0 ? CYAN : WHITE},${0.28 * tw * bgFade * depth})`;
+          bctx.fillStyle = `rgba(${i % 7 === 0 ? LAV : WHITE},${0.28 * tw * bgFade * depth})`;
           bctx.beginPath();
           bctx.arc(sx, sy, r, 0, Math.PI * 2);
           bctx.fill();
@@ -204,8 +204,8 @@ export const LiquidPortalLoader: React.FC<{ onDone: () => void }> = ({ onDone })
         bctx.globalCompositeOperation = 'lighter';
 
         const aura = bctx.createRadialGradient(0, 0, ringR * 0.55, 0, 0, ringR * 1.6);
-        aura.addColorStop(0, `rgba(${CYAN},${0.16 * ringA})`);
-        aura.addColorStop(0.6, `rgba(${BLUE},${0.10 * ringA})`);
+        aura.addColorStop(0, `rgba(${LAV},${0.16 * ringA})`);
+        aura.addColorStop(0.6, `rgba(${DEEP},${0.10 * ringA})`);
         aura.addColorStop(1, 'rgba(0,0,0,0)');
         bctx.fillStyle = aura;
         bctx.beginPath();
@@ -214,9 +214,9 @@ export const LiquidPortalLoader: React.FC<{ onDone: () => void }> = ({ onDone })
 
         // depth fill — liquid glass disc behind the rim, brighter near center
         const depthFill = bctx.createRadialGradient(0, 0, ringR * 0.1, 0, 0, ringR);
-        depthFill.addColorStop(0, `rgba(${BLUE},${0.05 * ringA})`);
-        depthFill.addColorStop(0.75, `rgba(${CYAN},${0.03 * ringA})`);
-        depthFill.addColorStop(1, `rgba(${BLUE},${0.08 * ringA})`);
+        depthFill.addColorStop(0, `rgba(${DEEP},${0.05 * ringA})`);
+        depthFill.addColorStop(0.75, `rgba(${LAV},${0.03 * ringA})`);
+        depthFill.addColorStop(1, `rgba(${DEEP},${0.08 * ringA})`);
         bctx.fillStyle = depthFill;
         bctx.beginPath();
         bctx.arc(0, 0, ringR, 0, Math.PI * 2);
@@ -224,11 +224,11 @@ export const LiquidPortalLoader: React.FC<{ onDone: () => void }> = ({ onDone })
 
         // torus body — liquid glass
         const body = bctx.createRadialGradient(0, 0, ringR - ringW, 0, 0, ringR + ringW);
-        body.addColorStop(0, `rgba(${CYAN},0)`);
-        body.addColorStop(0.32, `rgba(${CYAN},${0.34 * ringA})`);
+        body.addColorStop(0, `rgba(${LAV},0)`);
+        body.addColorStop(0.32, `rgba(${LAV},${0.34 * ringA})`);
         body.addColorStop(0.55, `rgba(${WHITE},${0.16 * ringA})`);
-        body.addColorStop(0.8, `rgba(${BLUE},${0.30 * ringA})`);
-        body.addColorStop(1, `rgba(${BLUE},0)`);
+        body.addColorStop(0.8, `rgba(${DEEP},${0.30 * ringA})`);
+        body.addColorStop(1, `rgba(${DEEP},0)`);
         bctx.fillStyle = body;
         bctx.beginPath();
         bctx.arc(0, 0, ringR + ringW, 0, Math.PI * 2);
@@ -239,7 +239,7 @@ export const LiquidPortalLoader: React.FC<{ onDone: () => void }> = ({ onDone })
         const rim = bctx.createRadialGradient(0, 0, Math.max(1, ringR - ringW * 0.9), 0, 0, Math.max(2, ringR - ringW * 0.45));
         rim.addColorStop(0, `rgba(${WHITE},0)`);
         rim.addColorStop(0.7, `rgba(${WHITE},${0.10 * ringA})`);
-        rim.addColorStop(1, `rgba(${CYAN},0)`);
+        rim.addColorStop(1, `rgba(${LAV},0)`);
         bctx.fillStyle = rim;
         bctx.beginPath();
         bctx.arc(0, 0, Math.max(2, ringR - ringW * 0.45), 0, Math.PI * 2);
@@ -257,7 +257,7 @@ export const LiquidPortalLoader: React.FC<{ onDone: () => void }> = ({ onDone })
           bctx.arc(0, 0, ringR + ringW * (0.1 - i * 0.22), a0, a0 + span);
           bctx.stroke();
           // violet companion arc
-          bctx.strokeStyle = `rgba(${VIOLET},${0.12 * ringA})`;
+          bctx.strokeStyle = `rgba(${SOFT},${0.12 * ringA})`;
           bctx.lineWidth = ringW * 0.3;
           bctx.beginPath();
           bctx.arc(0, 0, ringR - ringW * 0.35, a0 + Math.PI, a0 + Math.PI + span * 0.7);
@@ -270,7 +270,7 @@ export const LiquidPortalLoader: React.FC<{ onDone: () => void }> = ({ onDone })
           const hx = Math.cos(a0) * ringR;
           const hy = Math.sin(a0) * ringR;
           const hl = fctx.createRadialGradient(hx, hy, 0, hx, hy, ringW * 1.4);
-          const col = i % 3 === 2 ? VIOLET : WHITE;
+          const col = i % 3 === 2 ? SOFT : WHITE;
           hl.addColorStop(0, `rgba(${col},${0.20 * ringA})`);
           hl.addColorStop(1, 'rgba(0,0,0,0)');
           bctx.fillStyle = hl;
@@ -294,7 +294,7 @@ export const LiquidPortalLoader: React.FC<{ onDone: () => void }> = ({ onDone })
               // radii relative to the viewport, not the (exploding) ring
               const r1 = minDim * (0.14 + (i % 4) * 0.08) * (0.5 + enter * 0.6);
               const r2 = r1 + minDim * (0.18 + (i % 5) * 0.06) * enter;
-              fctx.strokeStyle = `rgba(${i % 4 === 3 ? VIOLET : CYAN},${0.26 * streakA})`;
+              fctx.strokeStyle = `rgba(${i % 4 === 3 ? SOFT : LAV},${0.26 * streakA})`;
               fctx.lineWidth = 1.5 + (i % 3);
               fctx.beginPath();
               fctx.moveTo(cx + Math.cos(a) * r1, cy + Math.sin(a) * r1);
@@ -314,9 +314,9 @@ export const LiquidPortalLoader: React.FC<{ onDone: () => void }> = ({ onDone })
         const vr = minDim * (2.2 - easeOutQuart(recede) * 2.05);
         const vA = 0.85 * (1 - recede);
         const veil = fctx.createRadialGradient(cx, cy, vr * 0.2, cx, cy, vr);
-        veil.addColorStop(0, `rgba(${CYAN},0)`);
-        veil.addColorStop(0.7, `rgba(${BLUE},${0.14 * vA})`);
-        veil.addColorStop(1, `rgba(${CYAN},${0.30 * vA})`);
+        veil.addColorStop(0, `rgba(${LAV},0)`);
+        veil.addColorStop(0.7, `rgba(${DEEP},${0.14 * vA})`);
+        veil.addColorStop(1, `rgba(${LAV},${0.30 * vA})`);
         fctx.fillStyle = veil;
         fctx.fillRect(0, 0, w, h);
       }
@@ -325,7 +325,7 @@ export const LiquidPortalLoader: React.FC<{ onDone: () => void }> = ({ onDone })
       const bloom = bell(t, 1.7, 2.4, 3.3, 3.9);
       if (bloom > 0.01) {
         const bl = fctx.createRadialGradient(cx, cy, 0, cx, cy, minDim * 0.6);
-        bl.addColorStop(0, `rgba(${CYAN},${0.10 * bloom})`);
+        bl.addColorStop(0, `rgba(${LAV},${0.10 * bloom})`);
         bl.addColorStop(1, 'rgba(0,0,0,0)');
         fctx.fillStyle = bl;
         fctx.fillRect(0, 0, w, h);
@@ -449,7 +449,7 @@ const PortalSink: React.FC<{ simple: boolean; timeScale: number; freeze: number 
         <div
           className="absolute -inset-10 rounded-full pointer-events-none"
           style={{
-            background: `radial-gradient(circle, rgba(56,189,248,${0.16 + breathe * 0.10}) 0%, rgba(59,130,246,${0.06 + breathe * 0.05}) 45%, rgba(0,0,0,0) 72%)`,
+            background: `radial-gradient(circle, rgba(167,139,250,${0.16 + breathe * 0.10}) 0%, rgba(139,92,246,${0.06 + breathe * 0.05}) 45%, rgba(0,0,0,0) 72%)`,
             filter: 'blur(6px)',
           }}
         />
@@ -460,7 +460,7 @@ const PortalSink: React.FC<{ simple: boolean; timeScale: number; freeze: number 
             alt=""
             draggable={false}
             className="relative w-28 h-28 sm:w-36 sm:h-36 object-contain"
-            style={{ filter: `drop-shadow(0 0 ${28 + breathe * 16}px rgba(56,189,248,${0.30 + breathe * 0.15}))` }}
+            style={{ filter: `drop-shadow(0 0 ${28 + breathe * 16}px rgba(167,139,250,${0.30 + breathe * 0.15}))` }}
           />
         </picture>
       </div>
@@ -469,23 +469,23 @@ const PortalSink: React.FC<{ simple: boolean; timeScale: number; freeze: number 
       <div
         className="my-4 h-px rounded-full skz-divider-in"
         style={{
-          background: 'linear-gradient(90deg, rgba(56,189,248,0), rgba(56,189,248,0.7) 50%, rgba(167,139,250,0.7) 60%, rgba(167,139,250,0))',
-          boxShadow: '0 0 12px rgba(56,189,248,0.35)',
+          background: 'linear-gradient(90deg, rgba(167,139,250,0), rgba(167,139,250,0.7) 50%, rgba(196,181,253,0.7) 60%, rgba(196,181,253,0))',
+          boxShadow: '0 0 12px rgba(167,139,250,0.35)',
         }}
       />
 
       <div className="text-center select-none">
         <div
-          className="font-display font-extrabold tracking-tight text-[#F5F7FA] skz-skyz-in"
+          className="font-display font-extrabold tracking-tight text-[#F3F0FA] skz-skyz-in"
           style={{
             fontSize: 'clamp(1.6rem, 5vw, 2.6rem)',
-            textShadow: `0 2px 24px rgba(56,189,248,${0.22 + breathe * 0.10}), 0 0 60px rgba(59,130,246,0.12)`,
+            textShadow: `0 2px 24px rgba(167,139,250,${0.22 + breathe * 0.10}), 0 0 60px rgba(139,92,246,0.12)`,
           }}
         >
-          SKY-Z
+          SKY Z
         </div>
         <div
-          className="font-display font-medium text-[#9AA4B2] skz-sub-in"
+          className="font-display font-medium text-[#A79FBC] skz-sub-in"
           style={{ fontSize: 'clamp(0.65rem, 2.2vw, 0.95rem)', marginTop: 2 }}
         >
           SOLUTIONS

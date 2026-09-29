@@ -67,7 +67,7 @@ export const LeadsInbox: React.FC<{ onData?: () => void }> = ({ onData }) => {
             onClick={() => setFilter(f)}
             className={`px-3.5 py-1.5 rounded-full text-[11px] font-mono font-semibold border transition-all cursor-pointer ${
               filter === f
-                ? 'bg-skyz-text text-skyz-bg border-skyz-text dark:bg-skyz-accent dark:text-[#080B10] dark:border-skyz-accent'
+                ? 'bg-skyz-text text-skyz-bg border-skyz-text dark:bg-skyz-accent dark:text-[#160F26] dark:border-skyz-accent'
                 : 'bg-skyz-surface text-skyz-text-muted border-skyz-border hover:text-skyz-text'
             }`}
           >
@@ -161,7 +161,7 @@ export const LeadsInbox: React.FC<{ onData?: () => void }> = ({ onData }) => {
                 <a
                   href={`mailto:${selected.email}?subject=Re: your SkyZ project inquiry${selected.service ? ` (${selected.service})` : ''}`}
                   onClick={() => setStatus(selected, 'replied')}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#080B10] text-sm font-semibold shadow-md hover:bg-skyz-accent dark:hover:bg-skyz-accent-secondary transition-all cursor-pointer"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#160F26] text-sm font-semibold shadow-md hover:bg-skyz-accent dark:hover:bg-skyz-accent-secondary transition-all cursor-pointer"
                 >
                   <Reply className="w-4 h-4" /> Reply
                 </a>

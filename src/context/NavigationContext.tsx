@@ -38,12 +38,12 @@ function getPageFromLocation(): PageType {
 }
 
 const PAGE_TITLES: Record<PageType, string> = {
-  home: 'SkyZ Solutions | Autonomous Digital Systems',
-  about: 'About Us | SkyZ Solutions — Purpose, Vision & System Architecture',
-  services: 'Services | SkyZ Solutions — BUILD • GROW • AUTOMATE',
-  work: 'Projects & Work | SkyZ Solutions — Systems Portfolio',
-  contact: 'Contact & Project Scoping | SkyZ Solutions',
-  studio: 'Design & Graphics Studio | SkyZ Solutions',
+  home: 'SKY Z Solutions | Autonomous Digital Systems',
+  about: 'About Us | SKY Z Solutions — Purpose, Vision & System Architecture',
+  services: 'Services | SKY Z Solutions — BUILD • GROW • AUTOMATE',
+  work: 'Projects & Work | SKY Z Solutions — Systems Portfolio',
+  contact: 'Contact & Project Scoping | SKY Z Solutions',
+  studio: 'Design & Graphics Studio | SKY Z Solutions',
 };
 
 export const NavigationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -52,7 +52,7 @@ export const NavigationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   // Sync document title and history
   useEffect(() => {
-    document.title = PAGE_TITLES[currentPage] || 'SkyZ Solutions';
+    document.title = PAGE_TITLES[currentPage] || 'SKY Z Solutions';
   }, [currentPage]);
 
   // Listen to popstate / hashchange for browser back/forward

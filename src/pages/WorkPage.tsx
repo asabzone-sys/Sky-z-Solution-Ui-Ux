@@ -250,8 +250,8 @@ export const WorkPage: React.FC = () => {
           </div>
         ))}
 
-        <Blob className="w-[360px] h-[330px] -top-20 -left-28 opacity-70" color="rgba(124, 58, 237, 0.09)" duration={12} />
-        <Blob className="w-[320px] h-[300px] bottom-[-80px] right-[-100px] opacity-70" color="rgba(56, 189, 248, 0.09)" duration={10} />
+        <Blob className="w-[360px] h-[330px] -top-20 -left-28 opacity-70" color="rgba(124, 77, 224, 0.09)" duration={12} />
+        <Blob className="w-[320px] h-[300px] bottom-[-80px] right-[-100px] opacity-70" color="rgba(159, 122, 234, 0.09)" duration={10} />
 
         <div className="relative z-10 max-w-3xl mx-auto text-center space-y-8">
           <Reveal>
@@ -278,7 +278,7 @@ export const WorkPage: React.FC = () => {
             <button
               type="button"
               onClick={scrollToChapters}
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#080B10] font-semibold text-sm shadow-md hover:bg-skyz-accent transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#160F26] font-semibold text-sm shadow-md hover:bg-skyz-accent transition-all cursor-pointer"
             >
               <span>Explore the work</span>
               <ArrowRight className="w-4 h-4" />
@@ -313,7 +313,7 @@ export const WorkPage: React.FC = () => {
                     onClick={() => setSelectedFilter(filter)}
                     className={`px-3.5 py-1.5 rounded-full text-[11px] font-mono font-semibold transition-all cursor-pointer ${
                       isSelected
-                        ? 'bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#080B10] shadow-sm'
+                        ? 'bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#160F26] shadow-sm'
                         : 'bg-skyz-bg border border-skyz-border text-skyz-text-muted hover:text-skyz-text hover:border-skyz-accent/40'
                     }`}
                   >
@@ -348,12 +348,12 @@ export const WorkPage: React.FC = () => {
       {/* ============================================================ */}
       <SectionShell>
         <div className="relative rounded-[inherit] px-2 py-14 sm:py-20 bg-gradient-to-b from-skyz-surface-subtle/60 to-transparent overflow-hidden">
-          <Blob className="w-[380px] h-[340px] top-6 -right-28 opacity-60" color="rgba(124, 58, 237, 0.07)" duration={11} />
+          <Blob className="w-[380px] h-[340px] top-6 -right-28 opacity-60" color="rgba(139, 92, 246, 0.07)" duration={11} />
           <div className="relative z-10">
             <VideoSection
               heading="See the work in motion"
               caption="A short tour through how these projects move from first sketch to a running, measurable system."
-              title="SkyZ Solutions — Selected work showcase"
+              title="SKY Z Solutions — Selected work showcase"
               videoId="dYISWlAxUVs"
             />
           </div>
@@ -365,8 +365,8 @@ export const WorkPage: React.FC = () => {
       {/* ============================================================ */}
       <SectionShell>
         <div className="relative rounded-[inherit] bg-skyz-accent-muted border border-skyz-accent/20 px-5 sm:px-12 py-20 sm:py-28 text-center overflow-hidden">
-          <Blob className="w-[320px] h-[300px] -top-24 -left-20 opacity-80" color="rgba(124, 58, 237, 0.12)" duration={10} />
-          <Blob className="w-[340px] h-[320px] -bottom-28 -right-24 opacity-80" color="rgba(56, 189, 248, 0.12)" duration={12} />
+          <Blob className="w-[320px] h-[300px] -top-24 -left-20 opacity-80" color="rgba(124, 77, 224, 0.12)" duration={10} />
+          <Blob className="w-[340px] h-[320px] -bottom-28 -right-24 opacity-80" color="rgba(159, 122, 234, 0.12)" duration={12} />
 
           <div className="relative z-10 max-w-2xl mx-auto space-y-9">
             <Reveal>
@@ -385,7 +385,7 @@ export const WorkPage: React.FC = () => {
                   <Wrench className="w-4 h-4 text-skyz-accent flex-shrink-0" />
                   Tell us what you want to build
                 </span>
-                <span className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#080B10] text-xs sm:text-sm font-semibold flex-shrink-0 transition-transform group-hover:translate-x-0.5">
+                <span className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#160F26] text-xs sm:text-sm font-semibold flex-shrink-0 transition-transform group-hover:translate-x-0.5">
                   Start
                   <Send className="w-3.5 h-3.5" />
                 </span>
@@ -490,7 +490,7 @@ export const WorkPage: React.FC = () => {
                       setActiveModalProject(null);
                       navigate('contact', { serviceCategory: activeModalProject.pillar });
                     }}
-                    className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-5 py-2 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#080B10] font-semibold text-xs shadow-sm hover:bg-skyz-accent cursor-pointer"
+                    className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-5 py-2 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#160F26] font-semibold text-xs shadow-sm hover:bg-skyz-accent cursor-pointer"
                   >
                     <span>Start Project</span>
                     <ArrowRight className="w-3.5 h-3.5" />

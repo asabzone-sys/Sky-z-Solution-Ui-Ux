@@ -98,7 +98,7 @@ export const TeamSection: React.FC<{ isAdmin: boolean }> = ({ isAdmin }) => {
                       title={isAdmin ? undefined : 'Only admins can change roles'}
                       className={`px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wide transition-all cursor-pointer disabled:cursor-not-allowed ${
                         p.role === r
-                          ? 'bg-skyz-text text-skyz-bg dark:bg-skyz-accent dark:text-[#080B10]'
+                          ? 'bg-skyz-text text-skyz-bg dark:bg-skyz-accent dark:text-[#160F26]'
                           : 'text-skyz-text-muted hover:text-skyz-text'
                       }`}
                     >

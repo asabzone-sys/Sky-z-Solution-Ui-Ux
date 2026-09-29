@@ -51,7 +51,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     serviceCategory: 'E-COMMERCE',
     pillar: 'BUILD',
     description: 'A modern online shopping experience designed around the brand with fluid browsing and high-speed checkout.',
-    accentColor: '#3B82F6',
+    accentColor: '#7C4DE0',
     tags: ['Custom Storefront', 'Checkout Flow', 'Mobile Commerce'],
     clientSector: 'Modern Retail & Lifestyle',
     visualType: 'interactive',
@@ -68,7 +68,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     serviceCategory: 'WEB DEVELOPMENT',
     pillar: 'BUILD',
     description: 'A responsive corporate web experience built for clarity, speed, and real business utility across all screen sizes.',
-    accentColor: '#0EA5E9',
+    accentColor: '#6D3FD4',
     tags: ['Corporate Website', 'Fast Loading', 'Responsive UI'],
     clientSector: 'Architecture & Design Consultancy',
     visualType: 'video',
@@ -85,7 +85,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     serviceCategory: 'SEO',
     pillar: 'GROW',
     description: 'Search-focused improvements and structured content architecture designed to strengthen long-term online visibility.',
-    accentColor: '#10B981',
+    accentColor: '#9F7AEA',
     tags: ['Technical SEO', 'Structured Content', 'Organic Discovery'],
     clientSector: 'B2B Professional Services',
     deliverables: ['Semantic Schema Markup', 'Content Hierarchy Audit', 'Search Console Optimization', 'Core Web Architecture'],
@@ -119,7 +119,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     serviceCategory: 'GRAPHIC DESIGN',
     pillar: 'GROW',
     description: 'Distinct visual identity, custom typography system, and digital brand assets that make the business recognizable.',
-    accentColor: '#EC4899',
+    accentColor: '#A78BFA',
     tags: ['Brand Identity', 'Typography System', 'Design Tokens'],
     clientSector: 'Creative Agency & Media',
     visualType: 'interactive',
@@ -136,7 +136,7 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
     serviceCategory: 'AI AUTOMATION',
     pillar: 'AUTOMATE',
     description: 'AI-powered customer inquiry routing and automated scheduling that reduces repetitive administrative work.',
-    accentColor: '#F59E0B',
+    accentColor: '#6D28D9',
     tags: ['AI Agent', 'Workflow Automation', 'Calendar Routing'],
     clientSector: 'Logistics & Client Operations',
     visualType: 'interactive',
@@ -161,12 +161,12 @@ export const SERVICE_CATEGORY_ICON: Record<ServiceCategory, React.ReactNode> = {
 /** Badge tint per service category — shared across Home and Work. */
 export const getServiceBadgeStyle = (category: string): string => {
   switch (category) {
-    case 'WEB DEVELOPMENT': return 'bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/30';
-    case 'E-COMMERCE': return 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/30';
-    case 'SEO': return 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30';
-    case 'DIGITAL MARKETING': return 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/30';
-    case 'GRAPHIC DESIGN': return 'bg-pink-500/10 text-pink-600 dark:text-pink-400 border-pink-500/30';
-    case 'AI AUTOMATION': return 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30';
+    case 'WEB DEVELOPMENT': return 'bg-violet-500/10 text-violet-600 dark:text-violet-300 border-violet-500/30';
+    case 'E-COMMERCE': return 'bg-violet-600/10 text-violet-700 dark:text-violet-300 border-violet-600/30';
+    case 'SEO': return 'bg-purple-500/10 text-purple-600 dark:text-purple-300 border-purple-500/30';
+    case 'DIGITAL MARKETING': return 'bg-purple-600/10 text-purple-700 dark:text-purple-300 border-purple-600/30';
+    case 'GRAPHIC DESIGN': return 'bg-violet-400/10 text-violet-600 dark:text-violet-300 border-violet-400/30';
+    case 'AI AUTOMATION': return 'bg-violet-700/10 text-violet-700 dark:text-violet-200 border-violet-700/30';
     default: return 'bg-skyz-surface-subtle text-skyz-text-muted border-skyz-border';
   }
 };

@@ -26,23 +26,22 @@ import {
   FloatingTag,
 } from '../components/OpalKit';
 
-const SERVICE_ICONS: Record<string, React.ReactNode> = {
-  'web-development': <Globe className="w-7 h-7 text-sky-500" />,
-  'ecommerce': <ShoppingCart className="w-7 h-7 text-blue-500" />,
-  'seo': <Search className="w-7 h-7 text-emerald-500" />,
-  'digital-marketing': <TrendingUp className="w-7 h-7 text-purple-500" />,
-  'graphic-design': <Palette className="w-7 h-7 text-pink-500" />,
-  'ai-automation': <Bot className="w-7 h-7 text-amber-500" />,
+const SERVICE_ICONS: Record<string, React.ReactNode> = {  'web-development': <Globe className="w-7 h-7 text-violet-600 dark:text-violet-300" />,
+  'ecommerce': <ShoppingCart className="w-7 h-7 text-violet-700 dark:text-violet-300" />,
+  'seo': <Search className="w-7 h-7 text-purple-600 dark:text-purple-300" />,
+  'digital-marketing': <TrendingUp className="w-7 h-7 text-purple-700 dark:text-purple-300" />,
+  'graphic-design': <Palette className="w-7 h-7 text-violet-500 dark:text-violet-300" />,
+  'ai-automation': <Bot className="w-7 h-7 text-violet-800 dark:text-violet-200" />, 
 };
 
 const TILTS = ['-rotate-3', 'rotate-2', '-rotate-1', 'rotate-3', '-rotate-2', 'rotate-1'];
 const TINTS: Record<string, string> = {
-  'web-development': 'bg-sky-100 dark:bg-sky-500/15',
-  'ecommerce': 'bg-blue-100 dark:bg-blue-500/15',
-  'seo': 'bg-emerald-100 dark:bg-emerald-500/15',
-  'digital-marketing': 'bg-purple-100 dark:bg-purple-500/15',
-  'graphic-design': 'bg-pink-100 dark:bg-pink-500/15',
-  'ai-automation': 'bg-amber-100 dark:bg-amber-500/15',
+  'web-development': 'bg-violet-100 dark:bg-violet-500/15',
+  'ecommerce': 'bg-violet-100 dark:bg-violet-600/15',
+  'seo': 'bg-purple-100 dark:bg-purple-500/15',
+  'digital-marketing': 'bg-purple-100 dark:bg-purple-600/15',
+  'graphic-design': 'bg-violet-200/70 dark:bg-violet-400/15',
+  'ai-automation': 'bg-violet-200/70 dark:bg-violet-700/20',
 };
 
 const PILLARS = [
@@ -163,14 +162,14 @@ export const ServicesPage: React.FC = () => {
       {/* 1. HERO — Opal-style centered statement + animated search bar     */}
       {/* ================================================================ */}
       <section className="w-full pt-16 pb-20 sm:pt-24 sm:pb-28 px-4 sm:px-6 relative overflow-hidden">
-        <Blob className="w-[380px] h-[340px] top-0 left-[-140px] opacity-70" color="rgba(124, 58, 237, 0.08)" duration={11} />
-        <Blob className="w-[340px] h-[320px] top-16 right-[-120px] opacity-60" color="rgba(56, 189, 248, 0.08)" duration={13} />
+        <Blob className="w-[380px] h-[340px] top-0 left-[-140px] opacity-70" color="rgba(124, 77, 224, 0.08)" duration={11} />
+        <Blob className="w-[340px] h-[320px] top-16 right-[-120px] opacity-60" color="rgba(159, 122, 234, 0.08)" duration={13} />
 
         {/* Floating elements responsive across mobile & desktop */}
-        <FloatingTag className="top-5 sm:top-16 left-[2%] sm:left-[8%] bg-sky-500/15 text-sky-600 dark:text-sky-400 border border-sky-500/20 -rotate-6" delay={0.4}>
+        <FloatingTag className="top-5 sm:top-16 left-[2%] sm:left-[8%] bg-violet-500/10 text-violet-600 dark:text-violet-300 border border-violet-500/20 -rotate-6" delay={0.4}>
           ✦ 6 CAPABILITIES
         </FloatingTag>
-        <FloatingTag className="top-4 sm:top-20 right-[2%] sm:right-[8%] bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/20 rotate-3" delay={0.8}>
+        <FloatingTag className="top-4 sm:top-20 right-[2%] sm:right-[8%] bg-skyz-surface text-skyz-text-muted border border-skyz-border rotate-3" delay={0.8}>
           ✦ END-TO-END
         </FloatingTag>
 
@@ -178,7 +177,7 @@ export const ServicesPage: React.FC = () => {
           <Reveal>
             <Eyebrow>
               <span className="w-2 h-2 rounded-full bg-skyz-accent animate-pulse" />
-              Services // SkyZ Solutions
+              Services // SKY Z Solutions
             </Eyebrow>
           </Reveal>
 
@@ -197,7 +196,7 @@ export const ServicesPage: React.FC = () => {
 
           {/* Interactive Animated Search Bar */}
           <Reveal delay={0.2} className="w-full max-w-2xl mx-auto px-1 sm:px-0">
-            <div className="p-1 sm:p-1.5 rounded-full bg-skyz-surface shadow-[0_12px_36px_-6px_rgba(124,58,237,0.14)] dark:shadow-[0_12px_36px_-6px_rgba(0,0,0,0.6)] transition-all duration-300 hover:shadow-[0_16px_44px_-4px_rgba(124,58,237,0.22)]">
+            <div className="p-1 sm:p-1.5 rounded-full bg-skyz-surface shadow-[0_12px_36px_-6px_rgba(124,77,224,0.14)] dark:shadow-[0_12px_36px_-6px_rgba(0,0,0,0.6)] transition-all duration-300 hover:shadow-[0_16px_44px_-4px_rgba(124,77,224,0.22)]">
               <form onSubmit={handleSubmit} className="relative flex items-center bg-skyz-surface-subtle rounded-full px-3 py-2 sm:px-4 sm:py-2.5">
                 <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-skyz-accent mr-1 flex-shrink-0">
                   <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 animate-pulse" />
@@ -221,7 +220,7 @@ export const ServicesPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-skyz-text dark:bg-skyz-accent flex items-center justify-center flex-shrink-0 cursor-pointer shadow-md hover:scale-105 active:scale-95 transition-all text-white dark:text-[#080B10]"
+                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-skyz-text dark:bg-skyz-accent flex items-center justify-center flex-shrink-0 cursor-pointer shadow-md hover:scale-105 active:scale-95 transition-all text-white dark:text-[#160F26]"
                   title="Search Services"
                 >
                   <Send className="w-4 h-4" />
@@ -311,12 +310,12 @@ export const ServicesPage: React.FC = () => {
       {/* ================================================================ */}
       <SectionShell>
         <div className="relative rounded-[inherit] px-2 py-14 sm:py-20 bg-gradient-to-b from-skyz-surface-subtle/60 to-transparent overflow-hidden">
-          <Blob className="w-[400px] h-[360px] top-4 -right-32 opacity-60" color="rgba(124, 58, 237, 0.07)" duration={11} />
+          <Blob className="w-[400px] h-[360px] top-4 -right-32 opacity-60" color="rgba(139, 92, 246, 0.07)" duration={11} />
           <div className="relative z-10">
             <VideoSection
               heading="See the system in motion"
               caption="Watch how a project moves through Build → Grow → Automate, from first scoping call to a running, measurable system."
-              title="SkyZ Solutions — Six services, one connected system"
+              title="SKY Z Solutions — Six services, one connected system"
               videoId="dYISWlAxUVs"
             />
           </div>
@@ -376,8 +375,8 @@ export const ServicesPage: React.FC = () => {
       {/* ================================================================ */}
       <SectionShell>
         <div className="relative rounded-[inherit] bg-skyz-accent-muted border border-skyz-accent/20 px-5 sm:px-12 py-20 sm:py-28 text-center overflow-hidden">
-          <Blob className="w-[320px] h-[300px] -top-24 -left-20 opacity-80" color="rgba(124, 58, 237, 0.12)" duration={10} />
-          <Blob className="w-[340px] h-[320px] -bottom-28 -right-24 opacity-80" color="rgba(56, 189, 248, 0.12)" duration={12} />
+          <Blob className="w-[320px] h-[300px] -top-24 -left-20 opacity-80" color="rgba(124, 77, 224, 0.12)" duration={10} />
+          <Blob className="w-[340px] h-[320px] -bottom-28 -right-24 opacity-80" color="rgba(159, 122, 234, 0.12)" duration={12} />
 
           <div className="relative z-10 max-w-2xl mx-auto space-y-9">
             <Reveal>
@@ -396,7 +395,7 @@ export const ServicesPage: React.FC = () => {
                   <Wrench className="w-4 h-4 text-skyz-accent flex-shrink-0" />
                   Tell us what you want to build
                 </span>
-                <span className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#080B10] text-xs sm:text-sm font-semibold flex-shrink-0 transition-transform group-hover:translate-x-0.5">
+                <span className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#160F26] text-xs sm:text-sm font-semibold flex-shrink-0 transition-transform group-hover:translate-x-0.5">
                   Start
                   <ArrowUpRight className="w-3.5 h-3.5" />
                 </span>

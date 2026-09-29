@@ -105,9 +105,9 @@ export const Hero: React.FC = () => {
   return (
     <section className="relative w-full min-h-[780px] sm:min-h-[840px] flex flex-col items-center justify-between px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16 pb-12 bg-skyz-bg transition-colors duration-200 overflow-hidden">
       {/* Organic Labs-style color field */}
-      <Blob className="w-[460px] h-[420px] -top-32 -left-36 opacity-80" color="rgba(124, 58, 237, 0.09)" duration={11} />
-      <Blob className="w-[400px] h-[380px] top-24 right-[-140px] opacity-70" color="rgba(56, 189, 248, 0.08)" duration={13} />
-      <Blob className="w-[340px] h-[320px] bottom-[-120px] left-1/3 opacity-60" color="rgba(236, 72, 153, 0.07)" duration={10} />
+      <Blob className="w-[460px] h-[420px] -top-32 -left-36 opacity-80" color="rgba(124, 77, 224, 0.09)" duration={11} />
+      <Blob className="w-[400px] h-[380px] top-24 right-[-140px] opacity-70" color="rgba(159, 122, 234, 0.08)" duration={13} />
+      <Blob className="w-[340px] h-[320px] bottom-[-120px] left-1/3 opacity-60" color="rgba(139, 92, 246, 0.07)" duration={10} />
 
       {/* Floating Service Chips — visible across desktop and mobile screens */}
       {FLOATING_CHIPS.map((chip) => {
@@ -147,16 +147,16 @@ export const Hero: React.FC = () => {
         <Reveal>
           <h1 className="font-display text-4xl sm:text-6xl md:text-7xl lg:text-[5.25rem] lg:leading-[5.5rem] text-skyz-text tracking-tighter max-w-4xl mx-auto font-black leading-tight">
             We build{' '}
-            <span className="text-skyz-accent">what comes next.</span>
+            <span className="skz-hero-gradient">what comes next.</span>
           </h1>
         </Reveal>
 
         {/* Playful cursor-tags — Putty hero flavor */}
         <div className="relative w-full">
-          <FloatingTag className="top-[-18px] sm:top-[-14px] left-[2%] sm:left-[8%] bg-green-400 text-black -rotate-6" delay={0.6}>
+          <FloatingTag className="top-[-18px] sm:top-[-14px] left-[2%] sm:left-[8%] bg-skyz-accent-muted text-violet-700 dark:text-violet-300 border border-skyz-border -rotate-6" delay={0.6}>
             ✦ FAST
           </FloatingTag>
-          <FloatingTag className="top-[6px] sm:top-[-26px] right-[2%] sm:right-[9%] bg-pink-400/90 text-slate-900 rotate-3" delay={0.9}>
+          <FloatingTag className="top-[6px] sm:top-[-26px] right-[2%] sm:right-[9%] bg-skyz-surface text-skyz-text-muted border border-skyz-border rotate-3" delay={0.9}>
             ✦ CONNECTED
           </FloatingTag>
         </div>
@@ -169,7 +169,7 @@ export const Hero: React.FC = () => {
 
         {/* HERO SEARCH PILL */}
         <Reveal delay={0.14} className="w-full max-w-2xl mt-9 sm:mt-12 px-2 sm:px-0">
-          <div className="p-1 sm:p-1.5 rounded-full bg-skyz-surface shadow-[0_12px_36px_-6px_rgba(124,58,237,0.14)] dark:shadow-[0_12px_36px_-6px_rgba(0,0,0,0.6)] transition-all duration-300 hover:shadow-[0_16px_44px_-4px_rgba(124,58,237,0.22)] dark:hover:shadow-[0_16px_44px_-4px_rgba(56,189,248,0.26)]">
+          <div className="p-1 sm:p-1.5 rounded-full bg-skyz-surface shadow-[0_12px_36px_-6px_rgba(124,77,224,0.14)] dark:shadow-[0_12px_36px_-6px_rgba(0,0,0,0.6)] transition-all duration-300 hover:shadow-[0_16px_44px_-4px_rgba(124,77,224,0.22)] dark:hover:shadow-[0_16px_44px_-4px_rgba(167,139,250,0.22)]">
             <form onSubmit={handleSubmit} className="relative flex items-center bg-skyz-surface-subtle rounded-full px-3 py-2 sm:px-4 sm:py-2.5">
               {/* Sparkle Icon */}
               <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-skyz-accent mr-1 flex-shrink-0">
@@ -197,7 +197,7 @@ export const Hero: React.FC = () => {
                 type="submit"
                 aria-label="Send inquiry query"
                 disabled={isSubmitting}
-                className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-skyz-text dark:bg-skyz-accent hover:bg-skyz-accent dark:hover:bg-skyz-accent-secondary text-white dark:text-[#080B10] flex items-center justify-center shadow-md transition-all duration-300 hover:scale-105 active:scale-95 flex-shrink-0 cursor-pointer disabled:opacity-50"
+                className="w-9 h-9 sm:w-11 sm:h-11 rounded-full skz-cta flex items-center justify-center transition-all duration-300 hover:scale-105 active:scale-95 flex-shrink-0 cursor-pointer disabled:opacity-50"
               >
                 <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>

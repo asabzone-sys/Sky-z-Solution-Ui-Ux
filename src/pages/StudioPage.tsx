@@ -533,7 +533,7 @@ const StudioCTA: React.FC = () => {
         <button
           type="button"
           onClick={() => navigate('contact')}
-          className="mt-9 sm:mt-10 inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#080B10] font-semibold text-sm shadow-lg hover:bg-skyz-accent dark:hover:bg-skyz-accent-secondary transition-all cursor-pointer"
+          className="mt-9 sm:mt-10 inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#160F26] font-semibold text-sm shadow-lg hover:bg-skyz-accent dark:hover:bg-skyz-accent-secondary transition-all cursor-pointer"
         >
           Start a Design Project
           <ArrowRight className="w-4 h-4" />

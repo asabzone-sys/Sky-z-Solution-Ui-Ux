@@ -111,7 +111,7 @@ const TESTIMONIALS_CONFIG = {
     name: '',
     role: '',
     initials: '',
-    accent: '#3B82F6',
+    accent: '#7C4DE0',
     service: '',
     avatar_path: null,
     published: false,

@@ -57,7 +57,7 @@ export const BookingStrip: React.FC = () => {
         className="relative bg-skyz-surface border border-skyz-border rounded-[2.5rem] px-6 sm:px-12 py-14 sm:py-20 overflow-hidden"
         style={{
           backgroundImage:
-            'radial-gradient(560px 320px at 12% 0%, rgba(124, 58, 237, 0.07), transparent 65%), radial-gradient(480px 300px at 92% 100%, rgba(56, 189, 248, 0.06), transparent 65%)',
+            'radial-gradient(560px 320px at 12% 0%, rgba(124, 77, 224, 0.08), transparent 65%), radial-gradient(480px 300px at 92% 100%, rgba(159, 122, 234, 0.07), transparent 65%)',
         }}
       >
         {/* powered-on hairline along the top edge */}
@@ -96,7 +96,7 @@ export const BookingStrip: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setOpen(true)}
-                className="group inline-flex items-center justify-center gap-3 px-7 py-4 bg-linear-to-r from-skyz-accent to-skyz-accent-secondary text-white font-semibold text-sm sm:text-[15px] hover:brightness-110 transition-all cursor-pointer"
+                className="group inline-flex items-center justify-center gap-3 px-7 py-4 skz-cta font-semibold text-sm sm:text-[15px] transition-all cursor-pointer"
               >
                 <span className="flex items-center justify-center w-7 h-7 rounded-full bg-white/15 border border-white/20 transition-transform group-hover:scale-105" aria-hidden>
                   <Calendar className="w-3.5 h-3.5" />
@@ -124,7 +124,7 @@ export const BookingStrip: React.FC = () => {
           // calendar-only layout: no details panel → no internal scrollbar,
           // and the accents pick up the brand purple
           hideEventTypeDetails: true,
-          primaryColor: '7c3aed',
+          primaryColor: '7c4de0',
         }}
       />
     </section>

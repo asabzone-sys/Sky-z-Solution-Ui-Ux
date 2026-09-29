@@ -84,7 +84,7 @@ export const Blob: React.FC<{
   color?: string;
   animate?: boolean;
   duration?: number;
-}> = ({ className = '', color = 'rgba(124, 58, 237, 0.10)', animate = true, duration = 10 }) => (
+}> = ({ className = '', color = 'rgba(124, 77, 224, 0.10)', animate = true, duration = 10 }) => (
   <div
     aria-hidden
     className={`pointer-events-none absolute ${animate ? 'skz-blob-float' : ''} ${className}`}
@@ -131,7 +131,7 @@ export const VideoSection: React.FC<{
       )}
 
       <Reveal delay={0.1}>
-        <div className="rounded-[1.5rem] sm:rounded-[2rem] bg-[#14161B] dark:bg-black p-2 sm:p-3 shadow-2xl shadow-skyz-accent/10 border border-skyz-border">
+        <div className="rounded-[1.5rem] sm:rounded-[2rem] bg-[#16131F] dark:bg-black p-2 sm:p-3 shadow-2xl shadow-skyz-accent/10 border border-skyz-border">
           {/* Header row — Putty style */}
           <div className="flex items-center gap-2.5 px-2 pt-1.5 pb-2.5">
             <span className="w-6 h-6 rounded-full bg-skyz-accent flex items-center justify-center flex-shrink-0">
@@ -139,7 +139,7 @@ export const VideoSection: React.FC<{
             </span>
             <div className="min-w-0">
               <div className="text-white text-xs sm:text-sm font-semibold truncate">{title}</div>
-              <div className="text-white/40 text-[10px] sm:text-xs">SkyZ Solutions</div>
+              <div className="text-white/40 text-[10px] sm:text-xs">SKY Z Solutions</div>
             </div>
           </div>
 

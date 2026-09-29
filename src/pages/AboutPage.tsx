@@ -58,16 +58,16 @@ export const AboutPage: React.FC = () => {
       {/* ================================================================ */}
       <section className="w-full pt-14 pb-20 sm:pt-24 sm:pb-28 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         {/* Organic color blobs behind the type — Labs playfulness */}
-        <Blob className="w-[420px] h-[380px] -top-24 -left-32 opacity-80" color="rgba(124, 58, 237, 0.10)" duration={11} />
+        <Blob className="w-[420px] h-[380px] -top-24 -left-32 opacity-80" color="rgba(124, 77, 224, 0.10)" duration={11} />
         <Blob className="w-[360px] h-[320px] top-10 right-[-120px] opacity-70" color="rgba(236, 72, 153, 0.09)" duration={13} />
-        <Blob className="w-[300px] h-[280px] bottom-[-100px] left-1/3 opacity-60" color="rgba(56, 189, 248, 0.10)" duration={9} />
+        <Blob className="w-[300px] h-[280px] bottom-[-100px] left-1/3 opacity-60" color="rgba(159, 122, 234, 0.10)" duration={9} />
 
         <div className="max-w-7xl mx-auto relative z-10">
           <Reveal>
             <div className="flex flex-wrap items-center justify-between gap-4 mb-10 sm:mb-14">
               <Eyebrow>
                 <span className="w-2 h-2 rounded-full bg-skyz-accent animate-pulse" />
-                Studio Story // SkyZ Solutions
+                Studio Story // SKY Z Solutions
               </Eyebrow>
               <div className="flex items-center gap-2 font-mono text-[11px] text-skyz-text-muted">
                 <span className="px-2.5 py-1 rounded-full bg-skyz-surface border border-skyz-border">EST. 2024</span>
@@ -123,7 +123,7 @@ export const AboutPage: React.FC = () => {
             <FloatingTag className="top-14 sm:top-24 right-[8%] sm:right-[22%] bg-pink-400/90 text-slate-900 rotate-3" delay={0.8}>
               ✦ CLEAN
             </FloatingTag>
-            <FloatingTag className="top-28 sm:top-44 right-[2%] sm:right-[4%] bg-blue-400 text-white rotate-6" delay={1.1}>
+            <FloatingTag className="top-28 sm:top-44 right-[2%] sm:right-[4%] bg-violet-500 text-white rotate-6" delay={1.1}>
               ✦ CONNECTED
             </FloatingTag>
           </Reveal>
@@ -140,7 +140,7 @@ export const AboutPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => navigate('services')}
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#080B10] font-semibold text-sm shadow-md hover:bg-skyz-accent transition-all cursor-pointer"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#160F26] font-semibold text-sm shadow-md hover:bg-skyz-accent transition-all cursor-pointer"
               >
                 <span>Explore Services</span>
                 <ArrowRight className="w-4 h-4" />
@@ -162,7 +162,7 @@ export const AboutPage: React.FC = () => {
       {/* ================================================================ */}
       <SectionShell>
         <div className="bg-skyz-surface border border-skyz-border rounded-[inherit] px-6 py-16 sm:px-14 sm:py-24">
-          <Blob className="w-[380px] h-[340px] -top-28 -right-24 opacity-70" color="rgba(124, 58, 237, 0.07)" duration={12} />
+          <Blob className="w-[380px] h-[340px] -top-28 -right-24 opacity-70" color="rgba(139, 92, 246, 0.07)" duration={12} />
           <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             <Reveal className="lg:col-span-5 space-y-5">
               <Eyebrow>
@@ -177,14 +177,14 @@ export const AboutPage: React.FC = () => {
             <div className="lg:col-span-7 space-y-6">
               <Reveal delay={0.08}>
                 <p className="text-lg sm:text-xl text-skyz-text-muted leading-relaxed">
-                  SkyZ Solutions is a creative digital technology studio. We build modern websites, expand digital audiences, and automate everyday business workflows. No fluff, no complicated handoffs—just clean software and direct results.
+                  SKY Z Solutions is a creative digital technology studio. We build modern websites, expand digital audiences, and automate everyday business workflows. No fluff, no complicated handoffs—just clean software and direct results.
                 </p>
               </Reveal>
               <div className="grid grid-cols-3 gap-3 sm:gap-4">
                 {[
-                  { label: 'BUILD', sub: 'Web & Commerce', color: 'text-sky-500' },
+                  { label: 'BUILD', sub: 'Web & Commerce', color: 'text-violet-600 dark:text-violet-300' },
                   { label: 'GROW', sub: 'Search & Design', color: 'text-purple-500' },
-                  { label: 'AUTOMATE', sub: 'Workflows & AI', color: 'text-amber-500' },
+                  { label: 'AUTOMATE', sub: 'Workflows & AI', color: 'text-violet-700 dark:text-violet-300' },
                 ].map((item, i) => (
                   <Reveal key={item.label} delay={0.1 + i * 0.07}>
                     <motion.div
@@ -207,13 +207,13 @@ export const AboutPage: React.FC = () => {
       {/* ================================================================ */}
       <SectionShell>
         <div className="relative rounded-[inherit] px-2 py-14 sm:py-20 bg-gradient-to-b from-skyz-surface-subtle/60 to-transparent overflow-hidden">
-          <Blob className="w-[420px] h-[380px] top-6 -left-32 opacity-60" color="rgba(56, 189, 248, 0.08)" duration={12} />
+          <Blob className="w-[420px] h-[380px] top-6 -left-32 opacity-60" color="rgba(159, 122, 234, 0.08)" duration={12} />
           <Blob className="w-[360px] h-[340px] bottom-0 -right-24 opacity-60" color="rgba(168, 85, 247, 0.08)" duration={10} />
           <div className="relative z-10">
             <VideoSection
               heading="See how we work"
               caption="A two-minute tour of how SkyZ designs, builds, and ships digital tools for real businesses."
-              title="Inside SkyZ Solutions — Build • Grow • Automate"
+              title="Inside SKY Z Solutions — Build • Grow • Automate"
               videoId="dYISWlAxUVs"
             />
           </div>
@@ -281,7 +281,7 @@ export const AboutPage: React.FC = () => {
       {/* ================================================================ */}
       <SectionShell>
         <div className="relative rounded-[inherit] px-6 py-20 sm:py-28 text-center overflow-hidden bg-skyz-surface border border-skyz-border">
-          <Blob className="w-[300px] h-[280px] -top-20 -left-16 opacity-80" color="rgba(56, 189, 248, 0.10)" duration={10} />
+          <Blob className="w-[300px] h-[280px] -top-20 -left-16 opacity-80" color="rgba(159, 122, 234, 0.10)" duration={10} />
           <Blob className="w-[320px] h-[300px] -bottom-24 -right-20 opacity-80" color="rgba(168, 85, 247, 0.10)" duration={12} />
           <div className="relative z-10 max-w-3xl mx-auto space-y-8">
             <Reveal>
@@ -294,8 +294,8 @@ export const AboutPage: React.FC = () => {
               <h2 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-skyz-text leading-tight">
                 Digital technology should make your business{' '}
                 <span className="text-skyz-accent">faster</span>,{' '}
-                <span className="text-pink-500">simpler</span>, and more{' '}
-                <span className="text-emerald-500">recognizable</span>.
+                <span className="text-skyz-accent">simpler</span>, and more{' '}
+                <span className="text-skyz-accent">recognizable</span>.
               </h2>
             </Reveal>
             <Reveal delay={0.14}>
@@ -307,7 +307,7 @@ export const AboutPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => navigate('contact')}
-                className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#080B10] font-semibold text-sm shadow-md hover:bg-skyz-accent transition-all cursor-pointer"
+                className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#160F26] font-semibold text-sm shadow-md hover:bg-skyz-accent transition-all cursor-pointer"
               >
                 <span>Start a Project</span>
                 <ArrowRight className="w-4 h-4" />

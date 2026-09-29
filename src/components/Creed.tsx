@@ -7,7 +7,7 @@ export const Creed: React.FC = () => {
   return (
     <SectionShell id="principles">
       <div className="bg-skyz-surface border border-skyz-border rounded-[inherit] px-5 sm:px-12 py-16 sm:py-24 relative overflow-hidden">
-        <Blob className="w-[340px] h-[310px] -bottom-24 -right-24 opacity-70" color="rgba(124, 58, 237, 0.06)" duration={12} />
+        <Blob className="w-[340px] h-[310px] -bottom-24 -right-24 opacity-70" color="rgba(124, 77, 224, 0.06)" duration={12} />
 
         <div className="relative z-10 max-w-7xl mx-auto">
           <Reveal>

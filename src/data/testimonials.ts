@@ -22,7 +22,7 @@ export const TESTIMONIALS: Testimonial[] = [
     name: 'Sana Mir',
     role: 'Founder, Apex Living',
     initials: 'SM',
-    accent: '#3B82F6',
+    accent: '#7C4DE0',
     service: 'E-COMMERCE',
   },
   {
@@ -31,7 +31,7 @@ export const TESTIMONIALS: Testimonial[] = [
     name: 'Daniel Cole',
     role: 'Director, Horizon Studio',
     initials: 'DC',
-    accent: '#0EA5E9',
+    accent: '#6D3FD4',
     service: 'WEB DEVELOPMENT',
   },
   {
@@ -40,7 +40,7 @@ export const TESTIMONIALS: Testimonial[] = [
     name: 'Amira Hassan',
     role: 'Managing Partner, Meridian Advisory',
     initials: 'AH',
-    accent: '#10B981',
+    accent: '#9F7AEA',
     service: 'SEO',
   },
   {
@@ -58,7 +58,7 @@ export const TESTIMONIALS: Testimonial[] = [
     name: 'Lena Fischer',
     role: 'Ops Lead, FlowOps Logistics',
     initials: 'LF',
-    accent: '#F59E0B',
+    accent: '#6D28D9',
     service: 'AI AUTOMATION',
   },
 ];

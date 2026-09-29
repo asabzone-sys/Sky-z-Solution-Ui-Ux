@@ -95,7 +95,7 @@ export const MeetingsInbox: React.FC<{ onData?: () => void }> = ({ onData }) => 
             onClick={() => setFilter(f)}
             className={`px-3.5 py-1.5 rounded-full text-[11px] font-mono font-semibold border transition-all cursor-pointer ${
               filter === f
-                ? 'bg-skyz-text text-skyz-bg border-skyz-text dark:bg-skyz-accent dark:text-[#080B10] dark:border-skyz-accent'
+                ? 'bg-skyz-text text-skyz-bg border-skyz-text dark:bg-skyz-accent dark:text-[#160F26] dark:border-skyz-accent'
                 : 'bg-skyz-surface text-skyz-text-muted border-skyz-border hover:text-skyz-text'
             }`}
           >

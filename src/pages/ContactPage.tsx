@@ -30,12 +30,12 @@ export const ContactPage: React.FC = () => {
   const calendlyUrl = CALENDLY_URL;
 
   const servicesList = [
-    { id: 'web-development', name: 'Web Development', icon: <Globe className="w-4 h-4 text-sky-500" /> },
-    { id: 'ecommerce', name: 'E-commerce', icon: <ShoppingCart className="w-4 h-4 text-blue-500" /> },
-    { id: 'seo', name: 'SEO', icon: <Search className="w-4 h-4 text-emerald-500" /> },
-    { id: 'digital-marketing', name: 'Digital Marketing', icon: <TrendingUp className="w-4 h-4 text-purple-500" /> },
-    { id: 'graphic-design', name: 'Graphic Design', icon: <Palette className="w-4 h-4 text-pink-500" /> },
-    { id: 'ai-automation', name: 'AI Automation', icon: <Bot className="w-4 h-4 text-amber-500" /> }
+    { id: 'web-development', name: 'Web Development', icon: <Globe className="w-4 h-4 text-violet-600 dark:text-violet-300" /> },
+    { id: 'ecommerce', name: 'E-commerce', icon: <ShoppingCart className="w-4 h-4 text-violet-700 dark:text-violet-300" /> },
+    { id: 'seo', name: 'SEO', icon: <Search className="w-4 h-4 text-purple-600 dark:text-purple-300" /> },
+    { id: 'digital-marketing', name: 'Digital Marketing', icon: <TrendingUp className="w-4 h-4 text-purple-700 dark:text-purple-300" /> },
+    { id: 'graphic-design', name: 'Graphic Design', icon: <Palette className="w-4 h-4 text-violet-500 dark:text-violet-300" /> },
+    { id: 'ai-automation', name: 'AI Automation', icon: <Bot className="w-4 h-4 text-violet-800 dark:text-violet-200" /> }
   ];
 
   // Default selection based on navigation context
@@ -152,14 +152,14 @@ export const ContactPage: React.FC = () => {
       {/* 1. HERO — Labs-style: generous air, big type, floating tags   */}
       {/* ============================================================ */}
       <section className="relative w-full px-4 sm:px-6 pt-28 sm:pt-32 pb-14 sm:pb-20 overflow-hidden">
-        <Blob className="w-[380px] h-[340px] -top-24 -left-28 opacity-70" color="rgba(124, 58, 237, 0.09)" duration={12} />
-        <Blob className="w-[320px] h-[300px] top-10 right-[-90px] opacity-70" color="rgba(56, 189, 248, 0.09)" duration={10} />
+        <Blob className="w-[380px] h-[340px] -top-24 -left-28 opacity-70" color="rgba(124, 77, 224, 0.09)" duration={12} />
+        <Blob className="w-[320px] h-[300px] top-10 right-[-90px] opacity-70" color="rgba(159, 122, 234, 0.09)" duration={10} />
 
         {/* Creative touch #1 — floating micro-tags around the hero type */}
-        <FloatingTag className="top-24 sm:top-32 left-[3%] sm:left-[10%] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20" delay={0.5}>
+        <FloatingTag className="top-24 sm:top-32 left-[3%] sm:left-[10%] bg-violet-500/10 text-violet-600 dark:text-violet-300 border border-violet-500/20" delay={0.5}>
           ✦ 24H REPLY
         </FloatingTag>
-        <FloatingTag className="top-40 sm:top-52 right-[3%] sm:right-[8%] bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20" delay={0.9}>
+        <FloatingTag className="top-40 sm:top-52 right-[3%] sm:right-[8%] bg-skyz-surface text-skyz-text-muted border border-skyz-border" delay={0.9}>
           ✦ NO COMMITMENT
         </FloatingTag>
 
@@ -188,7 +188,7 @@ export const ContactPage: React.FC = () => {
             <button
               type="button"
               onClick={scrollToBrief}
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#080B10] font-semibold text-sm shadow-md hover:bg-skyz-accent transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#160F26] font-semibold text-sm shadow-md hover:bg-skyz-accent transition-all cursor-pointer"
             >
               <Mail className="w-4 h-4" />
               <span>Write to the studio</span>
@@ -348,7 +348,7 @@ export const ContactPage: React.FC = () => {
                             onClick={() => setFormData({ ...formData, service: svc.name })}
                             className={`p-3 rounded-2xl text-xs font-medium flex items-center gap-2 border transition-all cursor-pointer text-left ${
                               isSelected
-                                ? 'bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#080B10] border-skyz-text dark:border-skyz-accent shadow-sm'
+                                ? 'bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#160F26] border-skyz-text dark:border-skyz-accent shadow-sm'
                                 : 'bg-skyz-surface-subtle text-skyz-text hover:bg-skyz-surface border-skyz-border hover:border-skyz-accent/40'
                             }`}
                           >
@@ -407,7 +407,7 @@ export const ContactPage: React.FC = () => {
                       <span className="flex items-center gap-3 text-xs sm:text-sm text-skyz-text-muted font-medium truncate">
                         {isSubmitting ? 'Sending your brief…' : 'Ready when you are —'}
                       </span>
-                      <span className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#080B10] text-xs sm:text-sm font-semibold flex-shrink-0 transition-transform group-hover:translate-x-0.5">
+                      <span className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#160F26] text-xs sm:text-sm font-semibold flex-shrink-0 transition-transform group-hover:translate-x-0.5">
                         {isSubmitting ? (
                           <span className="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin" />
                         ) : (
@@ -436,7 +436,7 @@ export const ContactPage: React.FC = () => {
       {/* ============================================================ */}
       <SectionShell>
         <div className="relative rounded-[inherit] px-6 sm:px-12 py-14 sm:py-16 overflow-hidden">
-          <Blob className="w-[300px] h-[280px] -bottom-24 -left-20 opacity-60" color="rgba(124, 58, 237, 0.07)" duration={11} />
+          <Blob className="w-[300px] h-[280px] -bottom-24 -left-20 opacity-60" color="rgba(124, 77, 224, 0.07)" duration={11} />
 
           <div className="relative z-10 grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-10 max-w-4xl mx-auto">
             {[
@@ -465,7 +465,7 @@ export const ContactPage: React.FC = () => {
       {/* ============================================================== */}
       <SectionShell id="book-a-call">
         <div className="relative bg-skyz-surface border border-skyz-border rounded-[inherit] px-5 sm:px-10 lg:px-14 py-24 sm:py-32 overflow-hidden">
-          <Blob className="w-[380px] h-[340px] -top-24 -right-28 opacity-60" color="rgba(124, 58, 237, 0.08)" duration={12} />
+          <Blob className="w-[380px] h-[340px] -top-24 -right-28 opacity-60" color="rgba(139, 92, 246, 0.08)" duration={12} />
           <div className="absolute top-6 right-6 hidden lg:block text-[11px] font-mono text-skyz-text-muted tracking-widest">
             SCHEDULE.MEET
           </div>
@@ -513,7 +513,7 @@ export const ContactPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setCalendlyOpen(true)}
-                  className="group inline-flex items-center gap-3 px-8 py-4 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#080B10] font-semibold text-sm sm:text-base shadow-lg hover:bg-skyz-accent dark:hover:bg-skyz-accent-secondary hover:shadow-xl transition-all cursor-pointer"
+                  className="group inline-flex items-center gap-3 px-8 py-4 rounded-full bg-skyz-text dark:bg-skyz-accent text-white dark:text-[#160F26] font-semibold text-sm sm:text-base shadow-lg hover:bg-skyz-accent dark:hover:bg-skyz-accent-secondary hover:shadow-xl transition-all cursor-pointer"
                 >
                   <Calendar className="w-5 h-5" />
                   <span>Book your schedule</span>
@@ -547,7 +547,7 @@ export const ContactPage: React.FC = () => {
                     styles={{ height: '630px' }}
                     pageSettings={{
                       hideEventTypeDetails: true,
-                      primaryColor: '7c3aed',
+                      primaryColor: '7c4de0',
                     }}
                   />
                 </div>
@@ -565,7 +565,7 @@ export const ContactPage: React.FC = () => {
         open={calendlyOpen}
         pageSettings={{
           hideEventTypeDetails: true,
-          primaryColor: '7c3aed',
+          primaryColor: '7c4de0',
         }}
       />
 

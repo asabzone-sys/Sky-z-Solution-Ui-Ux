@@ -40,18 +40,19 @@
 
 :root {
   color-scheme: light;
-  /* Original SkyZ Lavender Palette for Light Mode */
-  --background: #FCF8FC;
+  /* SkyZ Lavender — light theme: warm off-white fields, charcoal-violet ink,
+     soft hairlines, one controlled lavender-violet accent family. */
+  --background: #FBFAFD;
   --surface: #FFFFFF;
-  --surface-subtle: #F6F2F7;
-  --foreground: #1B1B1E;
-  --muted: #4A4455;
-  --border: #E4E1E6;
-  --border-subtle: #F0EDF1;
-  --accent: #7C3AED;
-  --accent-secondary: #A78BFA;
-  --accent-muted: #F0EBF8;
-  --glow: rgba(167, 139, 250, 0.16);
+  --surface-subtle: #F5F2FB;
+  --foreground: #211D2E;
+  --muted: #5D5470;
+  --border: #E9E5F2;
+  --border-subtle: #F0EDF8;
+  --accent: #7C4DE0;
+  --accent-secondary: #9F7AEA;
+  --accent-muted: #F1EBFA;
+  --glow: rgba(159, 122, 234, 0.16);
 
   /* Legacy variable compatibility */
   --bg-color: var(--background);
@@ -65,18 +66,19 @@
 
 .dark {
   color-scheme: dark;
-  /* Approved SkyZ Blue Palette for Dark Mode */
-  --background: #080B10;
-  --surface: #0F131A;
-  --surface-subtle: #151B24;
-  --foreground: #F5F7FA;
-  --muted: #9AA4B2;
-  --border: #202631;
-  --border-subtle: #1A212D;
-  --accent: #38BDF8;
-  --accent-secondary: #60A5FA;
-  --accent-muted: rgba(56, 189, 248, 0.12);
-  --glow: rgba(56, 189, 248, 0.16);
+  /* SkyZ Lavender — dark theme: near-black violet fields, lavender stays the
+     recognizable brand accent. No blue/cyan anywhere in the system. */
+  --background: #0B0813;
+  --surface: #131020;
+  --surface-subtle: #1B1630;
+  --foreground: #F3F0FA;
+  --muted: #A79FBC;
+  --border: #251F3A;
+  --border-subtle: #1D1830;
+  --accent: #A78BFA;
+  --accent-secondary: #C4B5FD;
+  --accent-muted: rgba(167, 139, 250, 0.12);
+  --glow: rgba(167, 139, 250, 0.16);
 
   /* Legacy variable compatibility */
   --bg-color: var(--background);
@@ -246,11 +248,11 @@ body.motion-off .widget-core-spin {
 }
 
 .card-shadow-active {
-  box-shadow: 0 30px 60px -12px rgba(27, 27, 30, 0.08), 0 18px 36px -18px rgba(124, 58, 237, 0.12);
+  box-shadow: 0 30px 60px -12px rgba(33, 29, 46, 0.08), 0 18px 36px -18px rgba(124, 77, 224, 0.12);
 }
 
 .dark .card-shadow-active {
-  box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.6), 0 0 30px -8px rgba(56, 189, 248, 0.15);
+  box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.6), 0 0 30px -8px rgba(167, 139, 250, 0.15);
 }
 
 .card-shadow-flank {
@@ -259,6 +261,46 @@ body.motion-off .widget-core-spin {
 
 .dark .card-shadow-flank {
   box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.4);
+}
+
+/* ------------------------------------------------------------------ */
+/* Lavender brand utilities (design language, used across components)   */
+/* ------------------------------------------------------------------ */
+
+/* Primary CTA: lavender gradient, one per view — subtle and expensive. */
+.skz-cta {
+  background-image: linear-gradient(120deg, #6D3FD4 0%, #8B5CF6 55%, #A78BFA 100%);
+  color: #fff;
+  box-shadow: 0 8px 24px -10px rgba(124, 77, 224, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  transition: filter 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+}
+.skz-cta:hover {
+  filter: brightness(1.07);
+  box-shadow: 0 12px 32px -10px rgba(124, 77, 224, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+.dark .skz-cta {
+  background-image: linear-gradient(120deg, #8B5CF6 0%, #A78BFA 100%);
+  color: #160F26;
+  box-shadow: 0 8px 26px -10px rgba(167, 139, 250, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+/* Hero display text: quiet lavender gradient (no rainbow, no neon). */
+.skz-hero-gradient {
+  background-image: linear-gradient(100deg, #3B2A6B 0%, #6D3FD4 45%, #9F7AEA 85%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.dark .skz-hero-gradient {
+  background-image: linear-gradient(100deg, #EAE4FA 0%, #C4B5FD 55%, #A78BFA 95%);
+}
+
+/* Header elevation once the page scrolls. */
+.skz-nav-scrolled {
+  box-shadow: 0 8px 30px -12px rgba(33, 29, 46, 0.14);
+}
+.dark .skz-nav-scrolled {
+  box-shadow: 0 8px 30px -12px rgba(0, 0, 0, 0.55);
 }
 
 /* Hide scrollbar utility */
@@ -361,9 +403,9 @@ body.motion-off .widget-core-spin {
 /* every override here is body-prefixed to win the cascade.          */
 /* ---------------------------------------------------------------- */
 
-/* backdrop: deep glass like our own modals */
+/* backdrop: deep violet glass like our own modals */
 body .calendly-overlay {
-  background-color: rgba(8, 11, 16, 0.72);
+  background-color: rgba(11, 8, 19, 0.72);
   -webkit-backdrop-filter: blur(10px);
   animation: skz-fade-in 0.25s ease-out both;
 }
@@ -421,7 +463,7 @@ body .calendly-popup-close {
   top: 1rem;
   right: 1rem;
   border-radius: 9999px;
-  background-color: rgba(15, 18, 26, 0.55) !important;
+  background-color: rgba(19, 16, 32, 0.55) !important;
   background-image: url(https://assets.calendly.com/assets/external/close-icon.svg) !important;
   background-size: 0.85rem !important;
   background-position: center !important;
@@ -434,7 +476,7 @@ body .calendly-popup-close {
 }
 body .calendly-popup-close:hover {
   transform: scale(1.08);
-  background-color: rgba(15, 18, 26, 0.8);
+  background-color: rgba(19, 16, 32, 0.8);
 }
 
 @keyframes skz-popup-in {
