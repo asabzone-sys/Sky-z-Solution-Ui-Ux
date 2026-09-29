@@ -59,7 +59,7 @@ export const AboutPage: React.FC = () => {
       <section className="w-full pt-14 pb-20 sm:pt-24 sm:pb-28 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         {/* Organic color blobs behind the type — Labs playfulness */}
         <Blob className="w-[420px] h-[380px] -top-24 -left-32 opacity-80" color="rgba(124, 77, 224, 0.10)" duration={11} />
-        <Blob className="w-[360px] h-[320px] top-10 right-[-120px] opacity-70" color="rgba(236, 72, 153, 0.09)" duration={13} />
+        <Blob className="w-[360px] h-[320px] top-10 right-[-120px] opacity-70" color="rgba(139, 92, 246, 0.09)" duration={13} />
         <Blob className="w-[300px] h-[280px] bottom-[-100px] left-1/3 opacity-60" color="rgba(159, 122, 234, 0.10)" duration={9} />
 
         <div className="max-w-7xl mx-auto relative z-10">
@@ -78,7 +78,7 @@ export const AboutPage: React.FC = () => {
 
           {/* Kinetic display type — hover each word for playful motion */}
           <Reveal delay={0.08}>
-            <h1 className="font-display font-black text-[13vw] sm:text-6xl md:text-8xl lg:text-[7.5rem] tracking-tight leading-[0.95] select-none">
+            <h1 className="font-display font-black text-[13vw] sm:text-6xl md:text-7xl lg:text-[4.75rem] tracking-tight leading-[1.02] select-none">
               <span className="inline-flex flex-wrap items-center gap-x-4 gap-y-2 sm:gap-x-6">
                 {['WE', 'BUILD', 'DIGITAL'].map((word, i) => (
                   <motion.span
@@ -117,10 +117,10 @@ export const AboutPage: React.FC = () => {
             </h1>
 
             {/* Floating cursor-tag badges — Putty hero flavor */}
-            <FloatingTag className="top-1 sm:top-2 right-[2%] sm:right-[8%] bg-green-400 text-black -rotate-6" delay={0.5}>
+            <FloatingTag className="top-1 sm:top-2 right-[2%] sm:right-[8%] bg-skyz-accent-muted text-violet-700 dark:text-violet-300 border border-skyz-border -rotate-6" delay={0.5}>
               ✦ FAST
             </FloatingTag>
-            <FloatingTag className="top-14 sm:top-24 right-[8%] sm:right-[22%] bg-pink-400/90 text-slate-900 rotate-3" delay={0.8}>
+            <FloatingTag className="top-14 sm:top-24 right-[8%] sm:right-[22%] bg-skyz-surface text-skyz-text-muted border border-skyz-border rotate-3" delay={0.8}>
               ✦ CLEAN
             </FloatingTag>
             <FloatingTag className="top-28 sm:top-44 right-[2%] sm:right-[4%] bg-violet-500 text-white rotate-6" delay={1.1}>
