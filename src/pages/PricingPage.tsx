@@ -152,37 +152,51 @@ export const PricingPage: React.FC = () => {
             </div>
           </Reveal>
 
-          <Reveal delay={0.08}>
-            <h1 className="font-display font-black text-[13vw] sm:text-6xl md:text-8xl lg:text-[4.75rem] tracking-tight leading-[0.95] select-none text-skyz-text">
-              SIMPLE PRICES,
-              <br />
-              <span className="inline-flex flex-wrap items-center gap-x-4 sm:gap-x-6">
-                <span>SERIOUS</span>
-                <motion.span
-                  whileHover={{ scale: 1.06, rotate: -2 }}
-                  transition={{ type: 'spring', stiffness: 320, damping: 14 }}
-                  className="inline-flex items-center px-4 py-1.5 sm:px-6 sm:py-2 rounded-2xl sm:rounded-3xl border-2 border-dashed border-skyz-accent/60 bg-skyz-accent-muted text-skyz-accent cursor-default"
-                >
-                  RESULTS.
-                </motion.span>
-              </span>
-            </h1>
-          </Reveal>
+          {/* Editorial split — copy left, art right. The illustration sits
+              beside the headline on desktop (premium two-column hero) and
+              drops below the copy on mobile. */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
+            <div className="lg:col-span-7">
+              <Reveal delay={0.08}>
+                <h1 className="font-display font-black text-[13vw] sm:text-6xl md:text-8xl lg:text-[4.75rem] tracking-tight leading-[0.95] select-none text-skyz-text">
+                  SIMPLE PRICES,
+                  <br />
+                  <span className="inline-flex flex-wrap items-center gap-x-4 sm:gap-x-6">
+                    <span>SERIOUS</span>
+                    <motion.span
+                      whileHover={{ scale: 1.06, rotate: -2 }}
+                      transition={{ type: 'spring', stiffness: 320, damping: 14 }}
+                      className="inline-flex items-center px-4 py-1.5 sm:px-6 sm:py-2 rounded-2xl sm:rounded-3xl border-2 border-dashed border-skyz-accent/60 bg-skyz-accent-muted text-skyz-accent cursor-default"
+                    >
+                      RESULTS.
+                    </motion.span>
+                  </span>
+                </h1>
+              </Reveal>
 
-          <Reveal delay={0.14}>
-            <p className="mt-6 max-w-2xl text-base sm:text-lg text-skyz-text-muted leading-relaxed">
-              Pick the package that matches where your business is today — every one
-              is a complete system, built by the same team, with the same attention
-              to detail. No lock-ins, you own everything.
-            </p>
-          </Reveal>
+              <Reveal delay={0.14}>
+                <p className="mt-6 max-w-xl text-base sm:text-lg text-skyz-text-muted leading-relaxed">
+                  Pick the package that matches where your business is today — every
+                  one is a complete system, built by the same team, with the same
+                  attention to detail. No lock-ins, you own everything.
+                </p>
+              </Reveal>
 
-          {/* flat vector vignette — pricing at a glance */}
-          <Reveal delay={0.2} className="hidden md:block">
-            <div className="w-full max-w-md mt-2 -ml-2" aria-hidden>
-              <PricingArt className="w-full h-auto" />
+              {/* mobile/tablet: the vignette lives under the copy */}
+              <Reveal delay={0.2} className="lg:hidden">
+                <div className="w-full max-w-xs mt-4" aria-hidden>
+                  <PricingArt className="w-full h-auto" />
+                </div>
+              </Reveal>
             </div>
-          </Reveal>
+
+            {/* desktop: art rides beside the headline, vertically centered */}
+            <Reveal delay={0.2} className="hidden lg:block lg:col-span-5">
+              <div className="w-full max-w-md mx-auto" aria-hidden>
+                <PricingArt className="w-full h-auto" />
+              </div>
+            </Reveal>
+          </div>
         </div>
       </section>
 

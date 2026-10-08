@@ -13,6 +13,28 @@
 
 import React from 'react';
 
+/* Motion — tiny, quiet loops that make the art feel alive without noise.
+   All respect prefers-reduced-motion via the shared .skz-ill class. */
+const IllStyle: React.FC = () => (
+  <style>{`
+    .skz-ill [data-anim="float"]  { animation: ill-float 6s ease-in-out infinite; }
+    .skz-ill [data-anim="float2"] { animation: ill-float 7.5s ease-in-out 1.2s infinite; }
+    .skz-ill [data-anim="pulse"]  { animation: ill-pulse 3.2s ease-in-out infinite; }
+    .skz-ill [data-anim="dash"]   { stroke-dasharray: 3 7; animation: ill-dash 14s linear infinite; }
+    .skz-ill [data-anim="draw"]   { stroke-dasharray: 120; stroke-dashoffset: 120; animation: ill-draw 2.6s ease-out .4s forwards; }
+    .skz-ill [data-anim="spin"]   { animation: ill-spin 26s linear infinite; transform-origin: center; }
+    @keyframes ill-float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+    @keyframes ill-pulse { 0%,100% { opacity: .35; } 50% { opacity: 1; } }
+    @keyframes ill-dash  { to { stroke-dashoffset: -100; } }
+    @keyframes ill-draw  { to { stroke-dashoffset: 0; } }
+    @keyframes ill-spin  { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) {
+      .skz-ill [data-anim] { animation: none !important; }
+      .skz-ill [data-anim="draw"] { stroke-dashoffset: 0; }
+    }
+  `}</style>
+);
+
 type SvgProps = { className?: string };
 
 /* Base wrapper — shared sizing + focusable=false for a11y */
@@ -24,12 +46,13 @@ const Svg: React.FC<SvgProps & { children: React.ReactNode; viewBox: string; lab
 }) => (
   <svg
     viewBox={viewBox}
-    className={className}
+    className={`skz-ill ${className}`}
     role="img"
     aria-label={label}
     focusable="false"
     xmlns="http://www.w3.org/2000/svg"
   >
+    <IllStyle />
     {children}
   </svg>
 );
@@ -66,6 +89,7 @@ export const HeroArt: React.FC<SvgProps> = ({ className = '' }) => (
       strokeWidth="3"
       strokeLinecap="round"
       strokeLinejoin="round"
+      data-anim="draw"
     />
     <circle cx="364" cy="96" r="4" fill="var(--accent)" />
 
@@ -74,15 +98,15 @@ export const HeroArt: React.FC<SvgProps> = ({ className = '' }) => (
     <rect x="180" y="145" width="44" height="4" rx="2" fill="var(--surface)" opacity="0.85" />
 
     {/* plant */}
-    <path d="M452 140c0-18 10-30 26-34-2 16-10 28-26 34z" fill="var(--accent-secondary)" opacity="0.7" />
+    <path d="M452 140c0-18 10-30 26-34-2 16-10 28-26 34z" fill="var(--accent-secondary)" opacity="0.7" data-anim="float2" />
     <path d="M452 140c0-14-8-24-22-28 2 14 8 24 22 28z" fill="var(--accent)" opacity="0.45" />
     <path d="M444 140h16l-3 22h-10z" fill="var(--muted)" opacity="0.55" />
     <rect x="438" y="160" width="28" height="10" rx="4" fill="var(--muted)" opacity="0.35" />
 
-    {/* orbit accents */}
-    <circle cx="120" cy="60" r="5" fill="none" stroke="var(--accent)" strokeWidth="2" />
-    <circle cx="508" cy="44" r="3.5" fill="var(--accent)" opacity="0.6" />
-    <path d="M420 22l4 8 8 4-8 4-4 8-4-8-8-4 8-4z" fill="var(--accent-secondary)" opacity="0.6" />
+    {/* orbit accents — quiet life */}
+    <circle cx="120" cy="60" r="5" fill="none" stroke="var(--accent)" strokeWidth="2" data-anim="pulse" />
+    <circle cx="508" cy="44" r="3.5" fill="var(--accent)" opacity="0.6" data-anim="float" />
+    <path d="M420 22l4 8 8 4-8 4-4 8-4-8-8-4 8-4z" fill="var(--accent-secondary)" opacity="0.6" data-anim="float2" />
   </Svg>
 );
 
@@ -131,12 +155,13 @@ export const GrowArt: React.FC<SvgProps> = ({ className = '' }) => (
       strokeWidth="2.5"
       strokeLinecap="round"
       strokeDasharray="1 8"
+      data-anim="dash"
     />
     <path d="M168 34l-12 2m12-2l-2 12" fill="none" stroke="var(--accent)" strokeWidth="3" strokeLinecap="round" />
 
     {/* sparkles */}
-    <path d="M186 88l3.5 7 7 3.5-7 3.5-3.5 7-3.5-7-7-3.5 7-3.5z" fill="var(--accent-secondary)" opacity="0.6" />
-    <circle cx="36" cy="48" r="4.5" fill="none" stroke="var(--accent)" strokeWidth="2" />
+    <path d="M186 88l3.5 7 7 3.5-7 3.5-3.5 7-3.5-7-7-3.5 7-3.5z" fill="var(--accent-secondary)" opacity="0.6" data-anim="float2" />
+    <circle cx="36" cy="48" r="4.5" fill="none" stroke="var(--accent)" strokeWidth="2" data-anim="pulse" />
   </Svg>
 );
 
@@ -145,7 +170,7 @@ export const GrowArt: React.FC<SvgProps> = ({ className = '' }) => (
 /* ------------------------------------------------------------------ */
 export const AutomateArt: React.FC<SvgProps> = ({ className = '' }) => (
   <Svg viewBox="0 0 220 160" className={className} label="Minimal illustration of automation nodes orbiting a core">
-    <circle cx="110" cy="80" r="52" fill="none" stroke="var(--border)" strokeWidth="1.5" strokeDasharray="3 7" />
+    <circle cx="110" cy="80" r="52" fill="none" stroke="var(--border)" strokeWidth="1.5" strokeDasharray="3 7" data-anim="spin" />
 
     {/* core */}
     <circle cx="110" cy="80" r="20" fill="var(--accent)" />
@@ -192,7 +217,7 @@ export const SupportArt: React.FC<SvgProps> = ({ className = '' }) => (
     <rect x="160" y="100" width="10" height="10" rx="3" fill="var(--accent)" />
 
     {/* sparkle */}
-    <path d="M124 24l3.5 7 7 3.5-7 3.5-3.5 7-3.5-7-7-3.5 7-3.5z" fill="var(--accent-secondary)" opacity="0.55" />
+    <path d="M124 24l3.5 7 7 3.5-7 3.5-3.5 7-3.5-7-7-3.5 7-3.5z" fill="var(--accent-secondary)" opacity="0.55" data-anim="float2" />
   </Svg>
 );
 
@@ -223,7 +248,7 @@ export const PricingArt: React.FC<SvgProps> = ({ className = '' }) => (
     <circle cx="42" cy="105" r="6" fill="var(--accent-secondary)" opacity="0.7" />
 
     {/* sparkle */}
-    <path d="M232 44l4 8 8 4-8 4-4 8-4-8-8-4 8-4z" fill="var(--accent-secondary)" opacity="0.55" />
-    <circle cx="40" cy="40" r="4" fill="none" stroke="var(--accent)" strokeWidth="2" />
+    <path d="M232 44l4 8 8 4-8 4-4 8-4-8-8-4 8-4z" fill="var(--accent-secondary)" opacity="0.55" data-anim="float2" />
+    <circle cx="40" cy="40" r="4" fill="none" stroke="var(--accent)" strokeWidth="2" data-anim="pulse" />
   </Svg>
 );

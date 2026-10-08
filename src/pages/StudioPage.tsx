@@ -6,6 +6,7 @@ import { useNavigation } from '../context/NavigationContext';
 import { STUDIO_CATEGORIES, StudioVisual, StudioWork } from '../data/studio';
 import { useStudioWorks } from '../lib/supabase';
 import { Eyebrow } from '../components/OpalKit';
+import { HeroArt } from '../components/Illustrations';
 
 /**
  * StudioPage — the Design & Graphics Studio.
@@ -135,6 +136,18 @@ const StudioIntro: React.FC = () => {
               {c}
             </span>
           ))}
+        </motion.div>
+
+        {/* quiet vignette — design-in-progress desk, floating to the right.
+            Desktop only: the sticky stage below owns small screens. */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.85, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+          className="hidden lg:block absolute right-4 xl:right-10 top-1/2 -translate-y-1/2 w-[340px] xl:w-[400px] pointer-events-none"
+          aria-hidden
+        >
+          <HeroArt className="w-full h-auto" />
         </motion.div>
 
         {/* scroll rail — vertical progress line instead of a bouncing arrow */}

@@ -15,6 +15,7 @@ import {
   Eyebrow,
   FloatingTag,
 } from '../components/OpalKit';
+import { BuildArt } from '../components/Illustrations';
 
 export const AboutPage: React.FC = () => {
   const { navigate } = useNavigation();
@@ -76,6 +77,11 @@ export const AboutPage: React.FC = () => {
             </div>
           </Reveal>
 
+          {/* Editorial split — kinetic type + copy left, vignette right.
+              The illustration only appears on large screens where the hero
+              has genuine breathing space for it. */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
+          <div className="lg:col-span-7">
           {/* Kinetic display type — hover each word for playful motion */}
           <Reveal delay={0.08}>
             <h1 className="font-display font-black text-[13vw] sm:text-6xl md:text-7xl lg:text-[4.75rem] tracking-tight leading-[1.02] select-none">
@@ -154,6 +160,15 @@ export const AboutPage: React.FC = () => {
               </button>
             </div>
           </Reveal>
+          </div>
+
+          {/* desktop-only vignette — the studio at work, beside the type */}
+          <Reveal delay={0.26} className="hidden lg:block lg:col-span-5">
+            <div className="w-full max-w-sm ml-auto" aria-hidden>
+              <BuildArt className="w-full h-auto" />
+            </div>
+          </Reveal>
+          </div>
         </div>
       </section>
 
