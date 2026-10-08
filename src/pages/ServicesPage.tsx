@@ -25,6 +25,7 @@ import {
   Eyebrow,
   FloatingTag,
 } from '../components/OpalKit';
+import { BuildArt, GrowArt, AutomateArt } from '../components/Illustrations';
 
 const SERVICE_ICONS: Record<string, React.ReactNode> = {  'web-development': <Globe className="w-7 h-7 text-violet-600 dark:text-violet-300" />,
   'ecommerce': <ShoppingCart className="w-7 h-7 text-violet-700 dark:text-violet-300" />,
@@ -67,6 +68,12 @@ const PILLARS = [
     items: ['AI Automation'],
   },
 ];
+
+const PILLAR_ART: Record<string, React.ReactNode> = {
+  BUILD: <BuildArt className="w-full h-28" />,
+  GROW: <GrowArt className="w-full h-28" />,
+  AUTOMATE: <AutomateArt className="w-full h-28" />,
+};
 
 const SERVICE_QUERIES = [
   'Build a custom high-performance web application',
@@ -342,6 +349,10 @@ export const ServicesPage: React.FC = () => {
                     transition={{ type: 'spring', stiffness: 260, damping: 20 }}
                     className="h-full p-7 sm:p-8 rounded-[2rem] border border-skyz-border bg-skyz-bg text-center flex flex-col items-center gap-4"
                   >
+                    {/* flat vector vignette — the pillar's story at a glance */}
+                    <div className="w-full max-w-[180px] mx-auto" aria-hidden>
+                      {PILLAR_ART[pillar.id]}
+                    </div>
                     <span className="w-14 h-14 rounded-full bg-skyz-accent-muted flex items-center justify-center">
                       {pillar.icon}
                     </span>

@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { useNavigation } from '../context/NavigationContext';
 import { Reveal, SectionShell, Blob, Eyebrow } from '../components/OpalKit';
+import { PricingArt, SupportArt } from '../components/Illustrations';
 
 /* ------------------------------------------------------------------ */
 /* Package data                                                        */
@@ -175,6 +176,13 @@ export const PricingPage: React.FC = () => {
               to detail. No lock-ins, you own everything.
             </p>
           </Reveal>
+
+          {/* flat vector vignette — pricing at a glance */}
+          <Reveal delay={0.2} className="hidden md:block">
+            <div className="w-full max-w-md mt-2 -ml-2" aria-hidden>
+              <PricingArt className="w-full h-auto" />
+            </div>
+          </Reveal>
         </div>
       </section>
 
@@ -333,6 +341,12 @@ export const PricingPage: React.FC = () => {
         <div className="relative rounded-[inherit] bg-skyz-surface border border-skyz-border px-5 sm:px-12 py-16 sm:py-20 text-center overflow-hidden">
           <Blob className="w-[300px] h-[280px] -top-20 -right-20 opacity-70" color="rgba(124, 77, 224, 0.10)" duration={12} />
           <div className="relative z-10 max-w-2xl mx-auto space-y-6">
+            {/* flat vector vignette — a consultant ready to talk */}
+            <Reveal className="flex justify-center" >
+              <div className="w-full max-w-[180px]" aria-hidden>
+                <SupportArt className="w-full h-auto" />
+              </div>
+            </Reveal>
             <Reveal>
               <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-skyz-text leading-tight">
                 Not sure which package?{' '}

@@ -3,6 +3,7 @@ import { Sparkles, ArrowRight, ArrowDown, Laptop, ShoppingCart, Search, Trending
 import { HERO_QUERIES, OFFICIAL_SERVICES } from '../data/content';
 import { useNavigation } from '../context/NavigationContext';
 import { Reveal, Blob, FloatingTag } from '../components/OpalKit';
+import { HeroArt } from './Illustrations';
 
 const SERVICE_ICON: Record<string, React.ReactNode> = {
   'web-development': <Laptop className="w-full h-full" />,
@@ -237,6 +238,14 @@ export const Hero: React.FC = () => {
             >
               Website SEO
             </button>
+          </div>
+        </Reveal>
+
+        {/* Flat vector vignette — the studio at work, one glance. Desktop
+            only: on phones the hero is already dense with chips + pill. */}
+        <Reveal delay={0.18} className="hidden lg:block w-full">
+          <div className="w-full max-w-xl mx-auto mt-6 opacity-95" aria-hidden>
+            <HeroArt className="w-full h-auto" />
           </div>
         </Reveal>
       </div>

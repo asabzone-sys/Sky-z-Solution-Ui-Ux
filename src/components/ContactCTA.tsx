@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ArrowRight, Check, ShieldCheck, Clock, Send } from 'lucide-react';
 import { useNavigation } from '../context/NavigationContext';
 import { Reveal, SectionShell, Blob } from '../components/OpalKit';
+import { SupportArt } from './Illustrations';
 import { ModalPortal } from './ModalPortal';
 
 export const ContactCTA: React.FC = () => {
@@ -74,6 +75,13 @@ export const ContactCTA: React.FC = () => {
                 <ArrowRight className="w-3.5 h-3.5" />
               </span>
             </button>
+          </Reveal>
+
+          {/* flat vector vignette — a conversation waiting to happen */}
+          <Reveal delay={0.17} className="hidden sm:flex justify-center">
+            <div className="w-full max-w-[160px]" aria-hidden>
+              <SupportArt className="w-full h-auto" />
+            </div>
           </Reveal>
 
           <Reveal delay={0.2}>
