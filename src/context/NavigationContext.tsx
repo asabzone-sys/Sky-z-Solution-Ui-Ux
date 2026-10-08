@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
-export type PageType = 'home' | 'about' | 'services' | 'work' | 'contact' | 'studio';
+export type PageType = 'home' | 'about' | 'services' | 'work' | 'contact' | 'studio' | 'pricing';
 
 interface NavigationContextType {
   currentPage: PageType;
@@ -26,6 +26,7 @@ function getPageFromLocation(): PageType {
   if (path.includes('work') || path.includes('project')) return 'work';
   if (path.includes('contact')) return 'contact';
   if (path.includes('studio')) return 'studio';
+  if (path.includes('pricing') || path.includes('packages')) return 'pricing';
 
   // Check hash
   if (hash.startsWith('#/about') || hash === '#about') return 'about';
@@ -33,6 +34,7 @@ function getPageFromLocation(): PageType {
   if (hash.startsWith('#/work') || hash === '#work' || hash.startsWith('#/projects') || hash === '#projects') return 'work';
   if (hash.startsWith('#/contact') || hash === '#contact') return 'contact';
   if (hash.startsWith('#/studio') || hash === '#studio') return 'studio';
+  if (hash.startsWith('#/pricing') || hash === '#pricing' || hash.startsWith('#/packages') || hash === '#packages') return 'pricing';
 
   return 'home';
 }
@@ -44,6 +46,7 @@ const PAGE_TITLES: Record<PageType, string> = {
   work: 'Projects & Work | SKY Z Solutions — Systems Portfolio',
   contact: 'Contact & Project Scoping | SKY Z Solutions',
   studio: 'Design & Graphics Studio | SKY Z Solutions',
+  pricing: 'Packages & Pricing | SKY Z Solutions',
 };
 
 export const NavigationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {

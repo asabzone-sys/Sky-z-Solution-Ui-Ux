@@ -24,6 +24,7 @@ const ServicesPage = lazy(() => import('./pages/ServicesPage').then((m) => ({ de
 const WorkPage = lazy(() => import('./pages/WorkPage').then((m) => ({ default: m.WorkPage })));
 const StudioPage = lazy(() => import('./pages/StudioPage').then((m) => ({ default: m.StudioPage })));
 const ContactPage = lazy(() => import('./pages/ContactPage').then((m) => ({ default: m.ContactPage })));
+const PricingPage = lazy(() => import('./pages/PricingPage').then((m) => ({ default: m.PricingPage })));
 
 const AppContent: React.FC = () => {
   const { currentPage } = useNavigation();
@@ -54,6 +55,7 @@ const AppContent: React.FC = () => {
             {currentPage === 'work' && <WorkPage />}
             {currentPage === 'studio' && <StudioPage />}
             {currentPage === 'contact' && <ContactPage />}
+            {currentPage === 'pricing' && <PricingPage />}
           </Suspense>
         </div>
       </main>
