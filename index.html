@@ -46,6 +46,10 @@
         <p class="text-base sm:text-lg md:text-xl text-skyz-text-muted max-w-2xl mx-auto mt-5 text-center px-2 leading-relaxed">Web systems, growth engines, and autonomous AI automation — built as one connected studio.</p>
       </div>
     </div>
+    <!-- SkyZ AI Consultant — floating chat widget (served by the agent backend,
+         deployed on Vercel as project "skyz-agent"). Loads after the page and
+         fails silently if the backend is not reachable. -->
+    <script src="https://skyz-agent.vercel.app/widget.js" defer></script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
