@@ -12,6 +12,7 @@ export interface FieldDef {
   type: 'text' | 'textarea' | 'select' | 'color' | 'order' | 'media';
   options?: string[];
   slot?: string;          // media slot key (SLOTS)
+  kind?: 'image' | 'video'; // media kind — changes the file picker + preview
   half?: boolean;         // half-width in the form grid
 }
 
@@ -23,6 +24,10 @@ export interface ManagerConfig {
   subKey: string;         // row field shown as list subtitle
   newTemplate: () => Record<string, unknown>;
   canDelete?: boolean;
+  /** optional transform when a DB row is opened for editing */
+  expand?: (row: Record<string, unknown>) => Record<string, unknown>;
+  /** optional transform just before a draft is saved to the DB */
+  prepare?: (draft: Record<string, unknown>) => Record<string, unknown>;
 }
 
 interface Row {
@@ -40,8 +45,7 @@ export const ContentManager: React.FC<{
   save: (row: Record<string, unknown>) => Promise<void>;
   remove?: (id: string) => Promise<void>;
   isAdmin: boolean;
-}> = ({ config, list, save, remove, isAdmin }) => {
-  const [rows, setRows] = useState<Row[]>([]);
+}> = ({ config, list, save, remove, isAdmin }) => {  const [rows, setRows] = useState<Row[]>([]);
   const [draft, setDraft] = useState<Record<string, unknown> | null>(null);
   const [isNew, setIsNew] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -56,13 +60,13 @@ export const ContentManager: React.FC<{
   useEffect(load, []);
 
   const openNew = () => { setDraft(config.newTemplate()); setIsNew(true); };
-  const openRow = (r: Row) => { setDraft({ ...r }); setIsNew(false); };
+  const openRow = (r: Row) => { setDraft(config.expand ? config.expand({ ...r }) : { ...r }); setIsNew(false); };
 
   const commit = async () => {
     if (!draft) return;
     setBusy(true); setError(null);
     try {
-      await save(draft);
+      await save(config.prepare ? config.prepare(draft) : draft);
       setSavedFlash(true); setTimeout(() => setSavedFlash(false), 1600);
       setDraft(null);
       load();
@@ -131,9 +135,15 @@ export const ContentManager: React.FC<{
                 return (
                   <div key={f.key} className={wide ? 'sm:col-span-2' : ''}>
                     {f.type === 'media' ? (
-                      <MediaSlot slotKey={f.slot || f.key} value={(v as string) || null} onChange={set} label={f.label} />
+                      <MediaSlot
+                        slotKey={f.slot || f.key}
+                        value={(v as string) || null}
+                        onChange={set}
+                        label={f.label}
+                        accept={f.kind === 'video' ? 'video/mp4,video/webm,video/quicktime' : 'image/*'}
+                      />
                     ) : (
-                      <Field label={f.label}>
+                      <Field label={f.label} hint={(f as FieldDef & { hint?: string }).hint}>
                         {f.type === 'textarea' && <TextArea value={String(v ?? '')} onChange={set} />}
                         {f.type === 'text' && <TextInput value={String(v ?? '')} onChange={set} />}
                         {f.type === 'select' && <Select value={String(v ?? '')} onChange={set} options={f.options || []} />}

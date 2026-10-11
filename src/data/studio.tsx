@@ -111,6 +111,25 @@ export const STUDIO_WORKS: StudioWork[] = [
   },
 ];
 
+/**
+ * YouTube helper — accepts a bare ID ('dYISWlAxUVs'), a watch URL,
+ * a youtu.be short URL or an embed URL, and returns the video ID.
+ * Null for anything that isn't YouTube (i.e. an uploaded MP4 path).
+ */
+export const youTubeId = (v?: string | null): string | null => {
+  if (!v) return null;
+  if (/^[a-zA-Z0-9_-]{11}$/.test(v.trim())) return v.trim();
+  const m = v.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+  return m ? m[1] : null;
+};
+
+/** Thumbnail for any video value — YouTube poster or the uploaded poster path URL. */
+export const videoThumb = (v?: string | null, poster?: string | null): string | null => {
+  const yt = youTubeId(v);
+  if (yt) return `https://i.ytimg.com/vi/${yt}/hqdefault.jpg`;
+  return poster || null;
+};
+
 export const STUDIO_CATEGORIES: StudioCategory[] = [
   'BRAND IDENTITY',
   'GRAPHIC DESIGN',

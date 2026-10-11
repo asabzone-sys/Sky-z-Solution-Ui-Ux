@@ -23,3 +23,6 @@ __pycache__/
 
 # never commit raw keys saved as files
 sk-*.txt
+
+# local demo media (large preview MP4s, never pushed)
+public/demo/

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react';
+import { youTubeId } from '../data/studio';
 import { useMotionPreference } from '../context/MotionPreferenceContext';
 import {
   ArrowRight,
@@ -24,12 +25,16 @@ import {
   VideoSection,
   Eyebrow,
 } from '../components/OpalKit';
-import { useProjects } from '../lib/supabase';
+import { useProjects, videoThumb } from '../lib/supabase';
+import { DEMO_WORK_VIDEO, isDemoWorkVideo } from '../data/portfolio';
 import { ModalPortal } from '../components/ModalPortal';
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
 const HERO_TILES_COUNT = 5;
+
+/** hero tiles show the video's poster frame instead of the live loop */
+const videoThumbOf = (p: PortfolioProject): string | null => videoThumb(p.video, p.poster ?? p.image);
 
 /** word-by-word masked rise for chapter titles — editorial, not a fade-up */
 const TitleRise: React.FC<{ text: string }> = ({ text }) => {
@@ -87,6 +92,8 @@ const ProjectChapter: React.FC<{
 }> = ({ project, index, onOpen }) => {
   const ref = useRef<HTMLDivElement>(null);
   const reduced = !useMotionPreference().motionEnabled;
+  // local hover state: drives this chapter's video slow-motion only
+  const [hovered, setHovered] = useState(false);
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
 
   const imgY = useTransform(scrollYProgress, [0, 1], ['-6%', '6%']);
@@ -140,6 +147,8 @@ const ProjectChapter: React.FC<{
                 className={`relative overflow-hidden rounded-[1.75rem] sm:rounded-[2rem] border border-skyz-border card-shadow-flank ${
                   index % 3 === 0 ? 'aspect-[16/10]' : 'aspect-[4/3]'
                 }`}
+                onHoverStart={() => setHovered(true)}
+                onHoverEnd={() => setHovered(false)}
               >
                 <motion.div
                   initial={reduced ? undefined : { clipPath: 'inset(0 0 100% 0)' }}
@@ -148,8 +157,13 @@ const ProjectChapter: React.FC<{
                   transition={{ duration: 1.05, ease: EASE }}
                   className="w-full h-full"
                 >
-                  <ProjectVisual project={project} />
+                  <ProjectVisual project={project} hovered={hovered} />
                 </motion.div>
+                {project.video && !youTubeId(project.video) && (
+                  <span className="absolute top-4 right-4 font-mono text-[9px] font-bold px-2 py-1 rounded-full bg-black/45 backdrop-blur text-white/85 border border-white/15 pointer-events-none">
+                    MOTION
+                  </span>
+                )}
                 <div className="hidden md:flex absolute inset-0 items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-black/20">
                   <span className="px-5 py-2.5 rounded-full bg-white/95 text-black text-sm font-semibold shadow-xl">
                     Open case study
@@ -205,10 +219,18 @@ const ProjectChapter: React.FC<{
 
 export const WorkPage: React.FC = () => {
   const { navigate } = useNavigation();
-  const PORTFOLIO_PROJECTS = useProjects();
+  const fetchProjects = useProjects();
+  const [activeModalProject, setActiveModalProject] = useState<PortfolioProject | null>(null);
+  // DEV-ONLY demo: appends a video-carrying entry so uploaded-MP4 cards can
+  // be previewed before real rows exist in Supabase. Stripped in prod builds.
+  const PORTFOLIO_PROJECTS = React.useMemo(
+    () => (import.meta.env.DEV && !fetchProjects.some(isDemoWorkVideo)
+      ? [...fetchProjects, DEMO_WORK_VIDEO]
+      : fetchProjects),
+    [fetchProjects],
+  );
   const HERO_TILES = PORTFOLIO_PROJECTS.slice(0, HERO_TILES_COUNT);
   const [selectedFilter, setSelectedFilter] = useState<'ALL' | ServiceCategory>('ALL');
-  const [activeModalProject, setActiveModalProject] = useState<PortfolioProject | null>(null);
   const reduced = !useMotionPreference().motionEnabled;
 
   const chaptersRef = useRef<HTMLDivElement>(null);
@@ -245,7 +267,12 @@ export const WorkPage: React.FC = () => {
             className={`block absolute ${TILE_LAYOUT[i].position} ${TILE_LAYOUT[i].rotate} ${TILE_LAYOUT[i].anim} pointer-events-none select-none z-0`}
           >
             <div className="w-24 sm:w-36 md:w-44 lg:w-56 aspect-[4/3] rounded-2xl sm:rounded-3xl overflow-hidden border border-skyz-border shadow-md sm:shadow-xl opacity-70 sm:opacity-80">
-              <ProjectVisual project={project} />
+              {/* hero tiles stay static frames (posters) — six floating videos would fight the hero text */}
+              {project.video && (project.poster || project.image || videoThumbOf(project)) ? (
+                <img src={project.poster || project.image || videoThumbOf(project)!} alt="" className="w-full h-full object-cover" loading="lazy" decoding="async" />
+              ) : (
+                <ProjectVisual project={project} />
+              )}
             </div>
           </div>
         ))}
@@ -416,7 +443,18 @@ export const WorkPage: React.FC = () => {
               className="w-full max-w-3xl rounded-[2rem] bg-skyz-surface border border-skyz-border shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
             >
               <div className="relative aspect-[16/9] sm:aspect-[21/9]">
-                <ProjectVisual project={activeModalProject} />
+                {activeModalProject.video && !youTubeId(activeModalProject.video) ? (
+                  <video
+                    src={activeModalProject.video}
+                    poster={activeModalProject.poster || activeModalProject.image || undefined}
+                    controls
+                    autoPlay
+                    playsInline
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                ) : (
+                  <ProjectVisual project={activeModalProject} />
+                )}
                 <button
                   type="button"
                   aria-label="Close Project Preview"

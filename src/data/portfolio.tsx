@@ -5,6 +5,8 @@
  * and the same card visual language.
  */
 import React from 'react';
+import LoopedVideo from '../components/LoopedVideo';
+import { youTubeId, videoThumb } from './studio';
 import {
   Laptop,
   ShoppingCart,
@@ -37,6 +39,10 @@ export interface PortfolioProject {
   // drop a project photo/mockup path here (e.g. '/assets/work/apex-storefront.jpg') to
   // replace the placeholder the moment real assets are ready.
   image?: string;
+  /** uploaded video (media-bucket path or full URL). When set, the card visual becomes a muted looping preview (same treatment as Studio belt cards). */
+  video?: string;
+  /** poster frame for the video preview */
+  poster?: string;
   mockupDetails: {
     heroMetricLabel?: string;
     sublabel?: string;
@@ -149,6 +155,20 @@ export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
   }
 ];
 
+/**
+ * DEV-ONLY demo — shows how an uploaded MP4 renders on a Work card before
+ * real video entries exist in Supabase. File lives in git-ignored
+ * public/demo/; the entry is stripped from production builds by the caller.
+ */
+export const DEMO_WORK_VIDEO: PortfolioProject = {
+  ...PORTFOLIO_PROJECTS.find((p) => p.id === 'horizon-platform')!,
+  id: 'demo-work-video',
+  title: 'Horizon — Motion Cut',
+  video: '/demo/cinematic.mp4',
+};
+
+export const isDemoWorkVideo = (p: PortfolioProject) => p.id === DEMO_WORK_VIDEO.id;
+
 export const SERVICE_CATEGORY_ICON: Record<ServiceCategory, React.ReactNode> = {
   'WEB DEVELOPMENT': <Laptop className="w-full h-full" />,
   'E-COMMERCE': <ShoppingCart className="w-full h-full" />,
@@ -179,7 +199,23 @@ export const getServiceBadgeStyle = (category: string): string => {
 export const ProjectVisual: React.FC<{
   project: PortfolioProject;
   className?: string;
-}> = ({ project, className = '' }) => {
+  /** live loop preview pauses while a modal/lightbox is open or reduced-motion is on */
+  previewsPaused?: boolean;
+  /** whether the pointer is over this exact instance (drives slow-motion) */
+  hovered?: boolean;
+}> = ({ project, className = '', previewsPaused = false, hovered = false }) => {
+  if (project.video && !youTubeId(project.video)) {
+    return (
+      <LoopedVideo
+        src={project.video}
+        poster={project.poster || project.image || undefined}
+        paused={previewsPaused}
+        thumb={project.poster || project.image || null}
+        alt={`${project.title} — motion preview`}
+        hovered={hovered}
+      />
+    );
+  }
   if (project.image) {
     return (
       <img

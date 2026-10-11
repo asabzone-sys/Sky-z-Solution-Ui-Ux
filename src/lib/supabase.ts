@@ -9,7 +9,10 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { useEffect, useState } from 'react';
 import { PORTFOLIO_PROJECTS, PortfolioProject } from '../data/portfolio';
-import { STUDIO_WORKS, StudioWork } from '../data/studio';
+import { STUDIO_WORKS, StudioWork, youTubeId } from '../data/studio';
+// videoThumb re-exported for Work surfaces that need poster frames
+import { videoThumb as _videoThumb } from '../data/studio';
+export { _videoThumb as videoThumb };
 import { TESTIMONIALS, Testimonial } from '../data/testimonials';
 
 const url = import.meta.env.VITE_SUPABASE_URL as string | undefined;
@@ -77,22 +80,34 @@ type ProjectRow = {
   deliverables: string[];
   image_path?: string | null;
   image_wide_path?: string | null;
+  video_path?: string | null;
 };
 
-const mapProject = (r: ProjectRow): PortfolioProject => ({
-  id: r.id,
-  title: r.title ?? '',
-  serviceCategory: (r.service_category ?? 'WEB DEVELOPMENT') as PortfolioProject['serviceCategory'],
-  pillar: (r.pillar ?? 'BUILD') as PortfolioProject['pillar'],
-  description: r.description ?? '',
-  accentColor: r.accent_color ?? '#3B82F6',
-  tags: r.tags ?? [],
-  clientSector: r.client_sector ?? '',
-  visualType: (r.visual_type ?? 'visual') as PortfolioProject['visualType'],
-  deliverables: r.deliverables ?? [],
-  mockupDetails: {},
-  image: mediaUrl(r.image_path || r.image_wide_path) || undefined,
-});
+const mapProject = (r: ProjectRow): PortfolioProject => {
+  const rawVideo = r.video_path?.trim() || null;
+  // Order matters: 1) any YouTube form normalises to an ID (kept for future
+  // click-to-play surfaces); 2) a path containing '/' is a media-bucket file
+  // (uploaded MP4/WebM); 3) anything else passes through untouched.
+  const video = !rawVideo
+    ? undefined
+    : (youTubeId(rawVideo)
+      ?? (rawVideo.includes('/') ? mediaUrl(rawVideo) || undefined : rawVideo));
+  return {
+    id: r.id,
+    title: r.title ?? '',
+    serviceCategory: (r.service_category ?? 'WEB DEVELOPMENT') as PortfolioProject['serviceCategory'],
+    pillar: (r.pillar ?? 'BUILD') as PortfolioProject['pillar'],
+    description: r.description ?? '',
+    accentColor: r.accent_color ?? '#3B82F6',
+    tags: r.tags ?? [],
+    clientSector: r.client_sector ?? '',
+    visualType: (r.visual_type ?? 'visual') as PortfolioProject['visualType'],
+    deliverables: r.deliverables ?? [],
+    mockupDetails: {},
+    image: mediaUrl(r.image_path || r.image_wide_path) || undefined,
+    video,
+  };
+};
 
 type StudioRow = {
   id: string;
@@ -109,20 +124,30 @@ type StudioRow = {
   video_path?: string | null;
 };
 
-const mapStudio = (r: StudioRow): StudioWork => ({
-  id: r.id,
-  order: r.order_index ?? 0,
-  title: r.title ?? '',
-  caption: r.caption ?? '',
-  description: r.description ?? '',
-  category: (r.category ?? 'GRAPHIC DESIGN') as StudioWork['category'],
-  year: r.year ?? '',
-  client: r.client ?? '',
-  accent: r.accent ?? '#8B5CF6',
-  image: mediaUrl(r.image_path) || undefined,
-  poster: mediaUrl(r.poster_path) || undefined,
-  video: r.video_path?.includes('/') ? mediaUrl(r.video_path) || undefined : r.video_path || undefined,
-});
+const mapStudio = (r: StudioRow): StudioWork => {
+  const rawVideo = r.video_path?.trim() || null;
+  // Order matters: 1) any YouTube form (watch URL, youtu.be, embed, bare ID)
+  // normalises to the video ID; 2) a path containing '/' is a media-bucket
+  // file (uploaded MP4/WebM); 3) anything else passes through untouched.
+  const video = !rawVideo
+    ? undefined
+    : (youTubeId(rawVideo)
+      ?? (rawVideo.includes('/') ? mediaUrl(rawVideo) || undefined : rawVideo));
+  return {
+    id: r.id,
+    order: r.order_index ?? 0,
+    title: r.title ?? '',
+    caption: r.caption ?? '',
+    description: r.description ?? '',
+    category: (r.category ?? 'GRAPHIC DESIGN') as StudioWork['category'],
+    year: r.year ?? '',
+    client: r.client ?? '',
+    accent: r.accent ?? '#8B5CF6',
+    image: mediaUrl(r.image_path) || undefined,
+    poster: mediaUrl(r.poster_path) || undefined,
+    video,
+  };
+};
 
 type TestimonialRow = {
   id: string;

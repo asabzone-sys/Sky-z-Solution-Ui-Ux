@@ -1,9 +1,9 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { motion, useScroll, useTransform, MotionValue, useSpring, useMotionValue, animate } from 'motion/react';
+import { motion, useScroll, useTransform, MotionValue, useSpring, useMotionValue, animate, AnimatePresence } from 'motion/react';
 import { useMotionPreference } from '../context/MotionPreferenceContext';
-import { ArrowUpRight, ArrowRight } from 'lucide-react';
+import { ArrowUpRight, ArrowRight, Play, X } from 'lucide-react';
 import { useNavigation } from '../context/NavigationContext';
-import { STUDIO_CATEGORIES, StudioVisual, StudioWork } from '../data/studio';
+import { STUDIO_CATEGORIES, StudioVisual, StudioWork, videoThumb, youTubeId } from '../data/studio';
 import { useStudioWorks } from '../lib/supabase';
 import { Eyebrow } from '../components/OpalKit';
 import { HeroArt } from '../components/Illustrations';
@@ -26,6 +26,26 @@ import { HeroArt } from '../components/Illustrations';
  */
 
 const EASE = [0.16, 1, 0.3, 1] as const;
+
+/* ------------------------------------------------------------------ */
+/* DEV-ONLY demo entry — shows how an uploaded MP4 renders on the belt. */
+/* Lives in git-ignored public/demo/, so it never ships with the repo,  */
+/* and is stripped from production builds via import.meta.env.DEV.      */
+/* ------------------------------------------------------------------ */
+const LOCAL_DEMO_WORK: StudioWork = {
+  id: 'demo-cinematic',
+  order: 99,
+  title: 'Cinematic Motion Reel',
+  caption: 'Frames that breathe between moments.',
+  description: 'Local demo of an uploaded MP4 motion-graphics piece on the belt.',
+  category: 'MOTION / VIDEO',
+  year: '2026',
+  client: 'SkyZ Demo',
+  accent: '#8B5CF6',
+  video: '/demo/cinematic.mp4',
+};
+
+const isLocalDemoVideo = (w: StudioWork) => w.id === LOCAL_DEMO_WORK.id;
 
 /* ------------------------------------------------------------------ */
 /* Intro — unique hero: drifting split lines, registration ticks,      */
@@ -393,13 +413,27 @@ const GraphicWork: React.FC = () => {
 /* ------------------------------------------------------------------ */
 const MotionStrip: React.FC = () => {
   const STUDIO_WORKS = useStudioWorks();
+  // DEV-ONLY demo: shows how an uploaded MP4 motion-graphics piece renders on
+  // the belt before real entries exist in Supabase. import.meta.env guard in
+  // production would ship nothing extra — this hook simply returns [] there,
+  // so the demo entry never appears in a production build.
+  const STUDIO_WORKS_FULL = React.useMemo(() => (
+    import.meta.env.DEV && STUDIO_WORKS.every((w) => !isLocalDemoVideo(w))
+      ? [...STUDIO_WORKS, LOCAL_DEMO_WORK]
+      : STUDIO_WORKS
+  ), [STUDIO_WORKS]);
+
   const sectionRef = useRef<HTMLElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const reduced = !useMotionPreference().motionEnabled;
   const [dist, setDist] = useState(0);
   const [hovered, setHovered] = useState<string | null>(null);
+  const [playing, setPlaying] = useState<StudioWork | null>(null);
 
-  // measured travel — never a hardcoded percentage
+  // measured travel — never a hardcoded percentage.
+  // Re-measures when the belt CONTENT changes (demo entry added on dev,
+  // or Supabase rows hydrate late) — previously content-length changes
+  // arrived after mount and the travel distance went stale.
   useLayoutEffect(() => {
     const track = trackRef.current;
     if (!track) return;
@@ -413,7 +447,7 @@ const MotionStrip: React.FC = () => {
     window.addEventListener('resize', measure);
     const t = setTimeout(measure, 400);   // after webfont swap
     return () => { ro.disconnect(); window.removeEventListener('resize', measure); clearTimeout(t); };
-  }, []);
+  }, [STUDIO_WORKS_FULL]);
 
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start start', 'end end'] });
   // spring-smoothed scroll mapping — kills wheel/scrollbar jitter.
@@ -425,13 +459,19 @@ const MotionStrip: React.FC = () => {
 
   /* manual drag (touch + mouse) composes WITH the scroll-driven position */
   const dragX = useMotionValue(0);
+  // movedRef: how far the pointer travelled during the active drag — the belt
+  // itself doesn't swallow clicks, so MotionCard uses this to ignore the
+  // click that fires after a drag release ( accidental video-open fix).
+  const movedRef = useRef(0);
   const dragRef = useRef({ active: false, startX: 0, base: 0 });
   const onPointerDown = (e: React.PointerEvent) => {
     dragRef.current = { active: true, startX: e.clientX, base: dragX.get() };
+    movedRef.current = 0;
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
   };
   const onPointerMove = (e: React.PointerEvent) => {
     if (!dragRef.current.active) return;
+    movedRef.current = Math.max(movedRef.current, Math.abs(e.clientX - dragRef.current.startX));
     dragX.set(dragRef.current.base + (e.clientX - dragRef.current.startX));
   };
   const endDrag = () => {
@@ -479,8 +519,16 @@ const MotionStrip: React.FC = () => {
           onPointerCancel={endDrag}
           className="flex items-stretch gap-5 sm:gap-8 w-max pl-4 sm:pl-8 pr-[12vw] cursor-grab active:cursor-grabbing touch-pan-y"
         >
-          {STUDIO_WORKS.map((w) => (
-            <MotionCard key={w.id} work={w} hovered={hovered} setHovered={setHovered} />
+          {STUDIO_WORKS_FULL.map((w) => (
+            <MotionCard
+              key={w.id}
+              work={w}
+              hovered={hovered}
+              setHovered={setHovered}
+              onPlay={setPlaying}
+              dragMovedRef={movedRef}
+              previewsMuted={reduced || playing !== null}
+            />
           ))}
         </motion.div>
 
@@ -494,7 +542,173 @@ const MotionStrip: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* click-to-play video lightbox — YouTube embed or uploaded MP4 */}
+      <AnimatePresence>
+        {playing && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-[70] flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-sm"
+            onClick={() => setPlaying(null)}
+            role="dialog"
+            aria-modal="true"
+            aria-label={`Play video: ${playing.title}`}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.94, y: 16 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.94, y: 16 }}
+              transition={{ duration: 0.25, ease: EASE }}
+              className="relative w-full max-w-4xl aspect-video rounded-[1.5rem] overflow-hidden bg-black border border-white/10 shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {youTubeId(playing.video)
+                ? (
+                  <iframe
+                    className="absolute inset-0 w-full h-full"
+                    src={`https://www.youtube.com/embed/${youTubeId(playing.video)}?autoplay=1&rel=0`}
+                    title={playing.title}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                ) : (
+                  <video
+                    src={playing.video}
+                    poster={playing.poster || undefined}
+                    controls
+                    autoPlay
+                    playsInline
+                    className="absolute inset-0 w-full h-full"
+                  />
+                )}
+              <button
+                type="button"
+                aria-label="Close video"
+                onClick={() => setPlaying(null)}
+                className="absolute top-3 right-3 w-9 h-9 rounded-full bg-black/50 backdrop-blur border border-white/20 text-white flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
+  );
+};
+
+/**
+ * LoopedCanvas — for uploaded MP4/WebM motion work the card IS the video:
+ * muted, looping, autoplay — COSMOS-style living cards. YouTube entries stay
+ * click-to-play (embeds can't be sensibly muted-looped inline).
+ *
+ * Performance rules baked in:
+ * - the element only MOUNTS when the card is near the viewport (no<br>
+ *   off-screen network/battery cost — crucial when the belt holds many videos)
+ * - plays/pauses with the viewport via IntersectionObserver<br>
+ * - pauses when the lightbox is open and plays/prerolls again on resume<br>
+ * - `preload="metadata"` so we never download full files for parked cards<br>
+ * - honours reduced-motion: static poster frame only, click still opens
+ */
+const LoopedVideo: React.FC<{
+  src: string;
+  poster?: string;
+  paused: boolean;       // shared pause state: lightbox open or reduced motion
+  thumb: string | null;
+  alt: string;
+  hovered: boolean;      // drives the smooth slow-motion on hover
+}> = ({ src, poster, paused, thumb, alt, hovered }) => {
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [mounted, setMounted] = useState(false);
+  const [nearViewport, setNearViewport] = useState(false);
+  const userPaused = paused;
+
+  // Mount the tag only once the card approaches the viewport. The belt moves
+  // cards HORIZONTALLY via a parent transform, and IntersectionObserver
+  // rootMargin is axis-symmetric — '25% 0px' only extends vertically, so
+  // horizontally-translated cards never entered the (0-width horizontal)
+  // interaction zone. A generous symmetric ROOT-px margin covers one card
+  // width of travel on both axes; vertical budget stays generous on mobile.
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return;
+    const margin = () => `${Math.round(Math.max(innerWidth * 0.5, 320))}px`;   // ~2 cards of lead-in
+    let io: IntersectionObserver | null = null;
+    const attach = () => {
+      io?.disconnect();
+      io = new IntersectionObserver(
+        ([entry]) => setNearViewport(entry.isIntersecting),
+        { rootMargin: `${margin()} ${margin()} ${margin()} ${margin()}` },
+      );
+      io.observe(el);
+    };
+    attach();
+    window.addEventListener('resize', attach);
+    return () => { io?.disconnect(); window.removeEventListener('resize', attach); };
+  }, []);
+
+  useEffect(() => {
+    if (nearViewport) setMounted(true);
+  }, [nearViewport]);
+
+  // play/pause follows viewport + shared pause state
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    if (userPaused || !nearViewport) {
+      if (!v.paused) v.pause();
+    } else {
+      v.play().catch(() => {/* autoplay can reject pre-interaction; poster covers it */});
+    }
+  }, [userPaused, nearViewport, mounted]);
+
+  // Smooth hover slow-motion: playbackRate glides 1 ⇄ 0.45 with a lerped
+  // rAF loop instead of snapping — a hard rate change stutters the decode
+  // pipeline for a beat. The loop self-terminates once the target is close
+  // and restarts only on direction change, so idle cards cost zero frames.
+  const rateRef = useRef(1);
+  const targetRate = hovered ? 0.45 : 1;
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v || userPaused || !nearViewport) { rateRef.current = targetRate; return; }
+    let raf = 0;
+    const tick = () => {
+      const diff = targetRate - rateRef.current;
+      if (Math.abs(diff) < 0.01) {
+        v.playbackRate = targetRate;
+        rateRef.current = targetRate;
+        return;   // settled — stop the loop
+      }
+      rateRef.current += diff * 0.14;   // lerp factor: ~200ms to settle
+      v.playbackRate = Math.max(0.05, rateRef.current);
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [targetRate, userPaused, nearViewport, mounted]);
+
+  return (
+    <div ref={wrapRef} className="absolute inset-0">
+      {mounted ? (
+        <video
+          ref={videoRef}
+          src={src}
+          poster={poster || thumb || undefined}
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          className="absolute inset-0 w-full h-full object-cover"
+          aria-label={alt}
+        />
+      ) : (
+        thumb && <img src={thumb} alt="" className="absolute inset-0 w-full h-full object-cover" loading="lazy" decoding="async" />
+      )}
+    </div>
   );
 };
 
@@ -502,8 +716,22 @@ const MotionCard: React.FC<{
   work: StudioWork;
   hovered: string | null;
   setHovered: (id: string | null) => void;
-}> = ({ work, hovered, setHovered }) => {
+  onPlay: (w: StudioWork) => void;
+  /** shared with the belt: px distance moved while dragging (0 = a true click) */
+  dragMovedRef: React.MutableRefObject<number>;
+  /** true while the video lightbox (or reduced-motion) mutes live previews */
+  previewsMuted: boolean;
+}> = ({ work, hovered, setHovered, onPlay, dragMovedRef, previewsMuted }) => {
   const dim = hovered !== null && hovered !== work.id;
+  const thumb = videoThumb(work.video, work.poster ?? work.image);
+  // Uploaded file → inline muted loop; YouTube → click-to-play only.
+  const isUploadedVideo = !!work.video && !youTubeId(work.video);
+  const handleActivate = () => {
+    // a click that follows a belt drag pixels-wise is a panning gesture, not
+    // an intent to open the video — ignore anything beyond a small slop
+    if (dragMovedRef.current > 6) return;
+    if (work.video) onPlay(work);
+  };
   return (
     <motion.div
       onHoverStart={() => setHovered(work.id)}
@@ -512,11 +740,39 @@ const MotionCard: React.FC<{
       transition={{ type: 'spring', stiffness: 260, damping: 26 }}
       className="relative w-[76vw] max-w-[340px] sm:w-[400px] lg:w-[420px] flex-shrink-0 cursor-pointer group select-none"
     >
-      <div className="relative aspect-[4/5] rounded-[1.75rem] sm:rounded-[2rem] overflow-hidden border border-skyz-border card-shadow-flank">
+      <div
+        className="relative aspect-[4/5] rounded-[1.75rem] sm:rounded-[2rem] overflow-hidden border border-skyz-border card-shadow-flank"
+        onClick={handleActivate}
+        role={work.video ? 'button' : undefined}
+        aria-label={work.video ? `Play video: ${work.title}` : undefined}
+      >
         <StudioVisual work={work} glyph={work.title.split(' ')[0].charAt(0)} />
+        {isUploadedVideo && work.video && (
+          <LoopedVideo
+            src={work.video}
+            poster={work.poster || work.image || undefined}
+            paused={previewsMuted}
+            thumb={thumb}
+            alt={`${work.title} — motion preview`}
+            hovered={hovered === work.id}
+          />
+        )}
+        {!isUploadedVideo && work.video && thumb && (
+          <img
+            src={thumb}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        )}
         {work.video && (
-          <span className="absolute top-5 right-5 w-11 h-11 rounded-full bg-black/45 backdrop-blur flex items-center justify-center text-white transition-transform duration-300 group-hover:scale-110">
-            <ArrowUpRight className="w-4 h-4" />
+          <span
+            className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full bg-black/45 backdrop-blur flex items-center justify-center text-white transition-all duration-300 group-hover:scale-110 ${
+              isUploadedVideo && !previewsMuted ? 'opacity-0' : 'opacity-100'
+            }`}
+          >
+            <Play className="w-5 h-5 ml-0.5" />
           </span>
         )}
         <div className="absolute inset-x-0 bottom-0 p-5 sm:p-7 bg-gradient-to-t from-black/60 via-black/25 to-transparent">

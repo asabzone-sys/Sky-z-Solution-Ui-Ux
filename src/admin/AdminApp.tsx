@@ -71,7 +71,8 @@ const STUDIO_CONFIG = {
     { key: 'caption', label: 'Caption (one poetic line)', type: 'textarea' as const },
     { key: 'image_path', label: 'Scene Visual', type: 'media' as const, slot: 'studio.scene' },
     { key: 'poster_path', label: 'Video Poster', type: 'media' as const, slot: 'studio.poster' },
-    { key: 'video_path', label: 'Video (YouTube ID or uploaded file path)', type: 'text' as const },
+    { key: 'video_path', label: 'Video file (MP4/WebM upload)', type: 'media' as const, slot: 'studio.poster', kind: 'video', hint: 'Uploaded video plays in a lightbox when a card is clicked. Prefer a poster above for the cover frame.' },
+    { key: 'video_youtube', label: '…or YouTube link/ID', type: 'text' as const, hint: 'Paste any youtube.com or youtu.be URL, or just the 11-character ID. YouTube wins if both are set.' },
   ],
   newTemplate: () => ({
     id: `studio-${Date.now()}`,
@@ -86,8 +87,26 @@ const STUDIO_CONFIG = {
     image_path: null,
     poster_path: null,
     video_path: null,
+    video_youtube: '',
     published: false,
   }),
+  // Split DB.video_path into the two editor controls: an upload path contains
+  // a folder segment ending in a video extension; anything else is YouTube.
+  expand: (row) => {
+    const vp = typeof row.video_path === 'string' ? row.video_path.trim() : '';
+    const isUpload = /(^|\/.+)\/.+\.(mp4|webm|mov|m4v)$/i.test(vp);
+    return isUpload
+      ? { ...row, video_youtube: '' }
+      : { ...row, video_youtube: vp, video_path: null };
+  },
+  // Join them back: YouTube wins when both are set; uploaded path otherwise.
+  prepare: (draft) => {
+    const yt = typeof draft.video_youtube === 'string' ? draft.video_youtube.trim() : '';
+    const upload = typeof draft.video_path === 'string' ? draft.video_path.trim() : '';
+    const next = { ...draft, video_path: yt || upload || null };
+    delete next.video_youtube;
+    return next;
+  },
 };
 
 const TESTIMONIALS_CONFIG = {

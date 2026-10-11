@@ -109,7 +109,8 @@ export const MediaSlot: React.FC<{
   value?: string | null;              // storage path
   onChange: (path: string | null) => void;
   label?: string;
-}> = ({ slotKey, value, onChange, label }) => {
+  accept?: string;                    // override the picker's file filter
+}> = ({ slotKey, value, onChange, label, accept = 'image/*' }) => {
   const spec: RatioSpec & { hint?: string } = SLOTS[slotKey as string] || { ratio: 1, label: '—', recommend: '', hint: '' };
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
@@ -149,7 +150,11 @@ export const MediaSlot: React.FC<{
       >
         {preview ? (
           <>
-            <img src={preview} alt="" className="absolute inset-0 w-full h-full object-cover" />
+            {accept.includes('video') ? (
+              <video src={preview} muted playsInline className="absolute inset-0 w-full h-full object-cover" />
+            ) : (
+              <img src={preview} alt="" className="absolute inset-0 w-full h-full object-cover" />
+            )}
             <div className="absolute inset-0 bg-black/45 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
               <span className="text-white text-xs font-semibold">Replace</span>
               <button
@@ -177,7 +182,7 @@ export const MediaSlot: React.FC<{
         <input
           ref={inputRef}
           type="file"
-          accept="image/*"
+          accept={accept}
           className="hidden"
           onChange={(e) => { const f = e.target.files?.[0]; if (f) pick(f); e.target.value = ''; }}
         />

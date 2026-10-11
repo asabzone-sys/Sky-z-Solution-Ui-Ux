@@ -55,6 +55,8 @@ export const WorkCarousel: React.FC = () => {
   const [activeSlot, setActiveSlot] = useState(0);
   const activeSlotRef = useRef(0);
   const [dragging, setDragging] = useState(false);
+  // which card the pointer is over — drives its video slow-motion
+  const [hoveredProjectId, setHoveredProjectId] = useState<string | null>(null);
 
   // Responsive card geometry (content size only — emphasis comes from scale)
   const [dims, setDims] = useState({ baseW: 420, gap: 48 });
@@ -222,8 +224,21 @@ export const WorkCarousel: React.FC = () => {
   // ── Card (content + markup unchanged from the original design) ───────
   const CardBody: React.FC<{ project: PortfolioProject }> = ({ project }) => (
     <>
-      <div className="relative w-full rounded-[1.4rem] overflow-hidden aspect-[16/11]">
-        <ProjectVisual project={project} />
+      <div
+        className="relative w-full rounded-[1.4rem] overflow-hidden aspect-[16/11]"
+        onMouseEnter={() => setHoveredProjectId(project.id)}
+        onMouseLeave={() => setHoveredProjectId((id) => (id === project.id ? null : id))}
+      >
+        <ProjectVisual
+          project={project}
+          hovered={hoveredProjectId === project.id}
+          previewsPaused={false}
+        />
+        {project.video && (
+          <span className="absolute top-3 right-3 font-mono text-[9px] font-bold px-2 py-1 rounded-full bg-black/45 backdrop-blur text-white/85 border border-white/15 pointer-events-none">
+            MOTION
+          </span>
+        )}
         <span
           className={`absolute top-3 left-3 text-[10px] font-mono font-bold px-2.5 py-1 rounded-full border backdrop-blur-sm ${getServiceBadgeStyle(project.serviceCategory)}`}
         >

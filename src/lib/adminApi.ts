@@ -217,18 +217,28 @@ export const uploadMedia = async (
 
   // Read dimensions in-browser via an object URL. This must NEVER reject the
   // upload: dimension probing is guidance (ratio hints in the admin UI), not
-  // validation. Wrap the Image promise in an inner try/catch so a decoding
-  // failure falls through to the upload instead of aborting it — previously
-  // storage errors surfaced here as the misleading "Not a readable image".
+  // validation. Images probe via <img>; videos probe via <video> metadata.
+  // Wrap each probe promise in an inner try/catch so a decoding failure falls
+  // through to the upload instead of aborting it — previously storage errors
+  // surfaced here as the misleading "Not a readable image".
+  const isVideo = file.type.startsWith('video/') || /\.(mp4|webm|mov|m4v)$/i.test(file.name);
   let dims = { width: 0, height: 0 };
   try {
     dims = await new Promise<{ width: number; height: number }>((resolve, reject) => {
-      const img = new Image();
       const objectUrl = URL.createObjectURL(file);
       const cleanup = () => URL.revokeObjectURL(objectUrl);
-      img.onload = () => { cleanup(); resolve({ width: img.naturalWidth, height: img.naturalHeight }); };
-      img.onerror = () => { cleanup(); reject(new Error('Not a readable image'));; };
-      img.src = objectUrl;
+      if (isVideo) {
+        const vid = document.createElement('video');
+        vid.preload = 'metadata';
+        vid.onloadedmetadata = () => { cleanup(); resolve({ width: vid.videoWidth, height: vid.videoHeight }); };
+        vid.onerror = () => { cleanup(); reject(new Error('Not a readable video'));; };
+        vid.src = objectUrl;
+      } else {
+        const img = new Image();
+        img.onload = () => { cleanup(); resolve({ width: img.naturalWidth, height: img.naturalHeight }); };
+        img.onerror = () => { cleanup(); reject(new Error('Not a readable image'));; };
+        img.src = objectUrl;
+      }
     });
   } catch {
     dims = { width: 0, height: 0 };   // dimensions unknown — still upload
